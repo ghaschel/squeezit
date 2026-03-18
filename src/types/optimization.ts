@@ -1,6 +1,7 @@
 export type SupportedFormat =
   | "jpeg"
   | "png"
+  | "apng"
   | "gif"
   | "webp"
   | "svg"
@@ -8,6 +9,8 @@ export type SupportedFormat =
   | "heif"
   | "avif"
   | "bmp"
+  | "jxl"
+  | "ico"
   | "raw";
 
 export interface ResolvedInput {

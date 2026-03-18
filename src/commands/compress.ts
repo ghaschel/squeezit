@@ -8,7 +8,6 @@ import {
   logOptimizationResult,
   optimizeImages,
   printSummary,
-  requiresDngLab,
   resolveCompressOptions,
   resolveInputs,
 } from "../utils";
@@ -66,7 +65,7 @@ async function runCompressCommand(
       `Found ${chalk.bold(inputs.length.toString())} candidate files`
     );
 
-    await ensureDependencies(options, requiresDngLab(inputs, options.max));
+    await ensureDependencies(options, inputs);
 
     console.log("");
     console.log(

@@ -13,7 +13,14 @@ import { afterEach, describe, expect, test } from "bun:test";
 
 import { resolveCompressOptions, resolveInputs } from "./utils";
 import { logOptimizationResult, printSummary } from "./utils/console";
-import { applyReplacement, describeSkipReason } from "./utils/optimizer";
+import { collectRequiredDependencies } from "./utils/dependencies";
+import {
+  applyReplacement,
+  describeSkipReason,
+  hasApngAnimation,
+  parseIcoEntries,
+  shouldAcceptIcoExtraction,
+} from "./utils/optimizer";
 
 const createdDirectories: string[] = [];
 
@@ -48,14 +55,17 @@ describe("resolveInputs", () => {
   test("defaults to supported files in the current directory", async () => {
     const root = await createTempDirectory();
     await writeFile(join(root, "tracked.png"), "x");
+    await writeFile(join(root, "favicon.ico"), "x");
+    await writeFile(join(root, "preview.jxl"), "x");
     await writeFile(join(root, "notes.txt"), "x");
     await mkdir(join(root, "nested"), { recursive: true });
     await writeFile(join(root, "nested", "deep.jpg"), "x");
+    await writeFile(join(root, "nested", "deep.apng"), "x");
 
     const matches = await resolveInputs(resolveCompressOptions([], {}, root));
     const displayPaths = matches.map((entry) => entry.displayPath);
 
-    expect(displayPaths).toEqual(["tracked.png"]);
+    expect(displayPaths).toEqual(["favicon.ico", "preview.jxl", "tracked.png"]);
   });
 
   test("matches unexpanded glob patterns", async () => {
@@ -139,6 +149,88 @@ describe("optimizer helpers", () => {
     expect(await readFile(originalPath, "utf8")).toBe("after");
     await expect(stat(sourcePath)).rejects.toThrow();
   });
+
+  test("detects APNG animation chunks", () => {
+    const pngWithAnimation = Buffer.concat([
+      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+      chunk("IHDR", Buffer.alloc(13)),
+      chunk("acTL", Buffer.from([0x00, 0x00, 0x00, 0x02])),
+      chunk("IEND", Buffer.alloc(0)),
+    ]);
+    const plainPng = Buffer.concat([
+      Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+      chunk("IHDR", Buffer.alloc(13)),
+      chunk("IEND", Buffer.alloc(0)),
+    ]);
+
+    expect(hasApngAnimation(pngWithAnimation)).toBe(true);
+    expect(hasApngAnimation(plainPng)).toBe(false);
+  });
+
+  test("parses ICO entry listings", () => {
+    const entries = parseIcoEntries(
+      [
+        "--icon --index=1 --width=16 --height=16 --bit-depth=32 --palette-size=0",
+        "--icon --index=2 --width=32 --height=32 --bit-depth=32 --palette-size=0",
+      ].join("\n")
+    );
+
+    expect(entries).toEqual([
+      { index: 1, width: 16, height: 16, bitDepth: 32 },
+      { index: 2, width: 32, height: 32, bitDepth: 32 },
+    ]);
+  });
+
+  test("accepts ICO extraction warnings when output exists", () => {
+    expect(
+      shouldAcceptIcoExtraction(
+        "computer.ico: incorrect total size of bitmap (44184 specified; 16936 real)"
+      )
+    ).toBe(true);
+    expect(
+      shouldAcceptIcoExtraction(
+        "computer.ico: no png image extracted from ico entry"
+      )
+    ).toBe(false);
+  });
+});
+
+describe("dependency planning", () => {
+  test("selects format-specific tools for new formats", () => {
+    const options = resolveCompressOptions([], { max: true }, process.cwd());
+    const dependencies = collectRequiredDependencies(
+      [
+        {
+          absolutePath: join(process.cwd(), "image.png"),
+          displayPath: "image.png",
+        },
+        {
+          absolutePath: join(process.cwd(), "animation.apng"),
+          displayPath: "animation.apng",
+        },
+        {
+          absolutePath: join(process.cwd(), "favicon.ico"),
+          displayPath: "favicon.ico",
+        },
+        {
+          absolutePath: join(process.cwd(), "hero.jxl"),
+          displayPath: "hero.jxl",
+        },
+      ],
+      options
+    );
+
+    const binaries = dependencies.map((dependency) => dependency.binary).sort();
+
+    expect(binaries).toContain("file");
+    expect(binaries).toContain("pngcrush");
+    expect(binaries).toContain("optipng");
+    expect(binaries).toContain("zopflipng");
+    expect(binaries).toContain("oxipng");
+    expect(binaries).toContain("icotool");
+    expect(binaries).toContain("cjxl");
+    expect(binaries).toContain("exiftool");
+  });
 });
 
 describe("console output", () => {
@@ -207,4 +299,11 @@ async function createTempDirectory(): Promise<string> {
   const directory = await mkdtemp(join(tmpdir(), "squeezit-test-"));
   createdDirectories.push(directory);
   return directory;
+}
+
+function chunk(type: string, data: Buffer): Buffer {
+  const header = Buffer.alloc(8);
+  header.writeUInt32BE(data.length, 0);
+  header.write(type, 4, 4, "ascii");
+  return Buffer.concat([header, data, Buffer.alloc(4)]);
 }

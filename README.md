@@ -19,6 +19,7 @@ It supports direct file paths, shell-style patterns like `*.png`, glob expressio
 ## Why Squeezit
 
 - Lossless-first workflow across common web and design formats
+- APNG, JXL, and ICO support alongside common web asset formats
 - Friendly CLI output with clear summaries, skips, and failures
 - Safe threshold-based replacement so tiny wins do not churn your files
 - Pattern matching that works with both regular shell parameters and glob expressions
@@ -72,6 +73,12 @@ Target nested files with glob expressions:
 squeezit -r "images/**/*.{png,jpg,webp}"
 ```
 
+Optimize an icon container in dry-run mode:
+
+```bash
+squeezit favicon.ico -d
+```
+
 Run the shorter alias:
 
 ```bash
@@ -94,6 +101,7 @@ squeezit [patterns...] [options]
 - Pass directories like `assets`
 - If no file parameter is provided, `squeezit` scans supported image files in the current directory
 - Scanning is non-recursive by default; use `-r, --recursive` to traverse subdirectories
+- Discovery includes APNG (`.apng`), JPEG XL (`.jxl`), and ICO (`.ico`) files
 
 ### Options
 
@@ -144,12 +152,24 @@ Preserve timestamps while stripping metadata:
 squeezit -r "photos/**/*.{jpg,tiff,heic}" -s -k
 ```
 
+Dry-run a JPEG XL file:
+
+```bash
+squeezit artwork.jxl -d
+```
+
+Modernize an ICO while preserving its icon sizes:
+
+```bash
+squeezit app.ico
+```
+
 ## Supported Inputs
 
 Squeezit currently matches these file extensions during discovery:
 
 - `jpg`, `jpeg`
-- `png`
+- `png`, `apng`
 - `gif`
 - `webp`
 - `svg`
@@ -157,17 +177,43 @@ Squeezit currently matches these file extensions during discovery:
 - `heic`, `heif`
 - `avif`
 - `bmp`
+- `jxl`
+- `ico`
 - `cr2`, `nef`, `arw`, `raf`, `orf`, `rw2`
 
 Internally, compression behavior is determined with MIME detection where applicable, not only by extension.
 
+## Supported Formats
+
+Squeezit currently supports these image format families:
+
+- `JPEG` (`.jpg`, `.jpeg`): optimized losslessly with `jpegtran` and `jpegrescan`
+- `PNG` (`.png`): compares multiple lossless PNG candidates and keeps the smallest result
+- `APNG` (`.apng`, animated PNG payloads): optimized losslessly with `oxipng`
+- `GIF` (`.gif`): optimized losslessly with `gifsicle`
+- `WebP` (`.webp`): optimized losslessly, including animated WebP handling
+- `SVG` (`.svg`): optimized with `svgo`
+- `TIFF` (`.tif`, `.tiff`): optimized with lossless ZIP compression
+- `HEIF / HEIC` (`.heif`, `.heic`): re-encoded in lossless mode
+- `AVIF` (`.avif`): re-encoded in lossless mode
+- `BMP` (`.bmp`): recompressed with lossless ZIP compression
+- `JPEG XL` (`.jxl`): re-encoded losslessly with `cjxl`
+- `ICO` (`.ico`): modernized by extracting embedded icon images, optimizing them, and rebuilding the icon container while preserving the available icon sizes
+- `RAW camera files` (`.cr2`, `.nef`, `.arw`, `.raf`, `.orf`, `.rw2`): metadata stripping in normal mode, optional RAW-to-DNG conversion in `--max` mode
+
+Notes:
+
+- If a lossless result is larger, the file is skipped and never replaced
+- ICO support is focused on modernizing containers while preserving icon sizes, not preserving original legacy BMP-style encoding byte-for-byte
+- RAW files are special-case inputs and only convert to `.dng` in `--max` mode
+
 ## System Dependencies
 
-Squeezit orchestrates best-in-class native image tools. Depending on the formats you process, it may require binaries such as:
+Squeezit orchestrates native image tools based on the inputs you actually process. It may require binaries such as:
 
 - `file`
 - `jpegtran`, `jpegrescan`, `jpegoptim`
-- `pngcrush`, `optipng`, `zopflipng`
+- `pngcrush`, `optipng`, `zopflipng`, `oxipng`
 - `gifsicle`
 - `svgo`
 - `cwebp`, `dwebp`, `webpinfo`, `gif2webp`
@@ -176,7 +222,11 @@ Squeezit orchestrates best-in-class native image tools. Depending on the formats
 - `tiffcp`
 - `magick`
 - `exiftool`
+- `cjxl`
+- `icotool`
 - `dnglab` for RAW to DNG conversion in `--max` mode
+
+Not every run needs every tool. Dependency checks are format-aware, so `squeezit` only asks for the binaries needed for the files you matched.
 
 If dependencies are missing, you can ask `squeezit` to install them:
 

@@ -1,5 +1,6 @@
 import { constants } from "node:fs";
 import { access, readFile } from "node:fs/promises";
+import { extname } from "node:path";
 
 import chalk from "chalk";
 import ora from "ora";
@@ -12,112 +13,163 @@ import type {
 import { commandExists, runCheckedCommand } from "./exec";
 import { confirmDependencyInstall } from "./prompts";
 
-const BASE_DEPENDENCIES: DependencySpec[] = [
-  {
+type DependencyName =
+  | "file"
+  | "jpegtran"
+  | "jpegrescan"
+  | "jpegoptim"
+  | "pngcrush"
+  | "optipng"
+  | "zopflipng"
+  | "oxipng"
+  | "gifsicle"
+  | "svgo"
+  | "cwebp"
+  | "dwebp"
+  | "webpinfo"
+  | "gif2webp"
+  | "heif-enc"
+  | "avifenc"
+  | "tiffcp"
+  | "magick"
+  | "exiftool"
+  | "dnglab"
+  | "cjxl"
+  | "icotool";
+
+const DEPENDENCY_CATALOG: Record<DependencyName, DependencySpec> = {
+  file: {
     binary: "file",
     required: true,
     brewPackage: "file-formula",
     aptPackage: "file",
   },
-  {
+  jpegtran: {
     binary: "jpegtran",
     required: true,
     brewPackage: "mozjpeg",
     aptPackage: "libjpeg-turbo-progs",
   },
-  {
+  jpegrescan: {
     binary: "jpegrescan",
     required: true,
     brewPackage: "jpegrescan",
     aptPackage: "jpegrescan",
   },
-  {
+  jpegoptim: {
     binary: "jpegoptim",
     required: true,
     brewPackage: "jpegoptim",
     aptPackage: "jpegoptim",
   },
-  {
+  pngcrush: {
     binary: "pngcrush",
     required: true,
     brewPackage: "pngcrush",
     aptPackage: "pngcrush",
   },
-  {
+  optipng: {
     binary: "optipng",
     required: true,
     brewPackage: "optipng",
     aptPackage: "optipng",
   },
-  {
+  zopflipng: {
     binary: "zopflipng",
     required: true,
     brewPackage: "zopfli",
     aptPackage: "zopfli",
   },
-  {
+  oxipng: {
+    binary: "oxipng",
+    required: true,
+    brewPackage: "oxipng",
+    aptPackage: "oxipng",
+  },
+  gifsicle: {
     binary: "gifsicle",
     required: true,
     brewPackage: "gifsicle",
     aptPackage: "gifsicle",
   },
-  {
+  svgo: {
     binary: "svgo",
     required: true,
     brewPackage: "svgo",
     aptPackage: "node-svgo",
   },
-  { binary: "cwebp", required: true, brewPackage: "webp", aptPackage: "webp" },
-  { binary: "dwebp", required: true, brewPackage: "webp", aptPackage: "webp" },
-  {
+  cwebp: {
+    binary: "cwebp",
+    required: true,
+    brewPackage: "webp",
+    aptPackage: "webp",
+  },
+  dwebp: {
+    binary: "dwebp",
+    required: true,
+    brewPackage: "webp",
+    aptPackage: "webp",
+  },
+  webpinfo: {
     binary: "webpinfo",
     required: true,
     brewPackage: "webp",
     aptPackage: "webp",
   },
-  {
+  gif2webp: {
     binary: "gif2webp",
     required: true,
     brewPackage: "webp",
     aptPackage: "webp",
   },
-  {
+  "heif-enc": {
     binary: "heif-enc",
     required: true,
     brewPackage: "libheif",
     aptPackage: "libheif-examples",
   },
-  {
+  avifenc: {
     binary: "avifenc",
     required: true,
     brewPackage: "libavif",
     aptPackage: "libavif-bin",
   },
-  {
+  tiffcp: {
     binary: "tiffcp",
     required: true,
     brewPackage: "libtiff",
     aptPackage: "libtiff-tools",
   },
-  {
+  magick: {
     binary: "magick",
     required: true,
     brewPackage: "imagemagick",
     aptPackage: "imagemagick",
   },
-  {
+  exiftool: {
     binary: "exiftool",
     required: true,
     brewPackage: "exiftool",
     aptPackage: "libimage-exiftool-perl",
   },
-];
-
-const DNGLAB_DEPENDENCY: DependencySpec = {
-  binary: "dnglab",
-  required: true,
-  brewPackage: "dnglab",
-  aptPackage: "dnglab",
+  dnglab: {
+    binary: "dnglab",
+    required: true,
+    brewPackage: "dnglab",
+    aptPackage: "dnglab",
+  },
+  cjxl: {
+    binary: "cjxl",
+    required: true,
+    brewPackage: "jpeg-xl",
+    aptPackage: "libjxl-tools",
+  },
+  icotool: {
+    binary: "icotool",
+    required: true,
+    brewPackage: "icoutils",
+    aptPackage: "icoutils",
+  },
 };
 
 const RAW_EXTENSIONS = new Set([
@@ -129,9 +181,37 @@ const RAW_EXTENSIONS = new Set([
   ".rw2",
 ]);
 
+const FORMAT_DEPENDENCIES: Record<string, DependencyName[]> = {
+  jpeg: ["jpegtran", "jpegrescan", "jpegoptim"],
+  png: ["pngcrush", "optipng", "oxipng"],
+  apng: ["oxipng"],
+  gif: ["gifsicle"],
+  webp: ["cwebp", "dwebp", "webpinfo", "gif2webp", "magick"],
+  svg: ["svgo"],
+  tiff: ["tiffcp"],
+  heif: ["magick", "heif-enc"],
+  avif: ["magick", "avifenc"],
+  bmp: ["magick"],
+  jxl: ["cjxl"],
+  ico: ["icotool", "oxipng", "exiftool"],
+  raw: [],
+};
+
+const STRIP_METADATA_FORMATS = new Set([
+  "png",
+  "apng",
+  "svg",
+  "webp",
+  "tiff",
+  "heif",
+  "avif",
+  "bmp",
+  "raw",
+]);
+
 export async function ensureDependencies(
   options: CompressCommandOptions,
-  requireDngLab: boolean
+  inputs: ResolvedInput[]
 ): Promise<void> {
   const spinner = ora("Checking required system tools").start();
   const platform = await detectPlatform();
@@ -141,9 +221,7 @@ export async function ensureDependencies(
     throw new Error("squeezit supports macOS and Debian/Ubuntu Linux only.");
   }
 
-  const dependencies = requireDngLab
-    ? [...BASE_DEPENDENCIES, DNGLAB_DEPENDENCY]
-    : BASE_DEPENDENCIES.slice();
+  const dependencies = collectRequiredDependencies(inputs, options);
   let missing = await findMissingDependencies(dependencies);
 
   if (missing.length === 0) {
@@ -180,20 +258,72 @@ export async function ensureDependencies(
   spinner.succeed("System tools are available");
 }
 
-export function requiresDngLab(
+export function collectRequiredDependencies(
   inputs: ResolvedInput[],
-  maxMode: boolean
-): boolean {
-  if (!maxMode) {
-    return false;
+  options: CompressCommandOptions
+): DependencySpec[] {
+  const required = new Set<DependencyName>(["file"]);
+
+  for (const input of inputs) {
+    const format = formatFamilyFromExtension(input.absolutePath);
+    if (!format) {
+      continue;
+    }
+
+    for (const dependency of FORMAT_DEPENDENCIES[format] ?? []) {
+      required.add(dependency);
+    }
+
+    if (format === "png" && options.max) {
+      required.add("zopflipng");
+    }
+
+    if (format === "raw" && options.max) {
+      required.add("dnglab");
+    }
+
+    if (options.stripMeta && STRIP_METADATA_FORMATS.has(format)) {
+      required.add("exiftool");
+    }
   }
 
-  return inputs.some((input) => {
-    const extension = input.absolutePath
-      .slice(input.absolutePath.lastIndexOf("."))
-      .toLowerCase();
-    return RAW_EXTENSIONS.has(extension);
-  });
+  return Array.from(required).map((name) => DEPENDENCY_CATALOG[name]);
+}
+
+function formatFamilyFromExtension(filePath: string): string | null {
+  const extension = extname(filePath).toLowerCase();
+
+  switch (extension) {
+    case ".jpg":
+    case ".jpeg":
+      return "jpeg";
+    case ".png":
+      return "png";
+    case ".apng":
+      return "apng";
+    case ".gif":
+      return "gif";
+    case ".webp":
+      return "webp";
+    case ".svg":
+      return "svg";
+    case ".tif":
+    case ".tiff":
+      return "tiff";
+    case ".heic":
+    case ".heif":
+      return "heif";
+    case ".avif":
+      return "avif";
+    case ".bmp":
+      return "bmp";
+    case ".jxl":
+      return "jxl";
+    case ".ico":
+      return "ico";
+    default:
+      return RAW_EXTENSIONS.has(extension) ? "raw" : null;
+  }
 }
 
 async function detectPlatform(): Promise<"macos" | "debian" | null> {

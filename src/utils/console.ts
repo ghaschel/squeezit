@@ -7,7 +7,11 @@ import type { OptimizationResult, Summary } from "../types";
 export function logOptimizationResult(result: OptimizationResult): void {
   const label = colorizeLabel(
     result.status,
-    result.status === "dry-run" ? "[DRY]" : result.label
+    result.status === "dry-run"
+      ? "[DRY]"
+      : result.status === "skipped"
+        ? "[SKIP]"
+        : result.label
   );
   const filePath = toDisplayPath(result.filePath);
   const targetSuffix =
@@ -16,8 +20,12 @@ export function logOptimizationResult(result: OptimizationResult): void {
       : "";
 
   if (result.status === "skipped") {
+    const formatSuffix =
+      result.label && result.label !== "[SKIP]"
+        ? chalk.dim(` ${result.label}`)
+        : "";
     console.log(
-      `${label} ${chalk.white(filePath)}${targetSuffix} ${chalk.dim(`(${result.message ?? "skipped"})`)}`
+      `${label} ${chalk.white(filePath)}${targetSuffix}${formatSuffix} ${chalk.dim(`(${result.message ?? "skipped"})`)}`
     );
     return;
   }

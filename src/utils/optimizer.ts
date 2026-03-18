@@ -1,4 +1,4 @@
-import { stat, unlink, utimes } from "node:fs/promises";
+import { readdir, readFile, stat, unlink, utimes } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, extname, join, parse } from "node:path";
 
@@ -12,7 +12,11 @@ import type {
   Summary,
   SupportedFormat,
 } from "../types";
-import { runCheckedCommand, writeCommandStdoutToFile } from "./exec";
+import {
+  runCheckedCommand,
+  runCommand,
+  writeCommandStdoutToFile,
+} from "./exec";
 
 const RAW_EXTENSIONS = new Set([
   ".cr2",
@@ -22,6 +26,24 @@ const RAW_EXTENSIONS = new Set([
   ".orf",
   ".rw2",
 ]);
+
+const EXTENSION_FORMAT_HINTS: Partial<Record<string, SupportedFormat>> = {
+  ".apng": "apng",
+  ".bmp": "bmp",
+  ".gif": "gif",
+  ".heic": "heif",
+  ".heif": "heif",
+  ".ico": "ico",
+  ".jxl": "jxl",
+  ".jpg": "jpeg",
+  ".jpeg": "jpeg",
+  ".png": "png",
+  ".svg": "svg",
+  ".tif": "tiff",
+  ".tiff": "tiff",
+  ".webp": "webp",
+  ".avif": "avif",
+};
 
 const MIME_TO_FORMAT: Record<string, SupportedFormat> = {
   "image/jpeg": "jpeg",
@@ -33,7 +55,29 @@ const MIME_TO_FORMAT: Record<string, SupportedFormat> = {
   "image/heif": "heif",
   "image/avif": "avif",
   "image/bmp": "bmp",
+  "image/jxl": "jxl",
+  "image/vnd.microsoft.icon": "ico",
+  "image/x-icon": "ico",
 };
+
+interface PipelineResult {
+  outputPath: string;
+  targetPath?: string;
+  label: string;
+}
+
+interface CandidateResult {
+  outputPath: string;
+}
+
+interface IcoEntry {
+  index: number;
+  width: number;
+  height: number;
+  bitDepth?: number;
+}
+
+class SkippableOptimizationError extends Error {}
 
 export async function optimizeImages(
   inputs: ResolvedInput[],
@@ -158,6 +202,10 @@ async function optimizeSingleImage(
       await remove(workDir);
     }
   } catch (error) {
+    if (error instanceof SkippableOptimizationError) {
+      return skippedResult(input.absolutePath, "[SKIP]", error.message);
+    }
+
     return {
       filePath: input.absolutePath,
       label: "[FAIL]",
@@ -185,14 +233,19 @@ export async function detectImage(
   const mimeType = (
     await runCheckedCommand("file", ["--mime-type", "-b", filePath])
   ).stdout.trim();
-  const format = MIME_TO_FORMAT[mimeType];
+  let format =
+    MIME_TO_FORMAT[mimeType] ?? EXTENSION_FORMAT_HINTS[rawExtension] ?? null;
 
   if (!format) {
     return null;
   }
 
   let animated = false;
-  if (format === "gif") {
+
+  if (format === "png" || format === "apng") {
+    animated = await isAnimatedPng(filePath);
+    format = rawExtension === ".apng" || animated ? "apng" : "png";
+  } else if (format === "gif") {
     animated = await isAnimatedGif(filePath);
   } else if (format === "webp") {
     animated = await isAnimatedWebp(filePath);
@@ -211,12 +264,14 @@ async function runPipeline(params: {
   workingInputPath: string;
   workDir: string;
   options: CompressCommandOptions;
-}): Promise<{ outputPath: string; targetPath?: string; label: string }> {
+}): Promise<PipelineResult> {
   const { detected, originalPath, workingInputPath, workDir, options } = params;
 
   switch (detected.format) {
     case "png":
       return optimizePng(workingInputPath, workDir, options);
+    case "apng":
+      return optimizeApng(workingInputPath, workDir, options);
     case "jpeg":
       return optimizeJpeg(workingInputPath, workDir, options);
     case "gif":
@@ -238,6 +293,10 @@ async function runPipeline(params: {
       return optimizeAvif(workingInputPath, workDir, options);
     case "bmp":
       return optimizeBmp(workingInputPath, workDir, options);
+    case "jxl":
+      return optimizeJxl(workingInputPath, workDir);
+    case "ico":
+      return optimizeIco(workingInputPath, workDir, options);
     case "raw":
       return optimizeRaw(originalPath, workingInputPath, workDir, options);
   }
@@ -247,13 +306,60 @@ async function optimizePng(
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
+  return optimizePngLike(inputPath, workDir, options, false, "[PNG]");
+}
+
+async function optimizeApng(
+  inputPath: string,
+  workDir: string,
+  options: CompressCommandOptions
+): Promise<PipelineResult> {
+  return optimizePngLike(inputPath, workDir, options, true, "[APNG]");
+}
+
+async function optimizePngLike(
+  inputPath: string,
+  workDir: string,
+  options: CompressCommandOptions,
+  animated: boolean,
+  label: string
+): Promise<PipelineResult> {
+  const candidates: CandidateResult[] = [];
+
+  if (!animated) {
+    candidates.push(await optimizePngLegacy(inputPath, workDir, options));
+  }
+
+  candidates.push(
+    await optimizeWithOxipng(
+      inputPath,
+      join(workDir, animated ? "optimized.apng" : "optimized-oxipng.png"),
+      {
+        maxEffort: true,
+        stripMetadata: options.stripMeta,
+      }
+    )
+  );
+
+  const best = await selectSmallestCandidate(candidates);
+  return {
+    outputPath: best.outputPath,
+    label,
+  };
+}
+
+async function optimizePngLegacy(
+  inputPath: string,
+  workDir: string,
+  options: CompressCommandOptions
+): Promise<CandidateResult> {
   const crushedPath = join(workDir, "stage-1.png");
   const optipngOutput = join(
     workDir,
-    options.max ? "stage-2.png" : "optimized.png"
+    options.max ? "stage-2.png" : "optimized-legacy.png"
   );
-  const optimizedPath = join(workDir, "optimized.png");
+  const optimizedPath = join(workDir, "optimized-legacy-max.png");
 
   await runCheckedCommand("pngcrush", [
     "-brute",
@@ -272,7 +378,7 @@ async function optimizePng(
     if (options.stripMeta) {
       await stripMetadata(optipngOutput);
     }
-    return { outputPath: optipngOutput, label: "[PNG]" };
+    return { outputPath: optipngOutput };
   }
 
   await runCheckedCommand("zopflipng", [
@@ -284,14 +390,33 @@ async function optimizePng(
   if (options.stripMeta) {
     await stripMetadata(optimizedPath);
   }
-  return { outputPath: optimizedPath, label: "[PNG]" };
+  return { outputPath: optimizedPath };
+}
+
+async function optimizeWithOxipng(
+  inputPath: string,
+  outputPath: string,
+  options: {
+    maxEffort: boolean;
+    stripMetadata: boolean;
+  }
+): Promise<CandidateResult> {
+  const args = ["-o", options.maxEffort ? "max" : "6"];
+
+  if (options.stripMetadata) {
+    args.push("--strip", "all");
+  }
+
+  args.push("--out", outputPath, inputPath);
+  await runCheckedCommand("oxipng", args);
+  return { outputPath };
 }
 
 async function optimizeJpeg(
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const jpegtranOutput = join(workDir, "stage-1.jpg");
   const optimizedPath = join(workDir, "optimized.jpg");
 
@@ -318,7 +443,7 @@ async function optimizeGif(
   workDir: string,
   options: CompressCommandOptions,
   animated: boolean
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const optimizedPath = join(workDir, "optimized.gif");
   const args = ["-O3"];
   if (options.stripMeta) {
@@ -336,7 +461,7 @@ async function optimizeSvg(
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const optimizedPath = join(workDir, "optimized.svg");
   await runCheckedCommand("svgo", [
     "--multipass",
@@ -355,7 +480,7 @@ async function optimizeWebp(
   workDir: string,
   options: CompressCommandOptions,
   animated: boolean
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const optimizedPath = join(workDir, "optimized.webp");
 
   if (animated) {
@@ -395,7 +520,7 @@ async function optimizeTiff(
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const optimizedPath = join(workDir, "optimized.tiff");
   await runCheckedCommand("tiffcp", ["-c", "zip:9", inputPath, optimizedPath]);
   if (options.stripMeta) {
@@ -408,7 +533,7 @@ async function optimizeHeif(
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const pngPath = join(workDir, "stage.png");
   const optimizedPath = join(workDir, "optimized.heif");
   await runCheckedCommand("magick", [inputPath, pngPath]);
@@ -428,7 +553,7 @@ async function optimizeAvif(
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const pngPath = join(workDir, "stage.png");
   const optimizedPath = join(workDir, "optimized.avif");
   await runCheckedCommand("magick", [inputPath, pngPath]);
@@ -453,7 +578,7 @@ async function optimizeBmp(
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; label: string }> {
+): Promise<PipelineResult> {
   const optimizedPath = join(workDir, "optimized.bmp");
   await runCheckedCommand("magick", [
     inputPath,
@@ -467,12 +592,114 @@ async function optimizeBmp(
   return { outputPath: optimizedPath, label: "[BMP]" };
 }
 
+async function optimizeJxl(
+  inputPath: string,
+  workDir: string
+): Promise<PipelineResult> {
+  const optimizedPath = join(workDir, "optimized.jxl");
+  await runCheckedCommand("cjxl", [
+    "--distance=0",
+    "--effort=10",
+    inputPath,
+    optimizedPath,
+  ]);
+  return { outputPath: optimizedPath, label: "[JXL]" };
+}
+
+async function optimizeIco(
+  inputPath: string,
+  workDir: string,
+  options: CompressCommandOptions
+): Promise<PipelineResult> {
+  try {
+    const entries = await listIcoEntries(inputPath);
+
+    if (entries.length === 0) {
+      throw new SkippableOptimizationError("unsupported or malformed ICO");
+    }
+
+    const rebuiltEntries: string[] = [];
+
+    for (const entry of entries) {
+      const extractDirectory = join(workDir, `ico-entry-${entry.index}`);
+      const extractedPath = await extractIcoEntry(
+        inputPath,
+        entry.index,
+        extractDirectory
+      );
+      await stripMetadata(extractedPath);
+
+      const optimizedPath = await optimizeEmbeddedIcoFrame(
+        extractedPath,
+        join(workDir, `ico-frame-${entry.index}`),
+        options
+      );
+
+      rebuiltEntries.push(optimizedPath);
+    }
+
+    const optimizedPath = join(workDir, "optimized.ico");
+    await runCheckedCommand("icotool", [
+      "-c",
+      "-o",
+      optimizedPath,
+      ...rebuiltEntries.map((filePath) => `--raw=${filePath}`),
+    ]);
+
+    return { outputPath: optimizedPath, label: "[ICO]" };
+  } catch (error) {
+    if (error instanceof SkippableOptimizationError) {
+      throw error;
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
+    const icoMessage = toSkippableIcoMessage(message);
+    if (icoMessage) {
+      throw new SkippableOptimizationError(icoMessage);
+    }
+
+    throw error;
+  }
+}
+
+async function optimizeEmbeddedIcoFrame(
+  inputPath: string,
+  candidateRoot: string,
+  options: CompressCommandOptions
+): Promise<string> {
+  await ensureDir(candidateRoot);
+
+  const baseline = inputPath;
+  const candidates: CandidateResult[] = [{ outputPath: baseline }];
+
+  candidates.push(
+    await optimizePngLegacy(inputPath, candidateRoot, {
+      ...options,
+      stripMeta: true,
+      max: true,
+    })
+  );
+  candidates.push(
+    await optimizeWithOxipng(
+      inputPath,
+      join(candidateRoot, "optimized-oxipng.png"),
+      {
+        maxEffort: true,
+        stripMetadata: true,
+      }
+    )
+  );
+
+  const best = await selectSmallestCandidate(candidates);
+  return best.outputPath;
+}
+
 async function optimizeRaw(
   originalPath: string,
   inputPath: string,
   workDir: string,
   options: CompressCommandOptions
-): Promise<{ outputPath: string; targetPath?: string; label: string }> {
+): Promise<PipelineResult> {
   if (!options.max) {
     await stripMetadata(inputPath);
     return { outputPath: inputPath, label: "[RAW]" };
@@ -497,6 +724,146 @@ async function stripMetadata(filePath: string): Promise<void> {
     "-all=",
     filePath,
   ]);
+}
+
+async function selectSmallestCandidate(
+  candidates: CandidateResult[]
+): Promise<CandidateResult> {
+  const [first, ...rest] = candidates;
+
+  if (!first) {
+    throw new Error("No optimization candidates were produced");
+  }
+
+  let selected = first;
+  let smallest = (await stat(selected.outputPath)).size;
+
+  for (const candidate of rest) {
+    const size = (await stat(candidate.outputPath)).size;
+    if (size < smallest) {
+      selected = candidate;
+      smallest = size;
+    }
+  }
+
+  return selected;
+}
+
+async function listIcoEntries(filePath: string): Promise<IcoEntry[]> {
+  const result = await runCheckedCommand("icotool", ["-l", filePath]);
+  return parseIcoEntries(result.stdout);
+}
+
+async function extractIcoEntry(
+  filePath: string,
+  index: number,
+  outputDirectory: string
+): Promise<string> {
+  await ensureDir(outputDirectory);
+
+  const result = await runCommand("icotool", [
+    "-x",
+    `--index=${index}`,
+    "-o",
+    outputDirectory,
+    filePath,
+  ]);
+
+  const extractedPath = await findExtractedIcoImage(outputDirectory);
+  if (result.exitCode === 0) {
+    return extractedPath;
+  }
+
+  if (shouldAcceptIcoExtraction(result.all)) {
+    return extractedPath;
+  }
+
+  throw new Error(result.all.trim() || `Failed to extract ICO entry ${index}`);
+}
+
+async function findExtractedIcoImage(directory: string): Promise<string> {
+  const entries = (await readdir(directory)).sort();
+  const match = entries.find((entry) => entry.toLowerCase().endsWith(".png"));
+
+  if (!match) {
+    throw new Error(`No PNG image extracted from ICO entry in ${directory}`);
+  }
+
+  return join(directory, match);
+}
+
+export function parseIcoEntries(output: string): IcoEntry[] {
+  const entries: IcoEntry[] = [];
+
+  for (const line of output.split(/\r?\n/).map((value) => value.trim())) {
+    if (!line) {
+      continue;
+    }
+
+    const index = extractNumber(line, "index");
+    const width = extractNumber(line, "width");
+    const height = extractNumber(line, "height");
+    const bitDepth = extractOptionalNumber(line, "bit-depth");
+
+    if (index === null || width === null || height === null) {
+      continue;
+    }
+
+    entries.push({
+      index,
+      width,
+      height,
+      bitDepth: bitDepth ?? undefined,
+    });
+  }
+
+  return entries;
+}
+
+function extractNumber(line: string, key: string): number | null {
+  const value = extractOptionalNumber(line, key);
+  return value === null ? null : value;
+}
+
+function extractOptionalNumber(line: string, key: string): number | null {
+  const match = line.match(new RegExp(`--${key}=(\\d+)`));
+  const value = match?.[1];
+
+  if (!value) {
+    return null;
+  }
+
+  return Number.parseInt(value, 10);
+}
+
+function toSkippableIcoMessage(message: string): string | null {
+  const normalized = message.toLowerCase();
+  const malformedMarkers = [
+    "clr_important field in bitmap should be zero",
+    "incorrect total size of bitmap",
+    "bytes of garbage",
+    "no png image extracted from ico entry",
+  ];
+
+  if (malformedMarkers.some((marker) => normalized.includes(marker))) {
+    return "unsupported or malformed ICO";
+  }
+
+  return null;
+}
+
+export function shouldAcceptIcoExtraction(message: string): boolean {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes("no png image extracted from ico entry")) {
+    return false;
+  }
+
+  return [
+    "clr_important field in bitmap should be zero",
+    "incorrect total size of bitmap",
+    "bytes of garbage",
+  ].some((marker) => normalized.includes(marker));
 }
 
 export async function applyReplacement(params: {
@@ -553,6 +920,45 @@ async function isAnimatedGif(filePath: string): Promise<boolean> {
 async function isAnimatedWebp(filePath: string): Promise<boolean> {
   const result = await runCheckedCommand("webpinfo", [filePath]);
   return result.all.includes("Animation:");
+}
+
+async function isAnimatedPng(filePath: string): Promise<boolean> {
+  const buffer = await readFile(filePath);
+  return hasApngAnimation(buffer);
+}
+
+export function hasApngAnimation(buffer: Uint8Array): boolean {
+  if (buffer.length < 8) {
+    return false;
+  }
+
+  const signature = Buffer.from([
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+  ]);
+
+  if (!Buffer.from(buffer.subarray(0, 8)).equals(signature)) {
+    return false;
+  }
+
+  let offset = 8;
+  while (offset + 8 <= buffer.length) {
+    const length = Buffer.from(buffer).readUInt32BE(offset);
+    const type = Buffer.from(buffer.subarray(offset + 4, offset + 8)).toString(
+      "ascii"
+    );
+
+    if (type === "acTL") {
+      return true;
+    }
+
+    if (type === "IEND") {
+      return false;
+    }
+
+    offset += length + 12;
+  }
+
+  return false;
 }
 
 function skippedResult(

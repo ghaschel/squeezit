@@ -9,6 +9,9 @@ export interface CompressCliFlags {
   verbose?: boolean;
   threshold?: number;
   inPlace?: boolean;
+  update?: boolean;
+  checkUpdate?: boolean;
+  pm?: string;
 }
 
 export interface CompressCommandOptions {

@@ -11,6 +11,7 @@ import {
   resolveCompressOptions,
   resolveInputs,
 } from "../utils";
+import { handleUpdateFlags } from "./update";
 
 export function registerCompressCommand(program: Command): Command {
   program
@@ -30,6 +31,9 @@ export function registerCompressCommand(program: Command): Command {
       parsePositiveInteger
     )
     .option("-I, --install-deps", "Attempt to install missing system tools")
+    .option("-U, --update", "Update squeezit to the latest published version")
+    .option("--check-update", "Check whether a newer published version exists")
+    .option("--pm <manager>", "Package manager to use for self-update")
     .option("-v, --verbose", "Print extra details")
     .option(
       "-t, --threshold <bytes>",
@@ -42,6 +46,10 @@ export function registerCompressCommand(program: Command): Command {
       "Create temporary work artifacts next to source files"
     )
     .action(async (patterns: string[], flags: CompressCliFlags) => {
+      if (await handleUpdateFlags(flags)) {
+        return;
+      }
+
       const options = resolveCompressOptions(patterns, flags, process.cwd());
       await runCompressCommand(options);
     });
@@ -57,6 +65,14 @@ async function runCompressCommand(
     const inputs = await resolveInputs(options);
 
     if (inputs.length === 0) {
+      if (options.installDeps) {
+        discoverySpinner.warn(
+          "No matching image files found. Installing the full supported toolchain because --install-deps was requested."
+        );
+        await ensureDependencies(options, []);
+        return;
+      }
+
       discoverySpinner.warn("No matching image files found.");
       return;
     }

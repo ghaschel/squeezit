@@ -262,6 +262,12 @@ export function collectRequiredDependencies(
   inputs: ResolvedInput[],
   options: CompressCommandOptions
 ): DependencySpec[] {
+  if (inputs.length === 0) {
+    return options.installDeps
+      ? Object.values(DEPENDENCY_CATALOG)
+      : [DEPENDENCY_CATALOG.file];
+  }
+
   const required = new Set<DependencyName>(["file"]);
 
   for (const input of inputs) {

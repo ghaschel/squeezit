@@ -85,6 +85,18 @@ Run the shorter alias:
 sqz -r assets/**/*.jpg -d
 ```
 
+Check for a newer published version:
+
+```bash
+squeezit --check-update
+```
+
+Self-update to the latest release:
+
+```bash
+squeezit -U
+```
+
 ## Documentation
 
 ### Usage
@@ -114,6 +126,9 @@ squeezit [patterns...] [options]
 | `-k, --keep-time`         | Preserve original access and modification timestamps      | `false`                        |
 | `-c, --concurrency <n>`   | Set worker concurrency manually                           | CPU count, or `2` with `--max` |
 | `-I, --install-deps`      | Attempt to install missing system tools                   | `false`                        |
+| `-U, --update`            | Update `squeezit` to the latest published version         | `false`                        |
+| `--check-update`          | Check whether a newer published version exists            | `false`                        |
+| `--pm <manager>`          | Override the package manager used for self-update         | auto-detected when possible    |
 | `-v, --verbose`           | Print additional diagnostic details                       | `false`                        |
 | `-t, --threshold <bytes>` | Minimum savings required before replacing a file          | `100`                          |
 | `-i, --in-place`          | Create temporary work artifacts next to the source files  | `false`                        |
@@ -162,6 +177,12 @@ Modernize an ICO while preserving its icon sizes:
 
 ```bash
 squeezit app.ico
+```
+
+Update the global installation explicitly with npm:
+
+```bash
+squeezit -U --pm npm
 ```
 
 ## Supported Inputs
@@ -227,6 +248,28 @@ Squeezit orchestrates native image tools based on the inputs you actually proces
 - `dnglab` for RAW to DNG conversion in `--max` mode
 
 Not every run needs every tool. Dependency checks are format-aware, so `squeezit` only asks for the binaries needed for the files you matched.
+
+## Self-Update
+
+Squeezit can check for a new published version and update itself:
+
+```bash
+squeezit --check-update
+squeezit -U
+```
+
+Installer detection works like this:
+
+- On install, `squeezit` records whether it was installed by `npm` or `bun` in its config metadata
+- On update, it reuses that persisted installer when available
+- If detection is ambiguous, pass `--pm npm` or `--pm bun`
+
+Examples:
+
+```bash
+squeezit -U --pm npm
+squeezit -U --pm bun
+```
 
 If dependencies are missing, you can ask `squeezit` to install them:
 

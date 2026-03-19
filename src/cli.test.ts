@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, test } from "bun:test";
 
 import { resolveCompressOptions, resolveInputs } from "./utils";
+import { detectPackageManagerFromUserAgent } from "./utils/config";
 import { logOptimizationResult, printSummary } from "./utils/console";
 import { collectRequiredDependencies } from "./utils/dependencies";
 import {
@@ -21,6 +22,11 @@ import {
   parseIcoEntries,
   shouldAcceptIcoExtraction,
 } from "./utils/optimizer";
+import {
+  compareVersions,
+  createUpdatePlan,
+  resolvePackageManager,
+} from "./utils/updater";
 
 const createdDirectories: string[] = [];
 
@@ -230,6 +236,89 @@ describe("dependency planning", () => {
     expect(binaries).toContain("icotool");
     expect(binaries).toContain("cjxl");
     expect(binaries).toContain("exiftool");
+  });
+
+  test("installs the full toolchain when --install-deps is requested without inputs", () => {
+    const dependencies = collectRequiredDependencies(
+      [],
+      resolveCompressOptions([], { installDeps: true }, process.cwd())
+    );
+
+    const binaries = dependencies.map((dependency) => dependency.binary).sort();
+
+    expect(binaries).toContain("file");
+    expect(binaries).toContain("oxipng");
+    expect(binaries).toContain("cjxl");
+    expect(binaries).toContain("icotool");
+    expect(binaries).toContain("dnglab");
+  });
+});
+
+describe("update helpers", () => {
+  test("detects package managers from install user agents", () => {
+    expect(
+      detectPackageManagerFromUserAgent("npm/11.0.0 node/v22.0.0 darwin arm64")
+    ).toBe("npm");
+    expect(detectPackageManagerFromUserAgent("bun/1.3.5 darwin-arm64")).toBe(
+      "bun"
+    );
+    expect(detectPackageManagerFromUserAgent("pnpm/10.0.0")).toBeNull();
+  });
+
+  test("compares versions numerically", () => {
+    expect(compareVersions("1.2.1", "1.2.0")).toBe(1);
+    expect(compareVersions("1.2.0", "1.2.0")).toBe(0);
+    expect(compareVersions("1.2.0", "1.2.1")).toBe(-1);
+    expect(compareVersions("v2.0.0-beta.1", "1.9.9")).toBe(1);
+  });
+
+  test("resolves the preferred package manager safely", () => {
+    expect(
+      resolvePackageManager({
+        override: "bun",
+        persistedConfig: null,
+        userAgent: undefined,
+        npmExecPath: undefined,
+        bunRuntime: false,
+      })
+    ).toBe("bun");
+
+    expect(
+      resolvePackageManager({
+        override: null,
+        persistedConfig: {
+          packageManager: "npm",
+          packageName: "squeezit",
+          updatedAt: new Date().toISOString(),
+        },
+        userAgent: undefined,
+        npmExecPath: undefined,
+        bunRuntime: false,
+      })
+    ).toBe("npm");
+
+    expect(
+      resolvePackageManager({
+        override: null,
+        persistedConfig: null,
+        userAgent: undefined,
+        npmExecPath: undefined,
+        bunRuntime: false,
+      })
+    ).toBeNull();
+  });
+
+  test("builds the expected self-update commands", () => {
+    expect(createUpdatePlan("npm", "squeezit")).toEqual({
+      packageManager: "npm",
+      command: "npm",
+      args: ["install", "-g", "squeezit@latest"],
+    });
+    expect(createUpdatePlan("bun", "squeezit")).toEqual({
+      packageManager: "bun",
+      command: "bun",
+      args: ["add", "-g", "squeezit@latest"],
+    });
   });
 });
 

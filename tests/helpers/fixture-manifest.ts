@@ -148,8 +148,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 1720734,
-        optimizedSize: 1359732,
-        savedBytes: 361002,
+        optimizedSize: 517842,
+        savedBytes: 1202892,
       },
       exif: {
         status: "optimized",
@@ -160,8 +160,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 1720734,
-        optimizedSize: 1359732,
-        savedBytes: 361002,
+        optimizedSize: 517842,
+        savedBytes: 1202892,
       },
     },
   },

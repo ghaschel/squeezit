@@ -23,6 +23,7 @@ export type DependencyName =
   | "cwebp"
   | "dwebp"
   | "webpinfo"
+  | "webpmux"
   | "gif2webp"
   | "heif-enc"
   | "avifenc"
@@ -114,6 +115,12 @@ export const DEPENDENCY_CATALOG: Record<DependencyName, DependencySpec> = {
     brewPackage: "webp",
     aptPackage: "webp",
   },
+  webpmux: {
+    binary: "webpmux",
+    required: true,
+    brewPackage: "webp",
+    aptPackage: "webp",
+  },
   gif2webp: {
     binary: "gif2webp",
     required: true,
@@ -184,7 +191,7 @@ const FORMAT_DEPENDENCIES: Record<string, DependencyName[]> = {
   png: ["pngcrush", "optipng", "oxipng"],
   apng: ["oxipng"],
   gif: ["gifsicle"],
-  webp: ["cwebp", "dwebp", "webpinfo", "gif2webp", "magick"],
+  webp: ["cwebp", "dwebp", "webpinfo", "webpmux", "magick"],
   svg: ["svgo"],
   tiff: ["tiffcp"],
   heif: ["magick", "heif-enc"],

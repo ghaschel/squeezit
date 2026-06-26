@@ -464,7 +464,7 @@ Squeezit orchestrates native image tools based on the inputs you actually proces
 - `pngcrush`, `optipng`, `zopflipng`, `oxipng`
 - `gifsicle`
 - `svgo`
-- `cwebp`, `dwebp`, `webpinfo`, `gif2webp`
+- `cwebp`, `dwebp`, `webpinfo`, `webpmux`
 - `heif-enc`
 - `avifenc`
 - `tiffcp`

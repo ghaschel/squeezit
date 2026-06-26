@@ -11,6 +11,7 @@ import {
   optimizeFiles,
   stripMetadata,
 } from "../../src/api";
+import { runCheckedCommand } from "../../src/utils/exec";
 import {
   formatFixtures,
   isPlaceholderExpectation,
@@ -33,7 +34,16 @@ afterEach(async () => {
 
 describe("api integration", () => {
   for (const fixture of formatFixtures) {
-    test(`${fixture.format}: default mode in place`, async () => {
+    const testFixture = (name: string, fn: () => Promise<void>): void => {
+      if (fixture.format === "webp") {
+        test(name, fn, 15_000);
+        return;
+      }
+
+      test(name, fn);
+    };
+
+    testFixture(`${fixture.format}: default mode in place`, async () => {
       const expected = fixture.expectations.default;
       if (isPlaceholderExpectation(expected)) {
         return;
@@ -58,7 +68,7 @@ describe("api integration", () => {
       expect(result.savedBytes).toBe(expected.savedBytes);
     });
 
-    test(`${fixture.format}: exif mode in place`, async () => {
+    testFixture(`${fixture.format}: exif mode in place`, async () => {
       const expected = fixture.expectations.exif;
       if (isPlaceholderExpectation(expected)) {
         return;
@@ -83,7 +93,7 @@ describe("api integration", () => {
       expect(result.savedBytes).toBe(expected.savedBytes);
     });
 
-    test(`${fixture.format}: max mode in place`, async () => {
+    testFixture(`${fixture.format}: max mode in place`, async () => {
       const expected = fixture.expectations.max;
       if (isPlaceholderExpectation(expected)) {
         return;
@@ -161,6 +171,54 @@ describe("api integration", () => {
     });
 
     expect(result.results.length).toBeGreaterThanOrEqual(2);
+  });
+
+  test("optimizes static webp with the static lossless path", async () => {
+    const workspace = await createWorkspace();
+    const inputPath = await copyFixtureToWorkspace(
+      representativeFixtures.webp,
+      workspace
+    );
+
+    const result = await optimizeFile(inputPath, { mode: "default" });
+    const info = await runCheckedCommand("webpinfo", [inputPath]);
+
+    expect(result.label).toBe("[WEBP]");
+    expect(result.status).toBe("optimized");
+    expect(result.optimizedSize).toBe(517842);
+    expect(info.all).toMatch(/Format: Lossy \(1\)/);
+    expect(info.all).not.toMatch(/^Chunk XMP\b/m);
+  }, 15_000);
+
+  test("optimizes animated webp directly as lossless webp frames", async () => {
+    const workspace = await createWorkspace();
+    const inputPath = join(workspace, "animated.webp");
+    await runCheckedCommand("magick", [
+      "-size",
+      "2x2",
+      "xc:red",
+      "-delay",
+      "10",
+      "-size",
+      "2x2",
+      "xc:blue",
+      inputPath,
+    ]);
+
+    const result = await optimizeFile(inputPath, {
+      mode: "default",
+      threshold: 0,
+    });
+    const info = await runCheckedCommand("webpinfo", [inputPath]);
+
+    expect(result.label).toBe("[WEBP-ANIM]");
+    expect(result.status).toBe("optimized");
+    expect(info.all).toMatch(/^\s*Animation:\s*1\b/m);
+    expect(info.all).toMatch(/^Chunk ANIM\b/m);
+    expect(
+      info.all.match(/Format: Lossless \(2\)/g)?.length
+    ).toBeGreaterThanOrEqual(2);
+    expect(info.all).not.toMatch(/Format: Lossy \(1\)/);
   });
 
   test("exposes fixture helper values for assertion updates", async () => {

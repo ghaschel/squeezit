@@ -13,6 +13,7 @@ import {
   isValidBmpRleRewrite,
   parseBmpHeader,
   parseIconContainerEntries,
+  parseWebpInfo,
 } from "../../src/utils/optimizer";
 import { resolveCompressOptions } from "../../src/utils/options";
 
@@ -172,6 +173,77 @@ describe("dependency planning", () => {
       expect.arrayContaining(["file", "magick"])
     );
     expect(dependencies.map((entry) => entry.binary)).not.toContain("exiftool");
+  });
+
+  test("requires webpmux instead of gif2webp for webp optimization", () => {
+    const options = resolveCompressOptions([], {}, process.cwd());
+    const dependencies = collectRequiredDependencies(
+      [
+        {
+          absolutePath: "/tmp/sample.webp",
+          displayPath: "sample.webp",
+        },
+      ],
+      options
+    );
+    const binaries = dependencies.map((entry) => entry.binary);
+
+    expect(binaries).toEqual(
+      expect.arrayContaining([
+        "file",
+        "cwebp",
+        "dwebp",
+        "webpinfo",
+        "webpmux",
+        "magick",
+      ])
+    );
+    expect(binaries).not.toContain("gif2webp");
+  });
+});
+
+describe("webp info parsing", () => {
+  test("treats Animation zero as static and records metadata chunks", () => {
+    const info = parseWebpInfo(
+      [
+        "RIFF HEADER:",
+        "Chunk VP8X at offset     12, length     18",
+        "  ICCP: 0",
+        "  Alpha: 0",
+        "  EXIF: 0",
+        "  XMP: 1",
+        "  Animation: 0",
+        "Chunk VP8  at offset     30, length 517830",
+        "  Animation: 0",
+        "  Format: Lossy (1)",
+        "Chunk XMP  at offset 517860, length 1202874",
+      ].join("\n")
+    );
+
+    expect(info).toEqual({
+      animated: false,
+      metadataChunks: ["xmp"],
+    });
+  });
+
+  test("detects true animated webp output", () => {
+    const info = parseWebpInfo(
+      [
+        "RIFF HEADER:",
+        "Chunk VP8X at offset     12, length     18",
+        "  Animation: 1",
+        "Chunk ANIM at offset     30, length     14",
+        "Chunk ANMF at offset     44, length     80",
+        "Chunk VP8L at offset     68, length     24",
+        "  Animation: 0",
+        "  Format: Lossless (2)",
+      ].join("\n")
+    );
+
+    expect(info).toEqual({
+      animated: true,
+      metadataChunks: [],
+    });
   });
 });
 

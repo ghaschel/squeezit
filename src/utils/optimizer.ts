@@ -80,6 +80,13 @@ interface CandidateResult {
   outputPath: string;
 }
 
+export type WebpMetadataChunk = "icc" | "exif" | "xmp";
+
+export interface WebpInfo {
+  animated: boolean;
+  metadataChunks: WebpMetadataChunk[];
+}
+
 interface IcoEntry {
   index: number;
   width: number;
@@ -599,20 +606,50 @@ async function optimizeWebp(
   const optimizedPath = join(workDir, "optimized.webp");
 
   if (animated) {
-    const tempGif = join(workDir, "stage.gif");
-    await runCheckedCommand("magick", [inputPath, tempGif]);
-    const gif2webpArgs = ["-m", options.max ? "6" : "4"];
-    if (options.max) {
-      gif2webpArgs.push("-min_size");
-    }
-    gif2webpArgs.push(tempGif, "-o", optimizedPath);
-    await runCheckedCommand("gif2webp", gif2webpArgs);
+    const args = [
+      inputPath,
+      "-define",
+      "webp:lossless=true",
+      "-define",
+      `webp:method=${options.max ? "6" : "4"}`,
+    ];
     if (options.stripMeta) {
-      await stripMetadata(optimizedPath);
+      args.push("-strip");
     }
+    args.push(optimizedPath);
+    await runCheckedCommand("magick", args);
     return { outputPath: optimizedPath, label: "[WEBP-ANIM]" };
   }
 
+  const webpInfo = await getWebpInfo(inputPath);
+  const candidates: CandidateResult[] = [];
+  const strippedMetadata = await stripWebpMetadata(
+    inputPath,
+    workDir,
+    webpInfo.metadataChunks
+  );
+  if (strippedMetadata) {
+    candidates.push(strippedMetadata);
+  }
+  candidates.push(
+    await optimizeStaticWebpLosslessly(
+      inputPath,
+      optimizedPath,
+      workDir,
+      options
+    )
+  );
+
+  const best = await selectSmallestCandidate(candidates);
+  return { outputPath: best.outputPath, label: "[WEBP]" };
+}
+
+async function optimizeStaticWebpLosslessly(
+  inputPath: string,
+  optimizedPath: string,
+  workDir: string,
+  options: CoreOptimizationOptions
+): Promise<CandidateResult> {
   const tempPng = join(workDir, "stage.png");
   await runCheckedCommand("dwebp", [inputPath, "-o", tempPng]);
   await runCheckedCommand("cwebp", [
@@ -628,7 +665,34 @@ async function optimizeWebp(
   if (options.stripMeta) {
     await stripMetadata(optimizedPath);
   }
-  return { outputPath: optimizedPath, label: "[WEBP]" };
+  return { outputPath: optimizedPath };
+}
+
+async function stripWebpMetadata(
+  inputPath: string,
+  workDir: string,
+  metadataChunks: WebpMetadataChunk[]
+): Promise<CandidateResult | null> {
+  if (metadataChunks.length === 0) {
+    return null;
+  }
+
+  let currentInputPath = inputPath;
+  let outputPath = inputPath;
+
+  for (const [index, chunk] of metadataChunks.entries()) {
+    outputPath = join(workDir, `optimized-strip-${index + 1}.webp`);
+    await runCheckedCommand("webpmux", [
+      "-strip",
+      chunk,
+      currentInputPath,
+      "-o",
+      outputPath,
+    ]);
+    currentInputPath = outputPath;
+  }
+
+  return { outputPath };
 }
 
 async function optimizeTiff(
@@ -695,7 +759,7 @@ async function optimizeAvif(
 async function optimizeBmp(
   inputPath: string,
   workDir: string,
-  options: CoreOptimizationOptions
+  _options: CoreOptimizationOptions
 ): Promise<PipelineResult> {
   const header = parseBmpHeader(await readFile(inputPath));
   if (!header) {
@@ -1634,8 +1698,7 @@ async function isAnimatedGif(filePath: string): Promise<boolean> {
 }
 
 async function isAnimatedWebp(filePath: string): Promise<boolean> {
-  const result = await runCheckedCommand("webpinfo", [filePath]);
-  return result.all.includes("Animation:");
+  return (await getWebpInfo(filePath)).animated;
 }
 
 async function isAnimatedPng(filePath: string): Promise<boolean> {
@@ -1675,6 +1738,29 @@ export function hasApngAnimation(buffer: Uint8Array): boolean {
   }
 
   return false;
+}
+
+async function getWebpInfo(filePath: string): Promise<WebpInfo> {
+  const result = await runCheckedCommand("webpinfo", [filePath]);
+  return parseWebpInfo(result.all);
+}
+
+export function parseWebpInfo(output: string): WebpInfo {
+  const animated =
+    /^\s*Animation:\s*1\b/m.test(output) || /^Chunk ANIM\b/m.test(output);
+  const metadataChunks: WebpMetadataChunk[] = [];
+
+  if (/^\s*ICCP:\s*1\b/m.test(output) || /^Chunk ICCP\b/m.test(output)) {
+    metadataChunks.push("icc");
+  }
+  if (/^\s*EXIF:\s*1\b/m.test(output) || /^Chunk EXIF\b/m.test(output)) {
+    metadataChunks.push("exif");
+  }
+  if (/^\s*XMP:\s*1\b/m.test(output) || /^Chunk XMP\b/m.test(output)) {
+    metadataChunks.push("xmp");
+  }
+
+  return { animated, metadataChunks };
 }
 
 function skippedResult(

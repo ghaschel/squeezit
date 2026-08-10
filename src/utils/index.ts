@@ -5,5 +5,6 @@ export * from "./discovery";
 export * from "./exec";
 export * from "./optimizer";
 export * from "./options";
+export * from "./progress";
 export * from "./prompts";
 export * from "./updater";

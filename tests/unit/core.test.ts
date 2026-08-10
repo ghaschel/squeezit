@@ -14,6 +14,7 @@ import {
   parseBmpHeader,
   parseIconContainerEntries,
   parseWebpInfo,
+  summarizeOptimizationResults,
 } from "../../src/utils/optimizer";
 import { resolveCompressOptions } from "../../src/utils/options";
 
@@ -52,6 +53,66 @@ describe("cli option resolution", () => {
     expect(parsed.max).toBe(false);
     expect(parsed.exifOnly).toBe(true);
     expect(parsed.stripMeta).toBe(true);
+  });
+
+  test("defaults progress to auto and preserves an explicit off mode", () => {
+    expect(resolveCompressOptions([], {}, process.cwd()).progress).toBe("auto");
+    expect(
+      resolveCompressOptions([], { progress: "off" }, process.cwd()).progress
+    ).toBe("off");
+  });
+});
+
+describe("optimization result summaries", () => {
+  test("summarizes every result status without depending on completion order", () => {
+    const startedAt = 1_234;
+    const summary = summarizeOptimizationResults(
+      [
+        {
+          filePath: "/tmp/first.png",
+          label: "[PNG]",
+          status: "optimized",
+          originalSize: 1_000,
+          optimizedSize: 800,
+          savedBytes: 200,
+        },
+        {
+          filePath: "/tmp/second.png",
+          label: "[PNG]",
+          status: "dry-run",
+          originalSize: 500,
+          optimizedSize: 400,
+          savedBytes: 100,
+        },
+        {
+          filePath: "/tmp/third.png",
+          label: "[SKIP]",
+          status: "skipped",
+          originalSize: 500,
+          optimizedSize: 500,
+          savedBytes: 0,
+        },
+        {
+          filePath: "/tmp/fourth.png",
+          label: "[FAIL]",
+          status: "failed",
+          originalSize: 0,
+          optimizedSize: 0,
+          savedBytes: 0,
+        },
+      ],
+      startedAt
+    );
+
+    expect(summary).toEqual({
+      processed: 4,
+      optimized: 1,
+      dryRunEligible: 1,
+      failed: 1,
+      skipped: 1,
+      savedBytes: 300,
+      startedAt,
+    });
   });
 });
 

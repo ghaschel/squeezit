@@ -28,6 +28,8 @@ It supports direct file paths, shell-style patterns like `*.png`, glob expressio
 
 ## Installation
 
+Requires Node.js 22.13 or later.
+
 ### npm
 
 ```bash
@@ -332,6 +334,7 @@ squeezit [patterns...] [options]
 | `-d, --dry-run`           | Show what would change without writing files                                          | `false`                        |
 | `-k, --keep-time`         | Preserve original access and modification timestamps                                  | `false`                        |
 | `-c, --concurrency <n>`   | Set worker concurrency manually                                                       | CPU count, or `2` with `--max` |
+| `--progress <mode>`       | Progress display mode: `auto` or `off`                                                | `auto`                         |
 | `-I, --install-deps`      | Attempt to install missing system tools                                               | `false`                        |
 | `-U, --update`            | Update `squeezit` to the latest published version                                     | `false`                        |
 | `--check-update`          | Check whether a newer published version exists                                        | `false`                        |
@@ -341,6 +344,12 @@ squeezit [patterns...] [options]
 | `-i, --in-place`          | Create temporary work artifacts next to the source files                              | `false`                        |
 | `-V, --version`           | Print the current version                                                             | n/a                            |
 | `-h, --help`              | Show CLI help                                                                         | n/a                            |
+
+### Progress Output
+
+With the default `--progress auto`, Squeezit shows a transient concurrent task list in supported interactive terminals. When every file has finished, it clears that live view and prints the usual durable per-file report in discovery order, followed by the summary.
+
+The interactive view is enabled only when stdout is a TTY, `TERM` is not `dumb`, and `CI` is unset. In CI, redirected output, and unsupported terminals, Squeezit keeps the existing streaming result lines as each file finishes. Use `--progress off` to choose that streaming output explicitly.
 
 ### Examples
 
@@ -384,6 +393,12 @@ Dry-run a JPEG XL file:
 
 ```bash
 squeezit artwork.jxl -d
+```
+
+Use durable streaming output even in an interactive terminal:
+
+```bash
+squeezit --progress off "images/**/*.{png,jpg,webp}"
 ```
 
 Modernize an ICO while preserving its icon sizes:

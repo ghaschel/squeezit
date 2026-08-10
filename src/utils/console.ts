@@ -5,6 +5,13 @@ import chalk from "chalk";
 import type { OptimizationResult, Summary } from "../types";
 
 export function logOptimizationResult(result: OptimizationResult): void {
+  console.log(formatOptimizationResult(result));
+}
+
+export function formatOptimizationResult(
+  result: OptimizationResult,
+  cwd?: string
+): string {
   const label = colorizeLabel(
     result.status,
     result.status === "dry-run"
@@ -13,7 +20,7 @@ export function logOptimizationResult(result: OptimizationResult): void {
         ? "[SKIP]"
         : result.label
   );
-  const filePath = toDisplayPath(result.filePath);
+  const filePath = toDisplayPath(result.filePath, cwd);
   const targetSuffix =
     result.targetPath && result.targetPath !== result.filePath
       ? chalk.dim(` -> ${basename(result.targetPath)}`)
@@ -24,17 +31,11 @@ export function logOptimizationResult(result: OptimizationResult): void {
       result.label && result.label !== "[SKIP]"
         ? chalk.dim(` ${result.label}`)
         : "";
-    console.log(
-      `${label} ${chalk.white(filePath)}${targetSuffix}${formatSuffix} ${chalk.dim(`(${result.message ?? "skipped"})`)}`
-    );
-    return;
+    return `${label} ${chalk.white(filePath)}${targetSuffix}${formatSuffix} ${chalk.dim(`(${result.message ?? "skipped"})`)}`;
   }
 
   if (result.status === "failed") {
-    console.log(
-      `${label} ${chalk.white(filePath)} ${chalk.red(result.message ?? "unknown error")}`
-    );
-    return;
+    return `${label} ${chalk.white(filePath)} ${chalk.red(result.message ?? "unknown error")}`;
   }
 
   const percent =
@@ -43,9 +44,7 @@ export function logOptimizationResult(result: OptimizationResult): void {
       : "0.0%";
   const stats = `${formatBytes(result.originalSize)} -> ${formatBytes(result.optimizedSize)}`;
 
-  console.log(
-    `${label} ${chalk.white(filePath)}${targetSuffix} ${chalk.green(`-${percent}`)} ${chalk.dim(`(${stats})`)}`
-  );
+  return `${label} ${chalk.white(filePath)}${targetSuffix} ${chalk.green(`-${percent}`)} ${chalk.dim(`(${stats})`)}`;
 }
 
 export function printSummary(
@@ -109,8 +108,8 @@ function colorizeLabel(
   }
 }
 
-function toDisplayPath(filePath: string): string {
-  const relativePath = relative(process.cwd(), filePath);
+function toDisplayPath(filePath: string, cwd = process.cwd()): string {
+  const relativePath = relative(cwd, filePath);
   if (relativePath && !relativePath.startsWith("..")) {
     return relativePath;
   }

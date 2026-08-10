@@ -5,8 +5,11 @@ const hoisted = vi.hoisted(() => {
   const resolveInputs = vi.fn();
   const ensureDependencies = vi.fn();
   const optimizeImages = vi.fn();
+  const runInteractiveOptimizations = vi.fn();
+  const shouldUseInteractiveProgress = vi.fn();
   const printSummary = vi.fn();
   const logOptimizationResult = vi.fn();
+  const formatOptimizationResult = vi.fn();
   const handleUpdateFlags = vi.fn();
   const spinner = {
     start: vi.fn(),
@@ -24,20 +27,26 @@ const hoisted = vi.hoisted(() => {
     logOptimizationResult,
     optimizeImages,
     oraFactory,
+    formatOptimizationResult,
     printSummary,
     resolveCompressOptions,
     resolveInputs,
+    runInteractiveOptimizations,
+    shouldUseInteractiveProgress,
     spinner,
   };
 });
 
 vi.mock("../../src/utils", () => ({
   ensureDependencies: hoisted.ensureDependencies,
+  formatOptimizationResult: hoisted.formatOptimizationResult,
   logOptimizationResult: hoisted.logOptimizationResult,
   optimizeImages: hoisted.optimizeImages,
   printSummary: hoisted.printSummary,
   resolveCompressOptions: hoisted.resolveCompressOptions,
   resolveInputs: hoisted.resolveInputs,
+  runInteractiveOptimizations: hoisted.runInteractiveOptimizations,
+  shouldUseInteractiveProgress: hoisted.shouldUseInteractiveProgress,
 }));
 
 vi.mock("../../src/commands/update", () => ({
@@ -69,11 +78,17 @@ describe("cli parameters", () => {
         verbose: flags.verbose ?? false,
         threshold: flags.threshold ?? 100,
         inPlace: flags.inPlace ?? false,
+        progress: flags.progress ?? "auto",
         cwd,
       })
     );
     hoisted.resolveInputs.mockResolvedValue([]);
     hoisted.ensureDependencies.mockResolvedValue(undefined);
+    hoisted.shouldUseInteractiveProgress.mockReturnValue(false);
+    hoisted.runInteractiveOptimizations.mockResolvedValue({
+      results: [],
+      summary: emptySummary(),
+    });
     hoisted.optimizeImages.mockResolvedValue({
       processed: 0,
       optimized: 0,
@@ -85,11 +100,15 @@ describe("cli parameters", () => {
     });
     hoisted.printSummary.mockImplementation(() => undefined);
     hoisted.logOptimizationResult.mockImplementation(() => undefined);
+    hoisted.formatOptimizationResult.mockImplementation(
+      (result) => `formatted:${result.filePath}`
+    );
     process.exitCode = undefined;
   });
 
   afterEach(() => {
     process.exitCode = undefined;
+    vi.restoreAllMocks();
   });
 
   test("registers the main command metadata", async () => {
@@ -167,6 +186,187 @@ describe("cli parameters", () => {
     );
   });
 
+  test("defaults progress to auto and accepts an explicit off mode", async () => {
+    const defaultResult = await parseCli([]);
+    const offResult = await parseCli(["--progress", "off"]);
+
+    expect(defaultResult.error).toBeNull();
+    expect(offResult.error).toBeNull();
+    expect(hoisted.resolveCompressOptions).toHaveBeenNthCalledWith(
+      1,
+      [],
+      expect.objectContaining({ progress: "auto" }),
+      process.cwd()
+    );
+    expect(hoisted.resolveCompressOptions).toHaveBeenNthCalledWith(
+      2,
+      [],
+      expect.objectContaining({ progress: "off" }),
+      process.cwd()
+    );
+  });
+
+  test("rejects unsupported progress modes", async () => {
+    const { error } = await parseCli(["--progress", "always"]);
+
+    expect(error).not.toBeNull();
+    expect(error).toMatchObject({ code: "commander.invalidArgument" });
+    expect(String(error)).toContain("Progress mode must be either auto or off");
+  });
+
+  test("holds TTY result lines until interactive work completes", async () => {
+    const inputs = [
+      { absolutePath: "/tmp/first.png", displayPath: "first.png" },
+      { absolutePath: "/tmp/second.png", displayPath: "second.png" },
+    ];
+    const results = [
+      {
+        filePath: "/tmp/first.png",
+        label: "[PNG]",
+        status: "optimized" as const,
+        originalSize: 1_000,
+        optimizedSize: 800,
+        savedBytes: 200,
+      },
+      {
+        filePath: "/tmp/second.png",
+        label: "[SKIP]",
+        status: "skipped" as const,
+        originalSize: 1_000,
+        optimizedSize: 1_000,
+        savedBytes: 0,
+      },
+    ];
+    const summary = {
+      ...emptySummary(),
+      processed: 2,
+      optimized: 1,
+      skipped: 1,
+      savedBytes: 200,
+    };
+    let completeInteractiveWork:
+      | ((value: { results: typeof results; summary: typeof summary }) => void)
+      | undefined;
+    const interactiveWork = new Promise<{
+      results: typeof results;
+      summary: typeof summary;
+    }>((resolve) => {
+      completeInteractiveWork = resolve;
+    });
+
+    hoisted.resolveInputs.mockResolvedValue(inputs);
+    hoisted.shouldUseInteractiveProgress.mockReturnValue(true);
+    hoisted.runInteractiveOptimizations.mockReturnValue(interactiveWork);
+    const consoleLog = vi
+      .spyOn(console, "log")
+      .mockImplementation(() => undefined);
+
+    const parsing = parseCli(["images"]);
+    await vi.waitFor(() => {
+      expect(hoisted.runInteractiveOptimizations).toHaveBeenCalledWith(
+        inputs,
+        expect.objectContaining({ progress: "auto" })
+      );
+    });
+
+    expect(hoisted.formatOptimizationResult).not.toHaveBeenCalled();
+    expect(hoisted.logOptimizationResult).not.toHaveBeenCalled();
+
+    completeInteractiveWork?.({ results, summary });
+    const { error } = await parsing;
+
+    expect(error).toBeNull();
+    expect(hoisted.optimizeImages).not.toHaveBeenCalled();
+    expect(hoisted.logOptimizationResult).not.toHaveBeenCalled();
+    expect(hoisted.formatOptimizationResult).toHaveBeenNthCalledWith(
+      1,
+      results[0]
+    );
+    expect(hoisted.formatOptimizationResult).toHaveBeenNthCalledWith(
+      2,
+      results[1]
+    );
+    expect(consoleLog).toHaveBeenCalledWith("formatted:/tmp/first.png");
+    expect(consoleLog).toHaveBeenCalledWith("formatted:/tmp/second.png");
+    expect(hoisted.printSummary).toHaveBeenCalledWith(summary, {
+      dryRun: false,
+    });
+  });
+
+  test("keeps fallback results streaming as each file completes", async () => {
+    const input = { absolutePath: "/tmp/first.png", displayPath: "first.png" };
+    const result = {
+      filePath: input.absolutePath,
+      label: "[PNG]",
+      status: "optimized" as const,
+      originalSize: 1_000,
+      optimizedSize: 800,
+      savedBytes: 200,
+    };
+    const summary = {
+      ...emptySummary(),
+      processed: 1,
+      optimized: 1,
+      savedBytes: 200,
+    };
+
+    hoisted.resolveInputs.mockResolvedValue([input]);
+    hoisted.optimizeImages.mockImplementation(
+      async (_inputs, _options, onResult) => {
+        onResult(result);
+        return summary;
+      }
+    );
+
+    const { error } = await parseCli(["images"]);
+
+    expect(error).toBeNull();
+    expect(hoisted.shouldUseInteractiveProgress).toHaveBeenCalled();
+    expect(hoisted.runInteractiveOptimizations).not.toHaveBeenCalled();
+    expect(hoisted.logOptimizationResult).toHaveBeenCalledWith(result);
+    expect(hoisted.printSummary).toHaveBeenCalledWith(summary, {
+      dryRun: false,
+    });
+  });
+
+  test("uses the interactive lifecycle for dry runs", async () => {
+    const input = { absolutePath: "/tmp/first.png", displayPath: "first.png" };
+    const result = {
+      filePath: input.absolutePath,
+      label: "[PNG]",
+      status: "dry-run" as const,
+      originalSize: 1_000,
+      optimizedSize: 800,
+      savedBytes: 200,
+    };
+    const summary = {
+      ...emptySummary(),
+      processed: 1,
+      dryRunEligible: 1,
+      savedBytes: 200,
+    };
+
+    hoisted.resolveInputs.mockResolvedValue([input]);
+    hoisted.shouldUseInteractiveProgress.mockReturnValue(true);
+    hoisted.runInteractiveOptimizations.mockResolvedValue({
+      results: [result],
+      summary,
+    });
+    vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    const { error } = await parseCli(["--dry-run", "images"]);
+
+    expect(error).toBeNull();
+    expect(hoisted.runInteractiveOptimizations).toHaveBeenCalledWith(
+      [input],
+      expect.objectContaining({ dryRun: true })
+    );
+    expect(hoisted.logOptimizationResult).not.toHaveBeenCalled();
+    expect(hoisted.printSummary).toHaveBeenCalledWith(summary, {
+      dryRun: true,
+    });
+  });
+
   test("skips compression work when update mode is handled", async () => {
     hoisted.handleUpdateFlags.mockResolvedValue(true);
 
@@ -227,6 +427,11 @@ describe("cli parameters", () => {
     expect(stdout).toContain("--max");
     expect(stdout).toContain("--strip-meta");
     expect(stdout).toContain("--exif");
+    expect(stdout).toContain("--progress <mode>");
+    expect(stdout).toContain("Progress display mode: auto or off");
+    expect(stdout).not.toContain(
+      "Progress display mode: auto or off (default: auto)"
+    );
     expect(stdout).toContain("--check-update");
     expect(stdout).toContain("--pm <manager>");
   });
@@ -276,4 +481,16 @@ async function parseCli(argv: string[]): Promise<{
   } catch (error) {
     return { error, stderr, stdout };
   }
+}
+
+function emptySummary() {
+  return {
+    processed: 0,
+    optimized: 0,
+    dryRunEligible: 0,
+    failed: 0,
+    skipped: 0,
+    savedBytes: 0,
+    startedAt: 1_234,
+  };
 }

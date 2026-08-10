@@ -26,6 +26,7 @@ export function resolveCompressOptions(
     concurrency: flags.concurrency ?? defaultConcurrency,
     installDeps: flags.installDeps ?? false,
     verbose: flags.verbose ?? false,
+    progress: flags.progress ?? "auto",
     threshold,
     inPlace: flags.inPlace ?? false,
     cwd,

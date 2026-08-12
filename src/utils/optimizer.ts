@@ -111,20 +111,33 @@ export async function optimizeImages(
   options: CoreOptimizationOptions,
   onResult?: (result: OptimizationResult) => void
 ): Promise<Summary> {
+  const startedAt = Date.now();
+  const results: OptimizationResult[] = [];
+
+  await runWithConcurrency(options.concurrency, inputs, async (input) => {
+    const result = await optimizeImage(input, options);
+    results.push(result);
+    onResult?.(result);
+  });
+
+  return summarizeOptimizationResults(results, startedAt);
+}
+
+export function summarizeOptimizationResults(
+  results: OptimizationResult[],
+  startedAt: number
+): Summary {
   const summary: Summary = {
-    processed: 0,
+    processed: results.length,
     optimized: 0,
     dryRunEligible: 0,
     failed: 0,
     skipped: 0,
     savedBytes: 0,
-    startedAt: Date.now(),
+    startedAt,
   };
 
-  await runWithConcurrency(options.concurrency, inputs, async (input) => {
-    const result = await optimizeSingleImage(input, options);
-    summary.processed += 1;
-
+  for (const result of results) {
     if (result.status === "optimized") {
       summary.optimized += 1;
       summary.savedBytes += result.savedBytes;
@@ -136,14 +149,12 @@ export async function optimizeImages(
     } else {
       summary.skipped += 1;
     }
-
-    onResult?.(result);
-  });
+  }
 
   return summary;
 }
 
-async function optimizeSingleImage(
+export async function optimizeImage(
   input: ResolvedInput,
   options: CoreOptimizationOptions
 ): Promise<OptimizationResult> {

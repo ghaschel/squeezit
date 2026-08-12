@@ -1,4 +1,4 @@
-import inquirer from "inquirer";
+import { confirm } from "@inquirer/prompts";
 
 import type { PackageManager } from "../types";
 
@@ -11,16 +11,10 @@ export async function confirmDependencyInstall(
   }
 
   const packageManager = platform === "macos" ? "Homebrew" : "APT";
-  const { confirmed } = await inquirer.prompt<{ confirmed: boolean }>([
-    {
-      type: "confirm",
-      name: "confirmed",
-      default: true,
-      message: `Install ${packages.length} missing package${packages.length === 1 ? "" : "s"} with ${packageManager}?`,
-    },
-  ]);
-
-  return confirmed;
+  return confirm({
+    default: true,
+    message: `Install ${packages.length} missing package${packages.length === 1 ? "" : "s"} with ${packageManager}?`,
+  });
 }
 
 export async function confirmSelfUpdate(
@@ -32,14 +26,8 @@ export async function confirmSelfUpdate(
     return true;
   }
 
-  const { confirmed } = await inquirer.prompt<{ confirmed: boolean }>([
-    {
-      type: "confirm",
-      name: "confirmed",
-      default: true,
-      message: `Update squeezit from ${currentVersion} to ${latestVersion} using ${packageManager}?`,
-    },
-  ]);
-
-  return confirmed;
+  return confirm({
+    default: true,
+    message: `Update squeezit from ${currentVersion} to ${latestVersion} using ${packageManager}?`,
+  });
 }

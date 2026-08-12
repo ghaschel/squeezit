@@ -1,5 +1,7 @@
 import type { CoreBatchOptions } from "./core";
 
+export type ProgressMode = "auto" | "off";
+
 export interface CompressCliFlags {
   recursive?: boolean;
   max?: boolean;
@@ -12,6 +14,7 @@ export interface CompressCliFlags {
   verbose?: boolean;
   threshold?: number;
   inPlace?: boolean;
+  progress?: ProgressMode;
   update?: boolean;
   checkUpdate?: boolean;
   pm?: string;
@@ -20,4 +23,5 @@ export interface CompressCliFlags {
 export interface CompressCommandOptions extends CoreBatchOptions {
   installDeps: boolean;
   verbose: boolean;
+  progress: ProgressMode;
 }

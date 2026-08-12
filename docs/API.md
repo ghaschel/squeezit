@@ -4,6 +4,8 @@
 
 ## Installation
 
+Requires Node.js 22.13 or later.
+
 ```bash
 npm install squeezit
 ```

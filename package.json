@@ -12,6 +12,7 @@
     "url": "https://github.com/ghaschel/squeeze.git"
   },
   "engines": {
+    "node": ">=22.13.0",
     "parcel": "^2.16.0"
   },
   "keywords": [
@@ -293,12 +294,13 @@
     }
   },
   "dependencies": {
+    "@inquirer/prompts": "^8.5.2",
     "chalk": "^5.6.2",
     "commander": "^14.0.3",
     "execa": "^9.6.1",
     "fs-extra": "^11.3.4",
     "glob": "^13.0.6",
-    "inquirer": "^13.3.2",
+    "listr2": "^11",
     "ora": "^9.3.0"
   },
   "config": {

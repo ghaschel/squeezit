@@ -1,15 +1,18 @@
 import chalk from "chalk";
-import { Command } from "commander";
+import { Command, InvalidArgumentError } from "commander";
 import ora from "ora";
 
 import type { CompressCliFlags, CompressCommandOptions } from "../types";
 import {
   ensureDependencies,
+  formatOptimizationResult,
   logOptimizationResult,
   optimizeImages,
   printSummary,
   resolveCompressOptions,
   resolveInputs,
+  runInteractiveOptimizations,
+  shouldUseInteractiveProgress,
 } from "../utils";
 import { handleUpdateFlags } from "./update";
 
@@ -33,6 +36,12 @@ export function registerCompressCommand(program: Command): Command {
       "-c, --concurrency <n>",
       "Worker count (default: CPU count, or 2 with --max)",
       parsePositiveInteger
+    )
+    .option(
+      "--progress <mode>",
+      "Progress display mode: auto or off",
+      parseProgressMode,
+      "auto"
     )
     .option("-I, --install-deps", "Attempt to install missing system tools")
     .option("-U, --update", "Update squeezit to the latest published version")
@@ -95,9 +104,11 @@ async function runCompressCommand(
     );
     console.log("");
 
-    const summary = await optimizeImages(inputs, options, (result) => {
-      logOptimizationResult(result);
-    });
+    const summary = shouldUseInteractiveProgress(options)
+      ? await runWithInteractiveProgress(inputs, options)
+      : await optimizeImages(inputs, options, (result) => {
+          logOptimizationResult(result);
+        });
 
     printSummary(summary, { dryRun: options.dryRun });
     process.exitCode = summary.failed > 0 ? 1 : 0;
@@ -107,6 +118,22 @@ async function runCompressCommand(
     );
     process.exitCode = 1;
   }
+}
+
+async function runWithInteractiveProgress(
+  inputs: Awaited<ReturnType<typeof resolveInputs>>,
+  options: CompressCommandOptions
+) {
+  const { results, summary } = await runInteractiveOptimizations(
+    inputs,
+    options
+  );
+
+  for (const result of results) {
+    console.log(formatOptimizationResult(result));
+  }
+
+  return summary;
 }
 
 function parsePositiveInteger(value: string): number {
@@ -125,4 +152,12 @@ function parseNonNegativeInteger(value: string): number {
   }
 
   return parsed;
+}
+
+function parseProgressMode(value: string): "auto" | "off" {
+  if (value !== "auto" && value !== "off") {
+    throw new InvalidArgumentError("Progress mode must be either auto or off");
+  }
+
+  return value;
 }

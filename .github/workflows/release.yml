@@ -234,9 +234,10 @@ jobs:
             tar -tzf "$archive" | grep -q '/bin/sqz$'
           done
 
-          mkdir linux-smoke
-          tar -xzf "squeezit-v${VERSION}-linux-x64.tar.gz" -C linux-smoke
-          SQZ="$(find linux-smoke -type f -path '*/bin/sqz' -print -quit)"
+          SMOKE_DIR="$RUNNER_TEMP/linux-smoke"
+          mkdir -p "$SMOKE_DIR"
+          tar -xzf "squeezit-v${VERSION}-linux-x64.tar.gz" -C "$SMOKE_DIR"
+          SQZ="$(find "$SMOKE_DIR" -type f -path '*/bin/sqz' -print -quit)"
           test -n "$SQZ"
           export PATH="$(dirname "$SQZ"):$PATH"
           sqz version --json
@@ -250,7 +251,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-artifacts
-          path: ${{ runner.temp }}/release-artifacts/*
+          path: |-
+            ${{ runner.temp }}/release-artifacts/squeezit-v${{ needs.validate.outputs.version }}-darwin-arm64.tar.gz
+            ${{ runner.temp }}/release-artifacts/squeezit-v${{ needs.validate.outputs.version }}-darwin-x64.tar.gz
+            ${{ runner.temp }}/release-artifacts/squeezit-v${{ needs.validate.outputs.version }}-linux-x64.tar.gz
+            ${{ runner.temp }}/release-artifacts/SHA256SUMS
+            ${{ runner.temp }}/release-artifacts/release-metadata.json
           if-no-files-found: error
           retention-days: 7
 

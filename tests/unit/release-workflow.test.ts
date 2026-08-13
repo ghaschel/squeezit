@@ -168,6 +168,8 @@ describe("tag release workflow", () => {
     ) as Array<{ archive: string; target: string }>;
     const packageJob = requiredJobs(await readWorkflow()).package_archives;
     const run = scripts(packageJob);
+    const uploadPath = action(packageJob, "actions/upload-artifact")?.with
+      ?.path;
 
     expect(packageJob.needs).toEqual(["validate", "publish_npm"]);
     expect(run).toContain('STAGE="$RUNNER_TEMP/oclif-package"');
@@ -186,6 +188,18 @@ describe("tag release workflow", () => {
     expect(run).toContain("sqz commands --json");
     expect(run).toContain("sqz compress --help");
     expect(run).toContain("tar -tzf");
+    expect(run).toContain('SMOKE_DIR="$RUNNER_TEMP/linux-smoke"');
+    expect(run).not.toContain("mkdir linux-smoke");
+
+    expect(uploadPath).toBeTypeOf("string");
+    expect((uploadPath as string).split("\n")).toEqual([
+      "${{ runner.temp }}/release-artifacts/squeezit-v${{ needs.validate.outputs.version }}-darwin-arm64.tar.gz",
+      "${{ runner.temp }}/release-artifacts/squeezit-v${{ needs.validate.outputs.version }}-darwin-x64.tar.gz",
+      "${{ runner.temp }}/release-artifacts/squeezit-v${{ needs.validate.outputs.version }}-linux-x64.tar.gz",
+      "${{ runner.temp }}/release-artifacts/SHA256SUMS",
+      "${{ runner.temp }}/release-artifacts/release-metadata.json",
+    ]);
+    expect(uploadPath).not.toMatch(/linux-smoke|oclif-package|[*?]/);
 
     expect(packageJson.oclif.update.node.targets).toEqual(
       fixtures.map(({ target }) => target)

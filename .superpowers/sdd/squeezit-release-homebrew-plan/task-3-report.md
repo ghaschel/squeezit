@@ -76,3 +76,45 @@ The first local npm dry-run attempt built successfully but failed when the exist
 - npm must have a Trusted Publisher entry whose workflow filename is exactly `release.yml`; otherwise OIDC publication will fail closed.
 - `HOMEBREW_TAP_TOKEN` must be configured with push access to `ghaschel/homebrew-tap` and that repository must permit the requested direct default-branch push.
 - The formula installs a broad native dependency catalog, so the macOS smoke job may be comparatively slow.
+
+## Review fix round 1: exact artifact upload set
+
+### Finding verification
+
+The review finding was reproduced against commit `2dc476a`. The package script enters `$ARTIFACT_DIR` with `pushd`, creates `linux-smoke` before leaving that directory, and uploads `${{ runner.temp }}/release-artifacts/*`. Therefore the upload wildcard included the smoke-test directory alongside the intended release files, and `gh release upload artifacts/*` could receive a directory.
+
+### RED
+
+The packaging contract was strengthened before changing the workflow. It now requires:
+
+- Linux smoke extraction at `$RUNNER_TEMP/linux-smoke`, outside `$ARTIFACT_DIR`.
+- No `mkdir linux-smoke` relative to the active artifact directory.
+- An upload action whose `path` value is exactly these five files: the three normalized target archives, `SHA256SUMS`, and `release-metadata.json`.
+- No wildcard, Oclif staging directory, or smoke directory in the upload path.
+
+Command:
+
+```text
+bunx vitest run tests/unit/release-workflow.test.ts
+```
+
+Observed: `1 failed | 6 passed (7)`. The packaging test failed because the workflow did not contain `SMOKE_DIR="$RUNNER_TEMP/linux-smoke"`; the received run block showed `mkdir linux-smoke`, confirming the reported production path was exercised.
+
+### GREEN and fix
+
+The workflow now extracts the Linux archive into `$RUNNER_TEMP/linux-smoke` and searches for `sqz` there. `actions/upload-artifact` no longer receives a wildcard: its literal allowlist contains only:
+
+1. `squeezit-v<version>-darwin-arm64.tar.gz`
+2. `squeezit-v<version>-darwin-x64.tar.gz`
+3. `squeezit-v<version>-linux-x64.tar.gz`
+4. `SHA256SUMS`
+5. `release-metadata.json`
+
+Focused rerun result:
+
+```text
+Test Files  1 passed (1)
+Tests       7 passed (7)
+```
+
+The focused suite includes YAML parsing and `bash -n` validation of every embedded workflow run block. Additional fix-round checks passed: `bun run typecheck`, ESLint on the contract test, Prettier on the workflow/test, and `git diff --check`.

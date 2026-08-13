@@ -28,7 +28,9 @@ It supports direct file paths, shell-style patterns like `*.png`, glob expressio
 
 ## Installation
 
-Requires Node.js 22.13 or later.
+For npm and Bun global installations, use Node.js 22.13 or later. Homebrew and
+the standalone archives provide Node themselves; see their installation notes
+below.
 
 ### npm
 

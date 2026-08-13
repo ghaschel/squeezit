@@ -6,9 +6,9 @@ which runs when a `v*` tag is pushed. Do not publish a release locally.
 
 ## Prerequisites
 
-- `ghaschel/squeeze` and `ghaschel/homebrew-tap` must be public repositories.
-- The repository must be able to use the standard GitHub-hosted runners; the
-  workflow uses Ubuntu and `macos-latest`.
+- This workflow assumes `ghaschel/squeeze` and `ghaschel/homebrew-tap` are
+  public repositories eligible for GitHub's free standard GitHub-hosted runner
+  model, including the `macos-latest` runner used for formula smoke tests.
 - Configure npm Trusted Publishing for the `squeezit` package with GitHub as the
   provider, repository `ghaschel/squeeze`, and workflow filename exactly
   `release.yml`. Publishing uses GitHub OIDC and provenance, so do not create

@@ -42,6 +42,44 @@ npm install -g squeezit
 bun add -g squeezit
 ```
 
+### Homebrew (macOS)
+
+The personal tap is the easiest macOS installation because the formula installs
+Node and Squeezit's native optimizer tools as dependencies:
+
+```bash
+brew install ghaschel/tap/squeezit
+```
+
+Upgrade a formula installation with Homebrew:
+
+```bash
+brew upgrade squeezit
+```
+
+Confirm the complete runtime and optimizer toolchain after installation:
+
+```bash
+sqz doctor
+```
+
+### Standalone GitHub archives
+
+Each GitHub release includes `.tar.gz` archives for `darwin-arm64`,
+`darwin-x64`, and `linux-x64`, plus a `SHA256SUMS` file. Download the archive
+for your platform and `SHA256SUMS` from the same release, then verify it before
+extracting it:
+
+```bash
+shasum -a 256 -c SHA256SUMS
+```
+
+On Linux, the equivalent command is `sha256sum --check SHA256SUMS`. The
+archives embed a Node runtime, so no separate Node installation is required;
+they do **not** bundle native image optimizer tools. Install the tools for your
+platform and run `sqz doctor` to see exactly what is missing before optimizing
+images.
+
 After installation, both commands are available:
 
 ```bash
@@ -306,6 +344,7 @@ The fixture-value helper and JS/TS API report `filePath` and `outputPath` relati
 ## Documentation
 
 - [API reference](https://github.com/ghaschel/squeeze/blob/main/docs/API.md)
+- [Release and maintainer guide](https://github.com/ghaschel/squeeze/blob/main/docs/releasing.md)
 
 ### Usage
 
@@ -515,7 +554,9 @@ Installer detection works like this:
 
 - `update check` never writes installer state.
 - A successful `update apply` records the npm, Bun, or Homebrew source used.
-- Homebrew is valid only when the active installation is formula-managed.
+- Homebrew is valid only when the active installation is formula-managed; it
+  does not install the Homebrew formula for an npm-, Bun-, or archive-installed
+  CLI.
 - If detection is ambiguous, choose `--pm npm`, `--pm bun`, or `--pm brew`.
 
 Examples:

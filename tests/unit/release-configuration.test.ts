@@ -13,7 +13,10 @@ describe("release configuration", () => {
   test("declares public provenance without changing the public Node floor", async () => {
     const packageJson = await readPackageJson();
 
-    expect(packageJson.publishConfig).toEqual({ provenance: true });
+    expect(packageJson.publishConfig).toEqual({
+      access: "public",
+      provenance: true,
+    });
     expect(packageJson.engines).toMatchObject({ node: ">=22.13.0" });
   });
 

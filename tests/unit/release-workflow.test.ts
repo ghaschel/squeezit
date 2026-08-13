@@ -92,7 +92,7 @@ describe("tag release workflow", () => {
 
     expect(workflow.on?.push?.tags).toEqual(["v*"]);
     expect(workflow.concurrency).toEqual({
-      group: "release-${{ github.ref }}",
+      group: "squeezit-release-mutation",
       "cancel-in-progress": false,
     });
     expect(workflow.permissions).toEqual({ contents: "read" });
@@ -122,6 +122,46 @@ describe("tag release workflow", () => {
     expect(JSON.stringify(validate)).not.toContain("registry-url");
   });
 
+  test("pins every external action to an immutable reviewed commit", async () => {
+    const jobs = requiredJobs(await readWorkflow());
+    const workflowSource = await readFile(
+      resolve(root, ".github/workflows/release.yml"),
+      "utf8"
+    );
+    const uses = Object.values(jobs).flatMap((job) =>
+      (job.steps ?? []).flatMap((step) => (step.uses ? [step.uses] : []))
+    );
+
+    expect(uses).toEqual(
+      expect.arrayContaining([
+        "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
+        "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+        "oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6",
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+      ])
+    );
+    expect(uses).toHaveLength(15);
+    expect(uses.every((reference) => /@[a-f0-9]{40}$/.test(reference))).toBe(
+      true
+    );
+    expect(workflowSource).toMatch(
+      /actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4\.2\.2/
+    );
+    expect(workflowSource).toMatch(
+      /actions\/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4\.4\.0/
+    );
+    expect(workflowSource).toMatch(
+      /oven-sh\/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2\.2\.0/
+    );
+    expect(workflowSource).toMatch(
+      /actions\/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\.6\.2/
+    );
+    expect(workflowSource).toMatch(
+      /actions\/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4\.3\.0/
+    );
+  });
+
   test("validates tag, main reachability, changelog, and focused checks", async () => {
     const validate = requiredJobs(await readWorkflow()).validate;
     const run = scripts(validate);
@@ -144,15 +184,21 @@ describe("tag release workflow", () => {
     expect(run).not.toMatch(/test:(?:full|max)|--max\b/);
   });
 
-  test("publishes npm through OIDC and safely skips an exact existing version", async () => {
+  test("publishes an exact verified npm tarball through OIDC", async () => {
     const publish = requiredJobs(await readWorkflow()).publish_npm;
     const run = scripts(publish);
     const serialized = JSON.stringify(publish);
 
     expect(publish.needs).toBe("validate");
-    expect(run).toContain('npm view "squeezit@$VERSION" version');
-    expect(run).toContain('if [ "$PUBLISHED_VERSION" = "$VERSION" ]');
-    expect(run).toContain("HUSKY=0 npm publish --access public --provenance");
+    expect(run).toContain("HUSKY=0 npm pack --json --pack-destination");
+    expect(run).toContain('npm view "squeezit@$VERSION" dist.integrity');
+    expect(run).toContain("openssl dgst -sha512 -binary");
+    expect(run).toContain("base64");
+    expect(run).toContain('test "$PUBLISHED_INTEGRITY" = "$LOCAL_INTEGRITY"');
+    expect(run).toContain(
+      'HUSKY=0 npm publish "$NPM_TARBALL" --access public --provenance'
+    );
+    expect(run).toContain("already exists with the verified tarball");
     expect(serialized).not.toMatch(/NODE_AUTH_TOKEN|NPM_TOKEN|registry-url/);
   });
 
@@ -175,8 +221,10 @@ describe("tag release workflow", () => {
     expect(run).toContain('STAGE="$RUNNER_TEMP/oclif-package"');
     expect(run).toContain("npm install --package-lock-only --ignore-scripts");
     expect(run).toContain("test ! -e package-lock.json");
-    expect(run).toContain("oclif pack tarballs --no-xz");
-    expect(run).toContain("HUSKY=0 bunx oclif pack tarballs --no-xz");
+    expect(run).toContain("oclif pack tarballs --no-xz --prune-lockfiles");
+    expect(run).toContain(
+      "HUSKY=0 bunx oclif pack tarballs --no-xz --prune-lockfiles"
+    );
     expect(run).toContain("oclif.update.node.targets.join");
     expect(run).toContain('normalized="squeezit-v${VERSION}-${target}.tar.gz"');
     expect(run).toContain("SHA256SUMS");
@@ -188,6 +236,9 @@ describe("tag release workflow", () => {
     expect(run).toContain("sqz commands --json");
     expect(run).toContain("sqz compress --help");
     expect(run).toContain("tar -tzf");
+    expect(run).toContain(
+      "package-lock\\.json|npm-shrinkwrap\\.json|yarn\\.lock"
+    );
     expect(run).toContain('SMOKE_DIR="$RUNNER_TEMP/linux-smoke"');
     expect(run).not.toContain("mkdir linux-smoke");
 
@@ -242,6 +293,12 @@ describe("tag release workflow", () => {
     expect(jobs.update_tap["runs-on"]).toBe("macos-latest");
     expect(JSON.stringify(jobs.update_tap)).toContain("HOMEBREW_TAP_TOKEN");
     expect(tapRun).toContain("scripts/render-homebrew-formula.ts");
+    expect(tapRun).toContain("Gem::Version");
+    expect(tapRun).toContain("requested >= existing ? 0 : 1");
+    expect(tapRun).toContain("Refusing to replace newer tap formula");
+    expect(tapRun.indexOf("Gem::Version")).toBeLessThan(
+      tapRun.indexOf("scripts/render-homebrew-formula.ts")
+    );
     expect(tapRun).toContain("--sha256");
     expect(tapRun).toContain("brew tap ghaschel/tap");
     expect(tapRun).toContain(

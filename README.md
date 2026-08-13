@@ -73,12 +73,14 @@ for your platform and `SHA256SUMS` from the same release, then verify it before
 extracting it:
 
 ```bash
-shasum -a 256 -c SHA256SUMS
+ARCHIVE="squeezit-v<VERSION>-<target>.tar.gz"
+grep "  $ARCHIVE$" SHA256SUMS | shasum -a 256 -c -
 ```
 
-On Linux, the equivalent command is `sha256sum --check SHA256SUMS`. The
-archives embed a Node runtime, so no separate Node installation is required;
-they do **not** bundle native image optimizer tools. Install the tools for your
+Replace `<VERSION>` and `<target>` with the downloaded archive's values. On
+Linux, replace `shasum -a 256 -c -` with `sha256sum --check -`. The archives
+embed a Node runtime, so no separate Node installation is required; they do
+**not** bundle native image optimizer tools. Install the tools for your
 platform and run `sqz doctor` to see exactly what is missing before optimizing
 images.
 

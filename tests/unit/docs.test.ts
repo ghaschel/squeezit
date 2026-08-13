@@ -43,6 +43,16 @@ describe("documentation coverage", () => {
     expect(readme).toContain("## Migrating to 2.0");
   });
 
+  test("documents one-archive standalone checksum verification", async () => {
+    const readme = await readFile(join(process.cwd(), "README.md"), "utf8");
+
+    expect(readme).toContain('ARCHIVE="squeezit-v<VERSION>-<target>.tar.gz"');
+    expect(readme).toContain(
+      'grep "  $ARCHIVE$" SHA256SUMS | shasum -a 256 -c -'
+    );
+    expect(readme).not.toContain("shasum -a 256 -c SHA256SUMS");
+  });
+
   test("contains dedicated API documentation", async () => {
     const apiDocs = await readFile(
       join(process.cwd(), "docs", "API.md"),
@@ -107,17 +117,20 @@ describe("documentation coverage", () => {
       await readFile(join(process.cwd(), "package.json"), "utf8")
     ) as { exports?: Record<string, unknown> };
 
-    expect(packageJson.exports).toBeDefined();
-    expect(packageJson.exports).toHaveProperty(".");
-    expect(packageJson.exports).toHaveProperty("./gulp");
-    expect(packageJson.exports).toHaveProperty("./vite");
-    expect(packageJson.exports).toHaveProperty("./webpack");
-    expect(packageJson.exports).toHaveProperty("./rollup");
-    expect(packageJson.exports).toHaveProperty("./parcel");
-    expect(packageJson.exports).toHaveProperty("./astro");
-    expect(packageJson.exports).toHaveProperty("./next");
-    expect(packageJson.exports).toHaveProperty("./esbuild");
-    expect(packageJson.exports).toHaveProperty("./babel");
-    expect(packageJson.exports).toHaveProperty("./grunt");
+    expect(Object.keys(packageJson.exports ?? {})).toEqual(
+      expect.arrayContaining([
+        ".",
+        "./gulp",
+        "./vite",
+        "./webpack",
+        "./rollup",
+        "./parcel",
+        "./astro",
+        "./next",
+        "./esbuild",
+        "./babel",
+        "./grunt",
+      ])
+    );
   });
 });

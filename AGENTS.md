@@ -1,5 +1,18 @@
 # Squeezit agent guide
 
+## Project skills
+
+Use the checked-in skill that matches the requested work before changing code:
+
+- `.agents/skills/squeezit-add-command/SKILL.md` for CLI taxonomy, flags,
+  command output, or JSON-contract work.
+- `.agents/skills/squeezit-add-integration/SKILL.md` for bundler, framework,
+  compiler, or package-subpath integrations.
+- `.agents/skills/squeezit-add-image-format/SKILL.md` for image formats,
+  optimizer binaries, metadata policy, and dependency catalog changes.
+- `.agents/skills/squeezit-release/SKILL.md` for versioning, release tags,
+  npm publishing, GitHub archives/releases, or Homebrew tap work.
+
 ## Commit convention
 
 This repository enforces its commit convention with Commitlint and the rules

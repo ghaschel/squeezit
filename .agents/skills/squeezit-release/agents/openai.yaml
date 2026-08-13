@@ -1,0 +1,4 @@
+interface:
+  display_name: "Squeezit Release"
+  short_description: "Prepare and safely publish a Squeezit release"
+  default_prompt: "Use $squeezit-release to prepare the next Squeezit release."

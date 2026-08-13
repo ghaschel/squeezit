@@ -1,0 +1,4 @@
+interface:
+  display_name: "Squeezit Add Image Format"
+  short_description: "Add an image format and its native optimizer"
+  default_prompt: "Use $squeezit-add-image-format to add a supported Squeezit image format."

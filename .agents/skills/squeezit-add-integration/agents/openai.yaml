@@ -1,0 +1,4 @@
+interface:
+  display_name: "Squeezit Add Integration"
+  short_description: "Add a tested Squeezit build-tool integration"
+  default_prompt: "Use $squeezit-add-integration to add a Squeezit build-tool integration."

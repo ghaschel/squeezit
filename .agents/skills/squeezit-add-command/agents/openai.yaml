@@ -1,0 +1,4 @@
+interface:
+  display_name: "Squeezit Add Command"
+  short_description: "Add a safe, discoverable Squeezit CLI command"
+  default_prompt: "Use $squeezit-add-command to add a Squeezit CLI command."

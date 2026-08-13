@@ -1,0 +1,32 @@
+# Squeezit agent guide
+
+## Commit convention
+
+This repository enforces its commit convention with Commitlint and the rules
+in `commitlint.config.cjs`. Treat the resolved configuration as the source of
+truth; it adds a project-specific `type-enum` to the Conventional Commits
+baseline.
+
+- Before proposing a commit message, read the resolved rules:
+
+  ```bash
+  bunx --no-install commitlint --print-config json
+  ```
+
+- Validate the complete candidate message, including its body and footer when
+  present:
+
+  ```bash
+  printf '%s' "<message>" | bunx --no-install commitlint
+  ```
+
+- If the `commit-msg` hook rejects a message, correct the rules reported in
+  brackets, validate it again, and retry.
+- Never bypass Git hooks for `git commit`, `git push`, `git merge`,
+  `git cherry-pick`, `git rebase`, or `git am`. In particular, do not use
+  `--no-verify`/`-n`, `git -c core.hooksPath=...`, or hook-disable environment
+  variables such as `HUSKY=0` with those Git commands.
+
+The checked-in Commitlint skill at
+`.claude/skills/committing-with-commitlint/SKILL.md` provides the full commit
+workflow. Use it whenever a task includes creating a commit.

@@ -232,7 +232,7 @@
     "check:types": "HUSKY=0 npm_config_cache=.npm-cache attw --pack . --profile node16",
     "fixture-values": "bun run scripts/fixture-values.ts",
     "release:initial": "git fetch --tags --force && $ bunx -- commit-and-tag-version --release-as v1.0.0",
-    "release": "git fetch --tags --force && commit-and-tag-version",
+    "release": "git fetch --tags --force && bun scripts/check-release-readiness.ts && commit-and-tag-version",
     "push": "git push --follow-tags",
     "release:check": "bun install --frozen-lockfile && bun run typecheck && bun run test:unit && bun run check:exports",
     "release:push": "bun run release:check && bun run push",

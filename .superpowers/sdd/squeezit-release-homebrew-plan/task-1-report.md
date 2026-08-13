@@ -65,3 +65,27 @@ The focused test failed as expected against the old root-level lookup, then pass
 0 fail
 12 expect() calls
 ```
+
+## Review fix round 2 — pre-tag release readiness
+
+The `release:push` guard only ran before pushing; it did not protect `bun run release` before `commit-and-tag-version`. Added a dedicated, testable `scripts/check-release-readiness.ts` helper and changed the release command to run it after `git fetch --tags --force` and before `commit-and-tag-version`.
+
+The helper rejects a release when the worktree is dirty, the checked-out local branch is not `main`, or `HEAD` differs from `origin/main`. `release:push` remains the existing validation-and-push alias and does not substitute for this pre-tag guard.
+
+### TDD evidence
+
+Added the readiness-helper tests and release command ordering assertion before implementation, then ran:
+
+```sh
+bun test tests/unit/release-configuration.test.ts tests/unit/release-readiness.test.ts
+```
+
+Observed the intended failures: the readiness module did not exist, and `release` had no pre-tag readiness command. After implementation, the same focused command passed:
+
+```text
+7 pass
+0 fail
+10 expect() calls
+```
+
+`bun run typecheck` also passed.

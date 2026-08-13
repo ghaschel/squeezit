@@ -33,6 +33,9 @@ describe("release configuration", () => {
     const packageJson = await readPackageJson();
     const scripts = packageJson.scripts as Record<string, string>;
 
+    expect(scripts.release).toBe(
+      "git fetch --tags --force && bun scripts/check-release-readiness.ts && commit-and-tag-version"
+    );
     expect(scripts["release:check"]).toContain("bun install --frozen-lockfile");
     expect(scripts["release:push"]).toBe(
       "bun run release:check && bun run push"

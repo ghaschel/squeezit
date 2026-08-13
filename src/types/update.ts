@@ -1,4 +1,4 @@
-export type PackageManager = "npm" | "bun";
+export type PackageManager = "npm" | "bun" | "brew";
 
 export interface InstallerConfig {
   packageManager: PackageManager;

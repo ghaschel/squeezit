@@ -7,7 +7,11 @@ export function resolveCompressOptions(
   flags: CompressCliFlags,
   cwd: string
 ): CompressCommandOptions {
-  const max = flags.max ?? false;
+  if (flags.profile === "max" && flags.threshold !== undefined) {
+    throw new Error("--threshold cannot be used with --profile max");
+  }
+
+  const max = flags.profile === "max" || (flags.max ?? false);
   const exifOnly = flags.exif ?? false;
   const stripMeta = max || exifOnly || (flags.stripMeta ?? false);
   const threshold = max ? 0 : (flags.threshold ?? 100);

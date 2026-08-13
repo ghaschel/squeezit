@@ -37,6 +37,29 @@ describe("core assets", () => {
 });
 
 describe("cli option resolution", () => {
+  test("maps the max profile to the existing full optimization behavior", () => {
+    const parsed = resolveCompressOptions(
+      [],
+      { profile: "max" } as never,
+      process.cwd()
+    );
+
+    expect(parsed.max).toBe(true);
+    expect(parsed.stripMeta).toBe(true);
+    expect(parsed.threshold).toBe(0);
+    expect(parsed.concurrency).toBe(2);
+  });
+
+  test("rejects a threshold override for the max profile", () => {
+    expect(() =>
+      resolveCompressOptions(
+        [],
+        { profile: "max", threshold: 1 } as never,
+        process.cwd()
+      )
+    ).toThrow("--threshold cannot be used with --profile max");
+  });
+
   test("forces threshold zero in max mode", () => {
     const parsed = resolveCompressOptions([], { max: true }, process.cwd());
 

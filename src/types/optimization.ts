@@ -26,6 +26,7 @@ export interface DependencySpec {
   required: boolean;
   brewPackage?: string;
   aptPackage?: string;
+  systemProvided?: boolean;
 }
 
 export interface DetectedImage {

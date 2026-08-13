@@ -15,9 +15,14 @@ import { confirmDependencyInstall } from "./prompts";
 export {
   buildMissingDependencyMessage,
   collectRequiredDependencies,
+  compareDependencyVersions,
+  DEPENDENCY_CATALOG,
   detectPlatform,
+  diagnoseDependencies,
+  diagnoseDependency,
   findMissingDependencies,
   installDependencies,
+  normalizeDependencyVersion,
   uniquePackages,
 } from "../core";
 
@@ -48,7 +53,7 @@ export async function ensureDependencies(
   if (!options.installDeps) {
     spinner.fail("Missing required system tools");
     throw new Error(
-      `${buildMissingDependencyMessage(missing, platform)}\nInstall with ${chalk.cyan("--install-deps")} or install these packages manually.`
+      `${buildMissingDependencyMessage(missing, platform)}\nInstall with ${chalk.cyan("sqz deps install")} or install these packages manually.`
     );
   }
 
@@ -71,7 +76,7 @@ export async function ensureDependencies(
   if (missing.length > 0) {
     spinner.fail("Dependencies are still missing after installation");
     throw new Error(
-      `${buildMissingDependencyMessage(missing, platform)}\nInstall with ${chalk.cyan("--install-deps")} or install these packages manually.`
+      `${buildMissingDependencyMessage(missing, platform)}\nInstall with ${chalk.cyan("sqz deps install")} or install these packages manually.`
     );
   }
 

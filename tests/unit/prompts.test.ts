@@ -8,6 +8,7 @@ vi.mock("@inquirer/prompts", () => ({ confirm: hoisted.confirm }));
 
 import {
   confirmDependencyInstall,
+  confirmImageOptimization,
   confirmSelfUpdate,
 } from "../../src/utils/prompts";
 
@@ -66,6 +67,17 @@ describe("interactive confirmations", () => {
     expect(hoisted.confirm).toHaveBeenCalledWith({
       default: true,
       message: "Update squeezit from 1.0.0 to 1.1.0 using bun?",
+    });
+  });
+
+  test("confirms image changes before a non-dry-run operation", async () => {
+    hoisted.confirm.mockResolvedValue(true);
+
+    await expect(confirmImageOptimization("compress", 2)).resolves.toBe(true);
+
+    expect(hoisted.confirm).toHaveBeenCalledWith({
+      default: true,
+      message: "Apply compress changes to 2 files?",
     });
   });
 

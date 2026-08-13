@@ -14,7 +14,7 @@
 
 `squeezit` is a CLI for aggressively compressing images without casually degrading them. It is designed for codebases, asset folders, and content repositories where you want smaller files, predictable behavior, and a command you can trust in day-to-day workflows.
 
-It supports direct file paths, shell-style patterns like `*.png`, glob expressions like `images/**/*.webp`, and a no-argument mode that scans supported image files in the current directory. Recursive scanning is available when you ask for it.
+It supports direct file paths, shell-style patterns like `*.png`, glob expressions like `images/**/*.webp`, and a no-argument `compress` mode that scans supported image files in the current directory. Recursive scanning is available when you ask for it.
 
 ## Why Squeezit
 
@@ -54,55 +54,55 @@ sqz --help
 Compress supported images in the current directory:
 
 ```bash
-squeezit
+sqz compress
 ```
 
 Preview changes without modifying files:
 
 ```bash
-squeezit -d
+sqz compress --dry-run
 ```
 
 Strip metadata only, without recompressing:
 
 ```bash
-squeezit --exif
+sqz metadata strip
 ```
 
 Target only top-level PNGs:
 
 ```bash
-squeezit "*.png"
+sqz compress "*.png"
 ```
 
 Target nested files with glob expressions:
 
 ```bash
-squeezit -r "images/**/*.{png,jpg,webp}"
+sqz compress -r "images/**/*.{png,jpg,webp}"
 ```
 
 Optimize an icon container in dry-run mode:
 
 ```bash
-squeezit favicon.ico -d
+sqz compress favicon.ico --dry-run
 ```
 
 Run the shorter alias:
 
 ```bash
-sqz -r assets/**/*.jpg -d
+sqz compress -r assets/**/*.jpg --dry-run
 ```
 
 Check for a newer published version:
 
 ```bash
-squeezit --check-update
+sqz update check
 ```
 
 Self-update to the latest release:
 
 ```bash
-squeezit -U
+sqz update apply
 ```
 
 ## Integrations
@@ -310,40 +310,40 @@ The fixture-value helper and JS/TS API report `filePath` and `outputPath` relati
 ### Usage
 
 ```bash
-squeezit [patterns...] [options]
+sqz <command> [arguments] [flags]
 ```
 
-### Pattern Resolution
+### Commands
 
-- Pass explicit file paths like `hero.png`
-- Pass shell-style parameters like `*.png`
-- Pass glob expressions like `images/**/*.webp`
-- Pass directories like `assets`
-- If no file parameter is provided, `squeezit` scans supported image files in the current directory
-- Scanning is non-recursive by default; use `-r, --recursive` to traverse subdirectories
-- Discovery includes APNG (`.apng`), JPEG XL (`.jxl`), ICO (`.ico`), and CUR (`.cur`) files
+| Command                                             | Purpose                                                          |
+| --------------------------------------------------- | ---------------------------------------------------------------- | -------------------------- |
+| `sqz compress [patterns...]`                        | Optimize images. `--profile standard                             | max` selects the strategy. |
+| `sqz metadata strip [patterns...]`                  | Remove metadata without recompression. `sqz exif` is its alias.  |
+| `sqz deps doctor [patterns...]`                     | Check all tools, or only the tools required by selected inputs.  |
+| `sqz deps install [patterns...]`                    | Install missing tools for all formats or selected inputs.        |
+| `sqz doctor`                                        | Check Node, platform, update source, and the complete toolchain. |
+| `sqz update check` / `sqz update apply`             | Check or apply a global update.                                  |
+| `sqz commands`, `sqz help [command]`, `sqz version` | Discover the installed CLI.                                      |
 
-### Options
+`sqz` is the canonical binary; `squeezit` remains a full alias. `sqz` with no command shows help.
 
-| Option                    | Description                                                                           | Default                        |
-| ------------------------- | ------------------------------------------------------------------------------------- | ------------------------------ |
-| `-r, --recursive`         | Recurse into directories when scanning inputs                                         | `false`                        |
-| `-m, --max`               | Use the heaviest lossless compression passes, strip metadata, and force threshold `0` | `false`                        |
-| `-s, --strip-meta`        | Remove EXIF, IPTC, and XMP metadata during compression                                | `false`                        |
-| `--exif`                  | Only strip EXIF/IPTC/XMP metadata without recompressing                               | `false`                        |
-| `-d, --dry-run`           | Show what would change without writing files                                          | `false`                        |
-| `-k, --keep-time`         | Preserve original access and modification timestamps                                  | `false`                        |
-| `-c, --concurrency <n>`   | Set worker concurrency manually                                                       | CPU count, or `2` with `--max` |
-| `--progress <mode>`       | Progress display mode: `auto` or `off`                                                | `auto`                         |
-| `-I, --install-deps`      | Attempt to install missing system tools                                               | `false`                        |
-| `-U, --update`            | Update `squeezit` to the latest published version                                     | `false`                        |
-| `--check-update`          | Check whether a newer published version exists                                        | `false`                        |
-| `--pm <manager>`          | Override the package manager used for self-update                                     | auto-detected when possible    |
-| `-v, --verbose`           | Print additional diagnostic details                                                   | `false`                        |
-| `-t, --threshold <bytes>` | Minimum savings required before replacing a file                                      | `100`                          |
-| `-i, --in-place`          | Create temporary work artifacts next to the source files                              | `false`                        |
-| `-V, --version`           | Print the current version                                                             | n/a                            |
-| `-h, --help`              | Show CLI help                                                                         | n/a                            |
+### Compression flags
+
+| Flag                      | Description                                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--profile standard       | max`                                                                                                       | `max` preserves the former full/max behavior: heaviest lossless passes, metadata removal, threshold `0`, and a default concurrency cap of `2`. It cannot be combined with `--threshold`. |
+| `-r, --recursive`         | Recurse into input directories.                                                                            |
+| `-s, --strip-meta`        | Remove EXIF, IPTC, and XMP metadata during compression.                                                    |
+| `-d, --dry-run`           | Report potential changes without writing files.                                                            |
+| `-k, --keep-time`         | Preserve input timestamps.                                                                                 |
+| `-c, --concurrency <n>`   | Set worker count.                                                                                          |
+| `--progress auto          | off`                                                                                                       | Use TTY progress automatically or force streaming output.                                                                                                                                |
+| `-t, --threshold <bytes>` | Minimum bytes saved before replacement; invalid with `--profile max`.                                      |
+| `-i, --in-place`          | Create temporary artifacts beside source files.                                                            |
+| `-y, --yes`               | Confirm non-dry-run image changes without an interactive prompt. Required in JSON or non-interactive mode. |
+| `-v, --verbose`           | Print diagnostics to stderr, or include them in JSON output.                                               |
+
+Patterns can be explicit paths, directories, shell patterns, or glob expressions. A `compress` command with no patterns scans supported image extensions in the current directory; scanning is non-recursive unless `--recursive` is supplied.
 
 ### Progress Output
 
@@ -356,67 +356,67 @@ The interactive view is enabled only when stdout is a TTY, `TERM` is not `dumb`,
 Preview everything under the current directory:
 
 ```bash
-squeezit -d
+sqz compress --dry-run
 ```
 
 Compress a single file:
 
 ```bash
-squeezit ./images/cover.png
+sqz compress ./images/cover.png
 ```
 
 Compress every JPEG under `assets`, but only if the win is at least 1 KB:
 
 ```bash
-squeezit -r "assets/**/*.jpg" -t 1024
+sqz compress -r "assets/**/*.jpg" --threshold 1024
 ```
 
 Use the heaviest compression strategy:
 
 ```bash
-squeezit -r "images/**/*" -m
+sqz compress -r "images/**/*" --profile max
 ```
 
 Strip metadata only:
 
 ```bash
-squeezit --exif "photos/**/*.{jpg,tiff,heic}"
+sqz metadata strip "photos/**/*.{jpg,tiff,heic}"
 ```
 
 Preserve timestamps while stripping metadata:
 
 ```bash
-squeezit -r "photos/**/*.{jpg,tiff,heic}" -s -k
+sqz compress -r "photos/**/*.{jpg,tiff,heic}" --strip-meta --keep-time
 ```
 
 Dry-run a JPEG XL file:
 
 ```bash
-squeezit artwork.jxl -d
+sqz compress artwork.jxl --dry-run
 ```
 
 Use durable streaming output even in an interactive terminal:
 
 ```bash
-squeezit --progress off "images/**/*.{png,jpg,webp}"
+sqz compress --progress off "images/**/*.{png,jpg,webp}"
 ```
 
 Modernize an ICO while preserving its icon sizes:
 
 ```bash
-squeezit app.ico
+sqz compress app.ico
 ```
 
 Modernize a cursor container while preserving entry sizes and hotspots:
 
 ```bash
-squeezit pointer.cur
+sqz compress pointer.cur
 ```
 
 Update the global installation explicitly with npm:
 
 ```bash
-squeezit -U --pm npm
+sqz update apply --pm npm
 ```
 
 ## Supported Inputs
@@ -442,33 +442,33 @@ Internally, compression behavior is determined with MIME detection where applica
 
 Squeezit currently supports these image format families:
 
-- `JPEG` (`.jpg`, `.jpeg`): fast lossless optimization by default, heavier passes in `--max`
-- `PNG` (`.png`): fast `oxipng` optimization by default, heavier candidate comparison in `--max`
+- `JPEG` (`.jpg`, `.jpeg`): fast lossless optimization by default, heavier passes with `--profile max`
+- `PNG` (`.png`): fast `oxipng` optimization by default, heavier candidate comparison with `--profile max`
 - `APNG` (`.apng`, animated PNG payloads): optimized losslessly with `oxipng`
-- `GIF` (`.gif`): fast lossless optimization by default, strongest `gifsicle` pass in `--max`
-- `WebP` (`.webp`): lossless re-encode, with heavier encoder settings in `--max`, including animated WebP handling
-- `SVG` (`.svg`): single-pass optimization by default, multipass in `--max`
-- `TIFF` (`.tif`, `.tiff`): lossless ZIP recompression, with a heavier ZIP preset in `--max`
-- `HEIF / HEIC` (`.heif`, `.heic`): lossless re-encode, with a slower encoder preset in `--max`
-- `AVIF` (`.avif`): lossless re-encode, with a slower encoder speed in `--max`
+- `GIF` (`.gif`): fast lossless optimization by default, strongest `gifsicle` pass with `--profile max`
+- `WebP` (`.webp`): lossless re-encode, with heavier encoder settings with `--profile max`, including animated WebP handling
+- `SVG` (`.svg`): single-pass optimization by default, multipass with `--profile max`
+- `TIFF` (`.tif`, `.tiff`): lossless ZIP recompression, with a heavier ZIP preset with `--profile max`
+- `HEIF / HEIC` (`.heif`, `.heic`): lossless re-encode, with a slower encoder preset with `--profile max`
+- `AVIF` (`.avif`): lossless re-encode, with a slower encoder speed with `--profile max`
 - `BMP` (`.bmp`): lossless RLE recompression for source 4-bit and 8-bit BMPs only; higher-bit BMPs are skipped
-- `JPEG XL` (`.jxl`): lossless re-encode, with a faster default pass and multi-effort candidate comparison in `--max`
+- `JPEG XL` (`.jxl`): lossless re-encode, with a faster default pass and multi-effort candidate comparison with `--profile max`
 - `ICO` (`.ico`): modernized by extracting embedded icon images, optimizing them, and rebuilding the icon container while preserving the original entry dimensions; if the rebuilt icon changes the dimension set, it is skipped
 - `CUR` (`.cur`): modernized by extracting embedded cursor images, optimizing them, and rebuilding the cursor container while preserving the original entry dimensions and hotspot coordinates; if the rebuilt cursor changes either, it is skipped
-- `RAW camera files` (`.cr2`, `.nef`, `.arw`, `.raf`, `.orf`, `.rw2`): metadata stripping in `--exif` mode, optional RAW-to-DNG conversion in `--max` mode using the smallest lossless DNG settings
+- `RAW camera files` (`.cr2`, `.nef`, `.arw`, `.raf`, `.orf`, `.rw2`): metadata stripping with `sqz metadata strip`, optional RAW-to-DNG conversion with `sqz compress --profile max` using the smallest lossless DNG settings
 
 Notes:
 
 - If a lossless result is larger, the file is skipped and never replaced
-- `--exif` is metadata-only mode and does not run recompression pipelines
-- `--max` always strips metadata in addition to raising encoder effort across the supported recompression pipelines
-- `--max` forces the replacement threshold to `0`, so any positive lossless reduction is accepted
+- `sqz metadata strip` is metadata-only and does not run recompression pipelines
+- `--profile max` always strips metadata in addition to raising encoder effort across the supported recompression pipelines
+- `--profile max` forces the replacement threshold to `0`, so any positive lossless reduction is accepted
 - ICO support is focused on modernizing containers while preserving icon sizes, not preserving original legacy BMP-style encoding byte-for-byte
 - CUR support is focused on modernizing containers while preserving entry sizes and cursor hotspots, not preserving original legacy BMP-style encoding byte-for-byte
 - BMP metadata-only writing is not supported; BMP optimization only rewrites eligible indexed BMP image data
 - ICO and CUR metadata-only writing are not supported
-- RAW files are special-case inputs and only convert to `.dng` in `--max` mode
-- RAW `--max` conversion now targets the smallest lossless DNG by disabling embedded RAW, preview, and thumbnail payloads; `.rw2` inputs also try the available lossless JPEG predictor variants and keep the smallest result
+- RAW files are special-case inputs and only convert to `.dng` with `--profile max`
+- RAW `--profile max` conversion targets the smallest lossless DNG by disabling embedded RAW, preview, and thumbnail payloads; `.rw2` inputs also try the available lossless JPEG predictor variants and keep the smallest result
 
 ## System Dependencies
 
@@ -487,39 +487,86 @@ Squeezit orchestrates native image tools based on the inputs you actually proces
 - `exiftool`
 - `cjxl`
 - `icotool`
-- `dnglab` for RAW to DNG conversion in `--max` mode
+- `dnglab` for RAW to DNG conversion with `--profile max`
 
-Not every run needs every tool. Dependency checks are format-aware, so `squeezit` only asks for the binaries needed for the files you matched.
+Not every run needs every tool. `sqz deps doctor [patterns...]` is format-aware; without patterns it checks the full supported toolchain. `sqz doctor` also checks Node 22.13+, the current platform, and update readiness.
+
+The doctor enforces minimum tool versions, including `jpegtran` 3.1.3, `jpegoptim` 1.5.6, `oxipng` 10.1.0, `svgo` 4.0.1, WebP tools 1.6.0, ImageMagick 7.1.2-9, ExifTool 13.50, and the approved versions of every remaining optimizer. It reports the executable version, provider, health, and a remediation. macOS supplies `file` itself; Homebrew supplies `jpegtran` through `jpeg-turbo`.
+
+Install missing tools explicitly:
+
+```bash
+sqz deps install
+sqz deps install "images/**/*.{png,jpg}"
+```
+
+`deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON or non-interactive environments; piping an affirmative response is intentionally unsupported.
 
 ## Self-Update
 
-Squeezit can check for a new published version and update itself:
+Squeezit can check for a new published version and update itself without conflating the read-only and state-changing operations:
 
 ```bash
-squeezit --check-update
-squeezit -U
+sqz update check
+sqz update apply
 ```
 
 Installer detection works like this:
 
-- On install, `squeezit` records whether it was installed by `npm` or `bun` in its config metadata
-- On update, it reuses that persisted installer when available
-- If detection is ambiguous, pass `--pm npm` or `--pm bun`
+- `update check` never writes installer state.
+- A successful `update apply` records the npm, Bun, or Homebrew source used.
+- Homebrew is valid only when the active installation is formula-managed.
+- If detection is ambiguous, choose `--pm npm`, `--pm bun`, or `--pm brew`.
 
 Examples:
 
 ```bash
-squeezit -U --pm npm
-squeezit -U --pm bun
+sqz update apply --pm npm
+sqz update apply --pm bun
+sqz update apply --pm brew --yes
 ```
 
-If dependencies are missing, you can ask `squeezit` to install them:
+### JSON and automation
+
+Every Squeezit-owned operational/display command accepts `--json` and writes exactly one JSON object to stdout:
+
+```json
+{
+  "schemaVersion": 1,
+  "command": "deps doctor",
+  "ok": true,
+  "data": {}
+}
+```
+
+Expected unhealthy states set `ok` to `false` and exit with code `1`; validation and unexpected failures use the same envelope with an `error.message`. Human diagnostics go to stderr with `--verbose`; JSON places them in `data.diagnostics`. The upstream `sqz autocomplete` command is the only intentional exception to this JSON contract.
+
+### Shell completion
+
+Install the completion integration for your shell:
 
 ```bash
-squeezit --install-deps
+sqz autocomplete zsh
+sqz autocomplete bash
+sqz autocomplete powershell
 ```
 
-Supported installation targets:
+The completion command exposes Squeezit commands, both binary aliases, flags, and enumerated values such as `--profile max`. Use `sqz autocomplete --refresh-cache` after an upgrade if your shell has cached command metadata.
+
+## Migrating to 2.0
+
+2.0 intentionally replaces the root compression command and its operational flags. Use explicit commands instead:
+
+| Before 2.0               | 2.0                          |
+| ------------------------ | ---------------------------- |
+| `squeezit [patterns...]` | `sqz compress [patterns...]` |
+| `--max`                  | `compress --profile max`     |
+| `--exif`                 | `metadata strip` or `exif`   |
+| `--install-deps`         | `deps install`               |
+| `--check-update`         | `update check`               |
+| `--update`               | `update apply`               |
+
+Supported operating systems for tool installation are:
 
 - macOS via Homebrew
 - Debian/Ubuntu via APT
@@ -534,12 +581,6 @@ Install dependencies:
 bun install
 ```
 
-Run the source CLI:
-
-```bash
-bun run index.ts --help
-```
-
 Build the published artifact:
 
 ```bash
@@ -549,7 +590,7 @@ bun run build
 Run the compiled CLI locally:
 
 ```bash
-node ./dist/index.js --help
+node ./bin/run.js --help
 ```
 
 Validate the project:

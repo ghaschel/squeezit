@@ -31,6 +31,18 @@ describe("documentation coverage", () => {
     expect(readme).toContain("squeezit/babel");
   });
 
+  test("documents the 2.0 command taxonomy and automation contract", async () => {
+    const readme = await readFile(join(process.cwd(), "README.md"), "utf8");
+
+    expect(readme).toContain("sqz compress [patterns...]");
+    expect(readme).toContain("sqz metadata strip [patterns...]");
+    expect(readme).toContain("sqz deps doctor [patterns...]");
+    expect(readme).toContain("sqz update check");
+    expect(readme).toContain("sqz autocomplete zsh");
+    expect(readme).toContain('"schemaVersion": 1');
+    expect(readme).toContain("## Migrating to 2.0");
+  });
+
   test("contains dedicated API documentation", async () => {
     const apiDocs = await readFile(
       join(process.cwd(), "docs", "API.md"),

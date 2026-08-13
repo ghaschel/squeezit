@@ -2,6 +2,16 @@ import { confirm } from "@inquirer/prompts";
 
 import type { PackageManager } from "../types";
 
+export async function confirmImageOptimization(
+  operation: "compress" | "metadata strip",
+  inputCount: number
+): Promise<boolean> {
+  return confirm({
+    default: true,
+    message: `Apply ${operation} changes to ${inputCount} file${inputCount === 1 ? "" : "s"}?`,
+  });
+}
+
 export async function confirmDependencyInstall(
   platform: "macos" | "debian",
   packages: string[]

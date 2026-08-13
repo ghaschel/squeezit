@@ -173,7 +173,9 @@ export async function optimizeCommand(
     }
   }
   note(`Resolved ${inputs.length} input file(s).`);
-  await ensureDependencies({ ...options, installDeps: false }, inputs);
+  await ensureDependencies({ ...options, installDeps: false }, inputs, {
+    silent: json,
+  });
 
   if (!json) {
     console.log("");

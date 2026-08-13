@@ -201,7 +201,7 @@
     "test:integration": "vitest run tests/integration",
     "test:api": "vitest run tests/integration/api*.test.ts",
     "test:webp": "vitest run tests/integration/api-webp.test.ts",
-    "test:cli": "vitest run tests/unit/cli-*.test.ts tests/unit/oclif-packaging.test.ts",
+    "test:cli": "bun run build:cli && bun run build:manifest && vitest run tests/unit/cli-*.test.ts tests/unit/oclif-packaging.test.ts tests/integration/cli-json.test.ts",
     "test:babel": "bun run build && vitest run tests/integration/babel.test.ts",
     "test:gulp": "vitest run tests/integration/gulp.test.ts",
     "test:grunt": "bun run build && vitest run tests/integration/grunt.test.ts",

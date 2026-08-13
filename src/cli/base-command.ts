@@ -29,6 +29,10 @@ export abstract class SqueezitCommand extends Command {
   }
 
   override async catch(error: unknown): Promise<void> {
+    // Oclif marks parsing as complete only after a successful parse. Mark it
+    // here as well so a JSON validation error remains a single clean document
+    // instead of also triggering Oclif's development warning on stderr.
+    this.parsed = true;
     const command = (this.id ?? "sqz").replaceAll(":", " ");
 
     if (this.jsonEnabled()) {

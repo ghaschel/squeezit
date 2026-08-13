@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ghaschel/squeeze/main/assets/squeezit-logo.svg" alt="squeezit logo" width="80%" />
+  <img src="https://raw.githubusercontent.com/ghaschel/squeezit/main/assets/squeezit-logo.svg" alt="squeezit logo" width="80%" />
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ghaschel/squeeze/main/assets/squeezit-wordmark.svg" alt="Squeezit" width="440" />
+  <img src="https://raw.githubusercontent.com/ghaschel/squeezit/main/assets/squeezit-wordmark.svg" alt="Squeezit" width="440" />
 </p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/squeezit"><img src="https://img.shields.io/npm/v/squeezit.svg?color=0f766e&label=npm" alt="npm version" style="margin-right: 10px;"></a>
   <a href="https://www.npmjs.com/package/squeezit"><img src="https://img.shields.io/npm/dm/squeezit.svg?color=1d4ed8&label=downloads" alt="npm downloads" style="margin-right: 10px;"></a>
-  <a href="https://github.com/ghaschel/squeeze/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/squeezit.svg?color=334155&label=license" alt="license"></a>
+  <a href="https://github.com/ghaschel/squeezit/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/squeezit.svg?color=334155&label=license" alt="license"></a>
 </p>
 
 `squeezit` is a CLI for aggressively compressing images without casually degrading them. It is designed for codebases, asset folders, and content repositories where you want smaller files, predictable behavior, and a command you can trust in day-to-day workflows.
@@ -28,7 +28,9 @@ It supports direct file paths, shell-style patterns like `*.png`, glob expressio
 
 ## Installation
 
-Requires Node.js 22.13 or later.
+For npm and Bun global installations, use Node.js 22.13 or later. Homebrew and
+the standalone archives provide Node themselves; see their installation notes
+below.
 
 ### npm
 
@@ -41,6 +43,46 @@ npm install -g squeezit
 ```bash
 bun add -g squeezit
 ```
+
+### Homebrew (macOS)
+
+The personal tap is the easiest macOS installation because the formula installs
+Node and Squeezit's native optimizer tools as dependencies:
+
+```bash
+brew install ghaschel/tap/squeezit
+```
+
+Upgrade a formula installation with Homebrew:
+
+```bash
+brew upgrade squeezit
+```
+
+Confirm the complete runtime and optimizer toolchain after installation:
+
+```bash
+sqz doctor
+```
+
+### Standalone GitHub archives
+
+Each GitHub release includes `.tar.gz` archives for `darwin-arm64`,
+`darwin-x64`, and `linux-x64`, plus a `SHA256SUMS` file. Download the archive
+for your platform and `SHA256SUMS` from the same release, then verify it before
+extracting it:
+
+```bash
+ARCHIVE="squeezit-v<VERSION>-<target>.tar.gz"
+grep "  $ARCHIVE$" SHA256SUMS | shasum -a 256 -c -
+```
+
+Replace `<VERSION>` and `<target>` with the downloaded archive's values. On
+Linux, replace `shasum -a 256 -c -` with `sha256sum --check -`. The archives
+embed a Node runtime, so no separate Node installation is required; they do
+**not** bundle native image optimizer tools. Install the tools for your
+platform and run `sqz doctor` to see exactly what is missing before optimizing
+images.
 
 After installation, both commands are available:
 
@@ -305,7 +347,8 @@ The fixture-value helper and JS/TS API report `filePath` and `outputPath` relati
 
 ## Documentation
 
-- [API reference](https://github.com/ghaschel/squeeze/blob/main/docs/API.md)
+- [API reference](https://github.com/ghaschel/squeezit/blob/main/docs/API.md)
+- [Release and maintainer guide](https://github.com/ghaschel/squeezit/blob/main/docs/releasing.md)
 
 ### Usage
 
@@ -515,7 +558,9 @@ Installer detection works like this:
 
 - `update check` never writes installer state.
 - A successful `update apply` records the npm, Bun, or Homebrew source used.
-- Homebrew is valid only when the active installation is formula-managed.
+- Homebrew is valid only when the active installation is formula-managed; it
+  does not install the Homebrew formula for an npm-, Bun-, or archive-installed
+  CLI.
 - If detection is ambiguous, choose `--pm npm`, `--pm bun`, or `--pm brew`.
 
 Examples:
@@ -602,4 +647,4 @@ bun test
 
 ## License
 
-[MIT](https://github.com/ghaschel/squeeze/blob/main/LICENSE)
+[MIT](https://github.com/ghaschel/squeezit/blob/main/LICENSE)

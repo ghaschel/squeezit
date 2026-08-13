@@ -91,8 +91,7 @@ export function createUpdateService(
     const persistedConfig = await dependencies.readInstallerConfig();
     const requestedPackageManager = request.overridePackageManager ?? null;
     const brewFormulaManaged =
-      requestedPackageManager === "brew" ||
-      (!requestedPackageManager && persistedConfig?.packageManager === "brew")
+      requestedPackageManager === "brew" || !requestedPackageManager
         ? await dependencies.isFormulaManaged(metadata.name)
         : false;
     const packageManager = resolvePackageManager({
@@ -289,6 +288,7 @@ export function resolvePackageManager(params: {
   } = params;
   const selected =
     override ??
+    (brewFormulaManaged ? "brew" : null) ??
     persistedConfig?.packageManager ??
     detectPackageManagerFromUserAgent(userAgent) ??
     resolveRuntimePackageManager(npmExecPath, bunRuntime);

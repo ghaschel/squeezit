@@ -26,6 +26,62 @@ describe("updater service", () => {
     });
   });
 
+  test("prefers a formula-managed executable over persisted npm metadata", async () => {
+    const isFormulaManaged = vi.fn(async () => true);
+    const runCheckedCommand = vi.fn(async () => ({
+      all: "",
+      exitCode: 0,
+      stderr: "",
+      stdout: "",
+    }));
+    const writeInstallerConfig = vi.fn();
+    const service = createUpdateService({
+      fetchLatestVersion: async () => "2.0.0",
+      isFormulaManaged,
+      now: () => new Date("2026-08-13T00:00:00.000Z"),
+      readInstallerConfig: async () => ({
+        packageManager: "npm",
+        packageName: "squeezit",
+        updatedAt: "2026-08-12T00:00:00.000Z",
+      }),
+      readPackageMetadata: async () => ({ name: "squeezit", version: "1.0.0" }),
+      runCheckedCommand,
+      writeInstallerConfig,
+    });
+
+    const checked = await service.check({ bunRuntime: false });
+
+    expect(checked).toMatchObject({
+      ok: true,
+      status: "update-available",
+      packageManager: "brew",
+      plan: { command: "brew", args: ["upgrade", "squeezit"] },
+    });
+    expect(isFormulaManaged).toHaveBeenCalledWith("squeezit");
+
+    const result = await service.apply(
+      { bunRuntime: false },
+      async () => true,
+      checked
+    );
+
+    expect(result).toMatchObject({
+      ok: true,
+      status: "updated",
+      packageManager: "brew",
+    });
+    expect(runCheckedCommand).toHaveBeenCalledWith(
+      "brew",
+      ["upgrade", "squeezit"],
+      { stdio: "inherit" }
+    );
+    expect(writeInstallerConfig).toHaveBeenCalledWith({
+      packageManager: "brew",
+      packageName: "squeezit",
+      updatedAt: "2026-08-13T00:00:00.000Z",
+    });
+  });
+
   test("checks for an update without persisting installer configuration", async () => {
     const writeInstallerConfig = vi.fn();
     const isFormulaManaged = vi.fn(async () => false);

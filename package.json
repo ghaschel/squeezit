@@ -3,13 +3,18 @@
   "version": "1.17.1",
   "description": "Lossless image optimizer CLI, JS/TS API, and bundler plugins for PNG, JPEG, GIF, WebP, SVG, AVIF, HEIC, JXL, ICO, BMP, and more.",
   "license": "MIT",
-  "homepage": "https://github.com/ghaschel/squeeze#readme",
+  "homepage": "https://github.com/ghaschel/squeezit#readme",
   "bugs": {
-    "url": "https://github.com/ghaschel/squeeze/issues"
+    "url": "https://github.com/ghaschel/squeezit/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ghaschel/squeeze.git"
+    "url": "https://github.com/ghaschel/squeezit.git"
+  },
+  "packageManager": "bun@1.3.5",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "engines": {
     "node": ">=22.13.0",
@@ -63,6 +68,16 @@
       "@oclif/plugin-autocomplete",
       "@oclif/plugin-not-found"
     ],
+    "update": {
+      "node": {
+        "version": "24.16.0",
+        "targets": [
+          "darwin-arm64",
+          "darwin-x64",
+          "linux-x64"
+        ]
+      }
+    },
     "topicSeparator": " "
   },
   "exports": {
@@ -218,8 +233,10 @@
     "check:types": "HUSKY=0 npm_config_cache=.npm-cache attw --pack . --profile node16",
     "fixture-values": "bun run scripts/fixture-values.ts",
     "release:initial": "git fetch --tags --force && $ bunx -- commit-and-tag-version --release-as v1.0.0",
-    "release": "git fetch --tags --force && commit-and-tag-version",
+    "release": "git fetch --tags --force && bun scripts/check-release-readiness.ts && commit-and-tag-version",
     "push": "git push --follow-tags",
+    "release:check": "bun install --frozen-lockfile && bun run typecheck && bun run test:unit && bun run check:exports",
+    "release:push": "bun run release:check && bun run push",
     "prepare": "husky"
   },
   "devDependencies": {

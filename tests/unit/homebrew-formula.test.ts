@@ -43,7 +43,7 @@ describe("Homebrew formula renderer", () => {
     expect(formula).toContain('bin.install_symlink libexec/"bin/sqz"');
     expect(formula).toContain('bin.install_symlink libexec/"bin/squeezit"');
     expect(formula).toContain(
-      'JSON.parse(shell_output("#{bin}/sqz version --json"))["version"]'
+      'JSON.parse(shell_output("#{bin}/sqz version --json")).dig("data", "version")'
     );
 
     const dependencyLines = formula

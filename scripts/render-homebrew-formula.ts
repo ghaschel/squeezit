@@ -75,7 +75,7 @@ ${dependencies}
 
   test do
     require "json"
-    assert_equal version.to_s, JSON.parse(shell_output("#{bin}/sqz version --json"))["version"]
+    assert_equal version.to_s, JSON.parse(shell_output("#{bin}/sqz version --json")).dig("data", "version")
   end
 end
 `;

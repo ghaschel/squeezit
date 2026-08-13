@@ -49,3 +49,19 @@ Both passed. The readiness guard reported 16 test files / 112 tests passing and 
 - Did not change the package version.
 - No `package-lock.json`, `yarn.lock`, or `pnpm-lock.yaml` was added; `bun.lock` remains the sole committed lockfile.
 - Did not add the tag workflow, updater changes, or documentation work owned by later tasks.
+
+## Review fix — nested version JSON
+
+Review identified that `sqz version --json` returns the version under `data.version`, while the generated formula test read the JSON root. The formula test was strengthened first to require:
+
+```ruby
+JSON.parse(shell_output("#{bin}/sqz version --json")).dig("data", "version")
+```
+
+The focused test failed as expected against the old root-level lookup, then passed after updating the renderer template:
+
+```text
+1 pass
+0 fail
+12 expect() calls
+```

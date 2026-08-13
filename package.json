@@ -3,13 +3,13 @@
   "version": "1.17.1",
   "description": "Lossless image optimizer CLI, JS/TS API, and bundler plugins for PNG, JPEG, GIF, WebP, SVG, AVIF, HEIC, JXL, ICO, BMP, and more.",
   "license": "MIT",
-  "homepage": "https://github.com/ghaschel/squeeze#readme",
+  "homepage": "https://github.com/ghaschel/squeezit#readme",
   "bugs": {
-    "url": "https://github.com/ghaschel/squeeze/issues"
+    "url": "https://github.com/ghaschel/squeezit/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ghaschel/squeeze.git"
+    "url": "https://github.com/ghaschel/squeezit.git"
   },
   "packageManager": "bun@1.3.5",
   "publishConfig": {

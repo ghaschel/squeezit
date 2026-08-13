@@ -1,19 +1,19 @@
 # Releasing Squeezit
 
-This guide is for maintainers of `ghaschel/squeeze`. Releases are published by
+This guide is for maintainers of `ghaschel/squeezit`. Releases are published by
 the GitHub Actions workflow at [`.github/workflows/release.yml`](../.github/workflows/release.yml),
 which runs when a `v*` tag is pushed. Do not publish a release locally.
 
 ## Prerequisites
 
-- This workflow assumes `ghaschel/squeeze` and `ghaschel/homebrew-tap` are
+- This workflow assumes `ghaschel/squeezit` and `ghaschel/homebrew-tap` are
   public repositories eligible for GitHub's free standard GitHub-hosted runner
   model, including the `macos-latest` runner used for formula smoke tests.
 - Configure npm Trusted Publishing for the `squeezit` package with GitHub as the
-  provider, repository `ghaschel/squeeze`, and workflow filename exactly
+  provider, repository `ghaschel/squeezit`, and workflow filename exactly
   `release.yml`. Publishing uses GitHub OIDC and provenance, so do not create
   or store an npm access token for this workflow.
-- Add `HOMEBREW_TAP_TOKEN` as a repository secret in `ghaschel/squeeze`. It
+- Add `HOMEBREW_TAP_TOKEN` as a repository secret in `ghaschel/squeezit`. It
   must be a fine-grained personal access token scoped only to
   `ghaschel/homebrew-tap`, with repository **Contents: read and write**
   permission. No broader repository access is needed.

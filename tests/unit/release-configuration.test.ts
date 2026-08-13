@@ -20,6 +20,33 @@ describe("release configuration", () => {
     expect(packageJson.engines).toMatchObject({ node: ">=22.13.0" });
   });
 
+  test("uses ghaschel/squeezit as the live release source", async () => {
+    const packageJson = await readPackageJson();
+    const [formulaRenderer, releaseGuide, readme] = await Promise.all(
+      [
+        "scripts/render-homebrew-formula.ts",
+        "docs/releasing.md",
+        "README.md",
+      ].map((path) => readFile(resolve(root, path), "utf8"))
+    );
+
+    expect(packageJson.homepage).toBe(
+      "https://github.com/ghaschel/squeezit#readme"
+    );
+    expect(packageJson.bugs).toEqual({
+      url: "https://github.com/ghaschel/squeezit/issues",
+    });
+    expect(packageJson.repository).toEqual({
+      type: "git",
+      url: "https://github.com/ghaschel/squeezit.git",
+    });
+
+    for (const source of [formulaRenderer, releaseGuide, readme]) {
+      expect(source).toContain("ghaschel/squeezit");
+      expect(source).not.toContain("ghaschel/squeeze");
+    }
+  });
+
   test("embeds Node 24.16.0 for exactly the supported Oclif archives", async () => {
     const packageJson = await readPackageJson();
     const oclif = packageJson.oclif as {

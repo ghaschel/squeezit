@@ -59,7 +59,7 @@ function renderFormula({ version, sha256 }: FormulaArguments): string {
 
   return `class Squeezit < Formula
   desc "Lossless image optimizer CLI"
-  homepage "https://github.com/ghaschel/squeeze"
+  homepage "https://github.com/ghaschel/squeezit"
   url "https://registry.npmjs.org/squeezit/-/squeezit-${version}.tgz"
   sha256 "${sha256}"
   license "MIT"

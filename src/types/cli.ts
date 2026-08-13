@@ -1,8 +1,10 @@
 import type { CoreBatchOptions } from "./core";
 
 export type ProgressMode = "auto" | "off";
+export type OptimizationProfile = "standard" | "max";
 
 export interface CompressCliFlags {
+  profile?: OptimizationProfile;
   recursive?: boolean;
   max?: boolean;
   stripMeta?: boolean;

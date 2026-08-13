@@ -50,8 +50,20 @@
   "types": "./dist/index.d.ts",
   "type": "module",
   "bin": {
-    "squeezit": "./dist/cli.js",
-    "sqz": "./dist/cli.js"
+    "sqz": "./bin/run.js",
+    "squeezit": "./bin/run.js"
+  },
+  "oclif": {
+    "bin": "sqz",
+    "binAliases": [
+      "squeezit"
+    ],
+    "commands": "./dist/commands",
+    "plugins": [
+      "@oclif/plugin-autocomplete",
+      "@oclif/plugin-not-found"
+    ],
+    "topicSeparator": " "
   },
   "exports": {
     ".": {
@@ -168,14 +180,19 @@
   },
   "files": [
     "assets",
+    "bin",
     "docs",
     "dist",
+    "oclif.manifest.json",
     "postinstall.mjs",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "build": "rm -rf dist && tsup && bun build ./index.ts --outfile ./dist/cli.js --target node",
+    "build": "rm -rf dist oclif.manifest.json && bun run build:library && bun run build:cli && bun run build:manifest",
+    "build:library": "tsup",
+    "build:cli": "tsup --config tsup.oclif.config.ts",
+    "build:manifest": "oclif manifest",
     "prepack": "bun run build",
     "postinstall": "node ./postinstall.mjs",
     "test": "vitest run",
@@ -184,7 +201,7 @@
     "test:integration": "vitest run tests/integration",
     "test:api": "vitest run tests/integration/api*.test.ts",
     "test:webp": "vitest run tests/integration/api-webp.test.ts",
-    "test:cli": "vitest run tests/unit/cli.test.ts",
+    "test:cli": "bun run build:cli && bun run build:manifest && vitest run tests/unit/cli-*.test.ts tests/unit/oclif-packaging.test.ts tests/integration/cli-json.test.ts",
     "test:babel": "bun run build && vitest run tests/integration/babel.test.ts",
     "test:gulp": "vitest run tests/integration/gulp.test.ts",
     "test:grunt": "bun run build && vitest run tests/integration/grunt.test.ts",
@@ -232,6 +249,7 @@
     "grunt": "^1.6.1",
     "lint-staged": "^16.4.0",
     "next": "^16.2.1",
+    "oclif": "^4.23.28",
     "parcel": "^2.16.0",
     "prettier": "^3.8.1",
     "publint": "^0.3.15",
@@ -294,9 +312,11 @@
     }
   },
   "dependencies": {
+    "@oclif/core": "^4.13.2",
+    "@oclif/plugin-autocomplete": "^3.2.52",
+    "@oclif/plugin-not-found": "^3.2.88",
     "@inquirer/prompts": "^8.5.2",
     "chalk": "^5.6.2",
-    "commander": "^14.0.3",
     "execa": "^9.6.1",
     "fs-extra": "^11.3.4",
     "glob": "^13.0.6",

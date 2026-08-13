@@ -7,7 +7,7 @@ import type {
   DependencySpec,
   ResolvedInput,
 } from "../types";
-import { commandExists, runCheckedCommand } from "../utils/exec";
+import { commandExists, runCheckedCommand, runCommand } from "../utils/exec";
 
 export type DependencyName =
   | "file"
@@ -36,146 +36,503 @@ export type DependencyName =
 
 export type SupportedPlatform = "macos" | "debian";
 
-export const DEPENDENCY_CATALOG: Record<DependencyName, DependencySpec> = {
+export type DependencyProvider =
+  | "apt"
+  | "brew"
+  | "manual"
+  | "system"
+  | "unknown";
+
+export type DependencyHealthStatus =
+  | "healthy"
+  | "missing"
+  | "outdated"
+  | "unverifiable";
+
+export interface DependencyDiagnosticSpec extends DependencySpec {
+  minimumVersion: string;
+  versionArgs: string[];
+  versionReporting: "self" | "provider";
+}
+
+export interface DependencyProviderVersion {
+  provider: Extract<DependencyProvider, "apt" | "brew" | "system">;
+  rawVersion: string;
+}
+
+export interface DependencyCommandResult {
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+  all: string;
+}
+
+export type DependencyCommandRunner = (
+  command: string,
+  args: string[]
+) => Promise<DependencyCommandResult>;
+
+export interface DependencyDiagnosticOptions {
+  platform?: SupportedPlatform | null;
+  commandExists?: (binary: string) => Promise<boolean>;
+  runCommand?: DependencyCommandRunner;
+  providerVersionLookup?: (
+    dependency: DependencyDiagnosticSpec,
+    platform: SupportedPlatform
+  ) => Promise<DependencyProviderVersion | undefined>;
+}
+
+export interface DependencyDiagnostic {
+  binary: string;
+  present: boolean;
+  provider: DependencyProvider;
+  status: DependencyHealthStatus;
+  minimumVersion: string;
+  rawVersion?: string;
+  normalizedVersion?: string;
+  remediation: string;
+}
+
+export const DEPENDENCY_CATALOG: Record<
+  DependencyName,
+  DependencyDiagnosticSpec
+> = {
   file: {
     binary: "file",
     required: true,
-    brewPackage: "file-formula",
     aptPackage: "file",
+    systemProvided: true,
+    minimumVersion: "5.41",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   jpegtran: {
     binary: "jpegtran",
     required: true,
-    brewPackage: "mozjpeg",
+    brewPackage: "jpeg-turbo",
     aptPackage: "libjpeg-turbo-progs",
+    minimumVersion: "3.1.3",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   jpegrescan: {
     binary: "jpegrescan",
     required: true,
     brewPackage: "jpegrescan",
     aptPackage: "jpegrescan",
+    minimumVersion: "1.1.0",
+    versionArgs: ["--version"],
+    versionReporting: "provider",
   },
   jpegoptim: {
     binary: "jpegoptim",
     required: true,
     brewPackage: "jpegoptim",
     aptPackage: "jpegoptim",
+    minimumVersion: "1.5.6",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   pngcrush: {
     binary: "pngcrush",
     required: true,
     brewPackage: "pngcrush",
     aptPackage: "pngcrush",
+    minimumVersion: "1.8.13",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   optipng: {
     binary: "optipng",
     required: true,
     brewPackage: "optipng",
     aptPackage: "optipng",
+    minimumVersion: "7.9.1",
+    versionArgs: ["-v"],
+    versionReporting: "self",
   },
   zopflipng: {
     binary: "zopflipng",
     required: true,
     brewPackage: "zopfli",
     aptPackage: "zopfli",
+    minimumVersion: "1.0.3",
+    versionArgs: ["--version"],
+    versionReporting: "provider",
   },
   oxipng: {
     binary: "oxipng",
     required: true,
     brewPackage: "oxipng",
     aptPackage: "oxipng",
+    minimumVersion: "10.1.0",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   gifsicle: {
     binary: "gifsicle",
     required: true,
     brewPackage: "gifsicle",
     aptPackage: "gifsicle",
+    minimumVersion: "1.96",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   svgo: {
     binary: "svgo",
     required: true,
     brewPackage: "svgo",
     aptPackage: "node-svgo",
+    minimumVersion: "4.0.1",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   cwebp: {
     binary: "cwebp",
     required: true,
     brewPackage: "webp",
     aptPackage: "webp",
+    minimumVersion: "1.6.0",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   dwebp: {
     binary: "dwebp",
     required: true,
     brewPackage: "webp",
     aptPackage: "webp",
+    minimumVersion: "1.6.0",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   webpinfo: {
     binary: "webpinfo",
     required: true,
     brewPackage: "webp",
     aptPackage: "webp",
+    minimumVersion: "1.6.0",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   webpmux: {
     binary: "webpmux",
     required: true,
     brewPackage: "webp",
     aptPackage: "webp",
+    minimumVersion: "1.6.0",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   gif2webp: {
     binary: "gif2webp",
     required: true,
     brewPackage: "webp",
     aptPackage: "webp",
+    minimumVersion: "1.6.0",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   "heif-enc": {
     binary: "heif-enc",
     required: true,
     brewPackage: "libheif",
     aptPackage: "libheif-examples",
+    minimumVersion: "1.20.2",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   avifenc: {
     binary: "avifenc",
     required: true,
     brewPackage: "libavif",
     aptPackage: "libavif-bin",
+    minimumVersion: "1.4.0",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   tiffcp: {
     binary: "tiffcp",
     required: true,
     brewPackage: "libtiff",
     aptPackage: "libtiff-tools",
+    minimumVersion: "4.7.1",
+    versionArgs: ["-h"],
+    versionReporting: "self",
   },
   magick: {
     binary: "magick",
     required: true,
     brewPackage: "imagemagick",
     aptPackage: "imagemagick",
+    minimumVersion: "7.1.2-9",
+    versionArgs: ["-version"],
+    versionReporting: "self",
   },
   exiftool: {
     binary: "exiftool",
     required: true,
     brewPackage: "exiftool",
     aptPackage: "libimage-exiftool-perl",
+    minimumVersion: "13.50",
+    versionArgs: ["-ver"],
+    versionReporting: "self",
   },
   dnglab: {
     binary: "dnglab",
     required: true,
     brewPackage: "dnglab",
     aptPackage: "dnglab",
+    minimumVersion: "0.7.2",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   cjxl: {
     binary: "cjxl",
     required: true,
     brewPackage: "jpeg-xl",
     aptPackage: "libjxl-tools",
+    minimumVersion: "0.11.2",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
   icotool: {
     binary: "icotool",
     required: true,
     brewPackage: "icoutils",
     aptPackage: "icoutils",
+    minimumVersion: "0.32.3",
+    versionArgs: ["--version"],
+    versionReporting: "self",
   },
 };
+
+/**
+ * Returns a tool version suitable for compatibility comparison. Homebrew's
+ * formula revision suffix (`_1`) is intentionally omitted because it does not
+ * describe the binary's upstream compatibility level.
+ */
+export function normalizeDependencyVersion(
+  output: string,
+  binary?: string
+): string | undefined {
+  if (binary) {
+    const escapedBinary = binary.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const namedMatch = output.match(
+      new RegExp(
+        `${escapedBinary}\\s+(?:version\\s+)?v?(\\d+(?:\\.\\d+)+(?:-\\d+)?(?:_\\d+)?)`,
+        "i"
+      )
+    );
+    if (namedMatch?.[1]) {
+      return namedMatch[1].replace(/_\d+$/, "");
+    }
+  }
+
+  const match = output.match(/\d+(?:\.\d+)+(?:-\d+)?(?:_\d+)?/);
+  return match?.[0].replace(/_\d+$/, "");
+}
+
+export function compareDependencyVersions(
+  actual: string,
+  minimum: string
+): -1 | 0 | 1 {
+  const actualParts = versionParts(actual);
+  const minimumParts = versionParts(minimum);
+  const length = Math.max(actualParts.length, minimumParts.length);
+
+  for (let index = 0; index < length; index += 1) {
+    const difference = (actualParts[index] ?? 0) - (minimumParts[index] ?? 0);
+    if (difference !== 0) {
+      return difference > 0 ? 1 : -1;
+    }
+  }
+
+  return 0;
+}
+
+export async function diagnoseDependency(
+  name: DependencyName,
+  options: DependencyDiagnosticOptions = {}
+): Promise<DependencyDiagnostic> {
+  const dependency = DEPENDENCY_CATALOG[name];
+  const platform = options.platform ?? (await detectPlatform());
+  const exists = options.commandExists ?? commandExists;
+
+  if (!(await exists(dependency.binary))) {
+    return {
+      binary: dependency.binary,
+      present: false,
+      provider: "unknown",
+      status: "missing",
+      minimumVersion: dependency.minimumVersion,
+      remediation: remediationFor(dependency, platform),
+    };
+  }
+
+  const commandRunner = options.runCommand ?? runCommand;
+  const providerVersion = platform
+    ? options.providerVersionLookup
+      ? await options.providerVersionLookup(dependency, platform)
+      : await lookupProviderVersion(dependency, platform, commandRunner)
+    : undefined;
+  const provider =
+    providerVersion?.provider ?? providerFor(dependency, platform);
+  const probe = await commandRunner(dependency.binary, dependency.versionArgs);
+  const directVersion =
+    dependency.versionReporting === "self"
+      ? normalizeDependencyVersion(probe.all, dependency.binary)
+      : undefined;
+
+  if (directVersion) {
+    return diagnosticForVersion(
+      dependency,
+      provider,
+      directVersion,
+      directVersion,
+      platform
+    );
+  }
+
+  if (providerVersion) {
+    const normalizedVersion = normalizeDependencyVersion(
+      providerVersion.rawVersion
+    );
+    if (normalizedVersion) {
+      return diagnosticForVersion(
+        dependency,
+        providerVersion.provider,
+        providerVersion.rawVersion,
+        normalizedVersion,
+        platform
+      );
+    }
+  }
+
+  return {
+    binary: dependency.binary,
+    present: true,
+    provider,
+    status: "unverifiable",
+    minimumVersion: dependency.minimumVersion,
+    remediation: `Install ${dependency.binary} through a supported package manager so its version can be verified`,
+  };
+}
+
+function providerFor(
+  dependency: DependencyDiagnosticSpec,
+  platform: SupportedPlatform | null
+): DependencyProvider {
+  return dependency.systemProvided && platform === "macos"
+    ? "system"
+    : "manual";
+}
+
+export async function diagnoseDependencies(
+  dependencies: Array<DependencyName | DependencySpec>,
+  options: DependencyDiagnosticOptions = {}
+): Promise<DependencyDiagnostic[]> {
+  const names = dependencies.map((dependency) =>
+    typeof dependency === "string"
+      ? dependency
+      : (dependency.binary as DependencyName)
+  );
+  return Promise.all(names.map((name) => diagnoseDependency(name, options)));
+}
+
+async function lookupProviderVersion(
+  dependency: DependencyDiagnosticSpec,
+  platform: SupportedPlatform | null,
+  commandRunner: DependencyCommandRunner
+): Promise<DependencyProviderVersion | undefined> {
+  if (platform === "macos" && dependency.brewPackage) {
+    const result = await commandRunner("brew", [
+      "list",
+      "--versions",
+      "--formula",
+      dependency.brewPackage,
+    ]);
+    const rawVersion = packageVersionFromOutput(
+      result.all,
+      dependency.brewPackage
+    );
+    return rawVersion ? { provider: "brew", rawVersion } : undefined;
+  }
+
+  if (platform === "debian" && dependency.aptPackage) {
+    const result = await commandRunner("dpkg-query", [
+      "-W",
+      "-f=${Version}",
+      dependency.aptPackage,
+    ]);
+    const rawVersion = result.all.trim();
+    return result.exitCode === 0 && rawVersion
+      ? { provider: "apt", rawVersion }
+      : undefined;
+  }
+
+  return undefined;
+}
+
+function diagnosticForVersion(
+  dependency: DependencyDiagnosticSpec,
+  provider: DependencyProvider,
+  rawVersion: string,
+  normalizedVersion: string,
+  platform: SupportedPlatform | null
+): DependencyDiagnostic {
+  const healthy =
+    compareDependencyVersions(normalizedVersion, dependency.minimumVersion) >=
+    0;
+
+  return {
+    binary: dependency.binary,
+    present: true,
+    provider,
+    status: healthy ? "healthy" : "outdated",
+    minimumVersion: dependency.minimumVersion,
+    rawVersion,
+    normalizedVersion,
+    remediation: healthy
+      ? ""
+      : `Upgrade ${remediationFor(dependency, platform)}`,
+  };
+}
+
+function remediationFor(
+  dependency: DependencyDiagnosticSpec,
+  platform: SupportedPlatform | null
+): string {
+  if (platform === "macos" && dependency.brewPackage) {
+    return `Install Homebrew package: ${dependency.brewPackage}`;
+  }
+
+  if (platform === "debian" && dependency.aptPackage) {
+    return `Install APT package: ${dependency.aptPackage}`;
+  }
+
+  if (dependency.systemProvided && platform === "macos") {
+    return `${dependency.binary} should be provided by macOS`;
+  }
+
+  return `Install required tool: ${dependency.binary}`;
+}
+
+function packageVersionFromOutput(
+  output: string,
+  packageName: string
+): string | undefined {
+  const packageLine = output
+    .split("\n")
+    .find((line) => line.trim().startsWith(`${packageName} `));
+  return packageLine?.trim().slice(packageName.length).trim();
+}
+
+function versionParts(version: string): number[] {
+  return version
+    .replace(/_\d+$/, "")
+    .split(/[.-]/)
+    .map((part) => Number.parseInt(part, 10));
+}
 
 const RAW_EXTENSIONS = new Set([
   ".cr2",

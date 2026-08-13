@@ -1,0 +1,31 @@
+{
+  "nodes": [
+    {
+      "id": "users_guilhermehaschel_documents_workspace_personal_compress_husky_husky_sh",
+      "label": "husky.sh",
+      "file_type": "code",
+      "source_file": "/Users/guilhermehaschel/Documents/Workspace/Personal/compress/.husky/_/husky.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "users_guilhermehaschel_documents_workspace_personal_compress_husky_husky_sh__entry",
+      "label": "husky.sh script",
+      "file_type": "code",
+      "source_file": "/Users/guilhermehaschel/Documents/Workspace/Personal/compress/.husky/_/husky.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_guilhermehaschel_documents_workspace_personal_compress_husky_husky_sh",
+      "target": "users_guilhermehaschel_documents_workspace_personal_compress_husky_husky_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/guilhermehaschel/Documents/Workspace/Personal/compress/.husky/_/husky.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ]
+}

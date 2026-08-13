@@ -1,0 +1,541 @@
+{
+  "commands": {
+    "commands": {
+      "aliases": [],
+      "args": {},
+      "description": "List available Squeezit commands.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "commands",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "commands.js"]
+    },
+    "compress": {
+      "aliases": [],
+      "args": {
+        "patterns": {
+          "description": "Files, directories, or glob patterns to optimize.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Compress image files with safe lossless optimization.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "profile": {
+          "description": "Optimization profile.",
+          "name": "profile",
+          "default": "standard",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["standard", "max"],
+          "type": "option"
+        },
+        "strip-meta": {
+          "description": "Remove EXIF/IPTC/XMP metadata.",
+          "name": "strip-meta",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "dry-run": {
+          "char": "d",
+          "description": "Report savings without modifying files.",
+          "name": "dry-run",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "keep-time": {
+          "char": "k",
+          "description": "Preserve original atime/mtime.",
+          "name": "keep-time",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "concurrency": {
+          "char": "c",
+          "description": "Concurrent workers.",
+          "name": "concurrency",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "progress": {
+          "description": "Progress display mode.",
+          "name": "progress",
+          "default": "auto",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["auto", "off"],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm image changes without a prompt.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "threshold": {
+          "description": "Minimum bytes saved before replacement.",
+          "name": "threshold",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "in-place": {
+          "description": "Create temporary artifacts next to source files.",
+          "name": "in-place",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "compress",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "compress.js"]
+    },
+    "doctor": {
+      "aliases": [],
+      "args": {},
+      "description": "Check runtime, platform, update source, and optimizer readiness.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "doctor",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "doctor.js"]
+    },
+    "help": {
+      "aliases": [],
+      "args": {
+        "command": {
+          "description": "Command to show help for.",
+          "multiple": true,
+          "name": "command",
+          "required": false
+        }
+      },
+      "description": "Display help for Squeezit commands.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "help",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": false,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "help.js"]
+    },
+    "version": {
+      "aliases": [],
+      "args": {},
+      "description": "Display the installed Squeezit version.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print version diagnostics to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "version",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "version.js"]
+    },
+    "deps:doctor": {
+      "aliases": [],
+      "args": {
+        "patterns": {
+          "description": "Limit checks to the tools required by these image inputs.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Diagnose optimizer tools for all or selected image formats.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "profile": {
+          "description": "Include tools needed for this optimization profile.",
+          "name": "profile",
+          "default": "standard",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["standard", "max"],
+          "type": "option"
+        },
+        "strip-meta": {
+          "description": "Include metadata stripping tools.",
+          "name": "strip-meta",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "deps:doctor",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "deps", "doctor.js"]
+    },
+    "deps:install": {
+      "aliases": [],
+      "args": {
+        "patterns": {
+          "description": "Install only tools required by these image inputs.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Install missing optimizer tools for all or selected image formats.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "profile": {
+          "description": "Include tools needed for this optimization profile.",
+          "name": "profile",
+          "default": "standard",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["standard", "max"],
+          "type": "option"
+        },
+        "strip-meta": {
+          "description": "Include metadata stripping tools.",
+          "name": "strip-meta",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm installation without a prompt.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "deps:install",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "deps", "install.js"]
+    },
+    "metadata:strip": {
+      "aliases": ["exif"],
+      "args": {
+        "patterns": {
+          "description": "Files, directories, or glob patterns whose metadata should be removed.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Remove EXIF/IPTC/XMP metadata without recompressing images.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "dry-run": {
+          "char": "d",
+          "description": "Report changes without modifying files.",
+          "name": "dry-run",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "keep-time": {
+          "char": "k",
+          "description": "Preserve original atime/mtime.",
+          "name": "keep-time",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "concurrency": {
+          "char": "c",
+          "description": "Concurrent workers.",
+          "name": "concurrency",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "progress": {
+          "description": "Progress display mode.",
+          "name": "progress",
+          "default": "auto",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["auto", "off"],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm image changes without a prompt.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "in-place": {
+          "description": "Create temporary artifacts next to source files.",
+          "name": "in-place",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "metadata:strip",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "metadata", "strip.js"]
+    },
+    "update:apply": {
+      "aliases": [],
+      "args": {},
+      "description": "Apply the latest Squeezit update.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "pm": {
+          "description": "Installation source.",
+          "name": "pm",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["npm", "bun", "brew"],
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm update without a prompt.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update:apply",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "update", "apply.js"]
+    },
+    "update:check": {
+      "aliases": [],
+      "args": {},
+      "description": "Check for a Squeezit update without changing installation state.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "pm": {
+          "description": "Installation source.",
+          "name": "pm",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["npm", "bun", "brew"],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update:check",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "update", "check.js"]
+    }
+  },
+  "version": "1.17.1"
+}

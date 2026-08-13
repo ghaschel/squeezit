@@ -59,7 +59,9 @@ export async function readInstallerConfig(): Promise<InstallerConfig | null> {
   if (
     !config ||
     typeof config !== "object" ||
-    (config.packageManager !== "npm" && config.packageManager !== "bun")
+    (config.packageManager !== "npm" &&
+      config.packageManager !== "bun" &&
+      config.packageManager !== "brew")
   ) {
     return null;
   }

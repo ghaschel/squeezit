@@ -11,6 +11,10 @@
     "type": "git",
     "url": "https://github.com/ghaschel/squeeze.git"
   },
+  "packageManager": "bun@1.3.5",
+  "publishConfig": {
+    "provenance": true
+  },
   "engines": {
     "node": ">=22.13.0",
     "parcel": "^2.16.0"
@@ -63,6 +67,16 @@
       "@oclif/plugin-autocomplete",
       "@oclif/plugin-not-found"
     ],
+    "update": {
+      "node": {
+        "version": "24.16.0",
+        "targets": [
+          "darwin-arm64",
+          "darwin-x64",
+          "linux-x64"
+        ]
+      }
+    },
     "topicSeparator": " "
   },
   "exports": {
@@ -220,6 +234,8 @@
     "release:initial": "git fetch --tags --force && $ bunx -- commit-and-tag-version --release-as v1.0.0",
     "release": "git fetch --tags --force && commit-and-tag-version",
     "push": "git push --follow-tags",
+    "release:check": "bun install --frozen-lockfile && bun run typecheck && bun run test:unit && bun run check:exports",
+    "release:push": "bun run release:check && bun run push",
     "prepare": "husky"
   },
   "devDependencies": {

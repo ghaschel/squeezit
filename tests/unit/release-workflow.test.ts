@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
 
@@ -69,6 +70,18 @@ function scripts(job: Job): string {
 
 function action(job: Job, name: string): Step | undefined {
   return (job.steps ?? []).find((step) => step.uses?.startsWith(`${name}@`));
+}
+
+function darwinArchiveValidation(runBlock: string): string {
+  const match = runBlock.match(
+    /for archive in squeezit-v"\$VERSION"-darwin-\*\.tar\.gz; do\n([\s\S]*?)\n\s*done/
+  );
+
+  if (!match) {
+    throw new Error("Missing macOS archive validation block");
+  }
+
+  return match[0];
 }
 
 describe("tag release workflow", () => {
@@ -284,6 +297,51 @@ describe("tag release workflow", () => {
         (target: string) => `squeezit-v${packageJson.version}-${target}.tar.gz`
       )
     );
+  });
+
+  test("validates a matching macOS archive without a pipefail broken pipe", async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), "squeezit-archive-"));
+    const archive = "squeezit-v2.0.4-darwin-arm64.tar.gz";
+
+    try {
+      await mkdir(resolve(directory, "squeezit/bin"), { recursive: true });
+      await mkdir(resolve(directory, "squeezit/files"), { recursive: true });
+      await writeFile(
+        resolve(directory, "squeezit/bin/sqz"),
+        "#!/usr/bin/env node\n"
+      );
+
+      for (let index = 0; index < 2_000; index += 1) {
+        await writeFile(
+          resolve(
+            directory,
+            "squeezit/files",
+            `${index.toString().padStart(4, "0")}-${"x".repeat(180)}`
+          ),
+          ""
+        );
+      }
+
+      await run("tar", ["-czf", archive, "squeezit"], {
+        cwd: directory,
+      });
+
+      const packageJob = requiredJobs(await readWorkflow()).package_archives;
+      await expect(
+        run(
+          "bash",
+          [
+            "-o",
+            "pipefail",
+            "-c",
+            `VERSION=2.0.4\n${darwinArchiveValidation(scripts(packageJob))}`,
+          ],
+          { cwd: directory }
+        )
+      ).resolves.toMatchObject({ stderr: "", stdout: "" });
+    } finally {
+      await rm(directory, { force: true, recursive: true });
+    }
   });
 
   test("resumes only draft releases, updates the tap on macOS, then publishes", async () => {

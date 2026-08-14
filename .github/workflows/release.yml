@@ -252,13 +252,15 @@ jobs:
 
           sha256sum --check SHA256SUMS
           for archive in squeezit-v"$VERSION"-*.tar.gz; do
-            if tar -tzf "$archive" | grep -Eq '(^|/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock)$'; then
+            archive_listing="$(tar -tzf "$archive")"
+            if grep -Eq '(^|/)(package-lock\.json|npm-shrinkwrap\.json|yarn\.lock)$' <<<"$archive_listing"; then
               echo "Archive contains a forbidden npm-family lockfile: $archive" >&2
               exit 1
             fi
           done
           for archive in squeezit-v"$VERSION"-darwin-*.tar.gz; do
-            tar -tzf "$archive" | grep -q '/bin/sqz$'
+            archive_listing="$(tar -tzf "$archive")"
+            grep -q '/bin/sqz$' <<<"$archive_listing"
           done
 
           SMOKE_DIR="$RUNNER_TEMP/linux-smoke"

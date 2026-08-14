@@ -1,9 +1,11 @@
 import { readFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { resolve } from "node:path";
 
 import { describe, expect, test } from "vitest";
 
 const root = resolve(import.meta.dirname, "../..");
+const require = createRequire(import.meta.url);
 
 async function readPackageJson(): Promise<Record<string, unknown>> {
   return JSON.parse(await readFile(resolve(root, "package.json"), "utf8"));
@@ -67,11 +69,23 @@ describe("release configuration", () => {
       "git fetch --tags --force && bun scripts/check-release-readiness.ts && commit-and-tag-version"
     );
     expect(scripts["release:check"]).toContain("bun install --frozen-lockfile");
+    expect(scripts["check:exports"]).toBe("bun run build:library && publint");
     expect(scripts["release:push"]).toBe(
       "bun run release:check && bun run push"
     );
     expect(scripts.postbump).toBe(
       "bun run build:cli && bun run build:manifest"
     );
+  });
+
+  test("commits the regenerated Oclif manifest with every version bump", () => {
+    const versionrc = require(resolve(root, ".versionrc.cjs")) as {
+      bumpFiles?: string[];
+    };
+
+    expect(versionrc.bumpFiles).toEqual([
+      "package.json",
+      "oclif.manifest.json",
+    ]);
   });
 });

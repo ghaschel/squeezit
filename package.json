@@ -229,7 +229,7 @@
     "test:next": "bun run build && vitest run tests/integration/next.test.ts",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "check:exports": "publint",
+    "check:exports": "bun run build:library && publint",
     "check:types": "HUSKY=0 npm_config_cache=.npm-cache attw --pack . --profile node16",
     "fixture-values": "bun run scripts/fixture-values.ts",
     "release:initial": "git fetch --tags --force && $ bunx -- commit-and-tag-version --release-as v1.0.0",

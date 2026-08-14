@@ -29,7 +29,11 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "commands.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "commands.js"
+      ]
     },
     "compress": {
       "aliases": [],
@@ -63,7 +67,10 @@
           "default": "standard",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": ["standard", "max"],
+          "options": [
+            "standard",
+            "max"
+          ],
           "type": "option"
         },
         "strip-meta": {
@@ -100,7 +107,10 @@
           "default": "auto",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": ["auto", "off"],
+          "options": [
+            "auto",
+            "off"
+          ],
           "type": "option"
         },
         "verbose": {
@@ -140,7 +150,11 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "compress.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "compress.js"
+      ]
     },
     "doctor": {
       "aliases": [],
@@ -171,7 +185,11 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "doctor.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "doctor.js"
+      ]
     },
     "help": {
       "aliases": [],
@@ -202,7 +220,11 @@
       "strict": false,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "help.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "help.js"
+      ]
     },
     "version": {
       "aliases": [],
@@ -233,7 +255,11 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "version.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "version.js"
+      ]
     },
     "deps:doctor": {
       "aliases": [],
@@ -267,7 +293,10 @@
           "default": "standard",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": ["standard", "max"],
+          "options": [
+            "standard",
+            "max"
+          ],
           "type": "option"
         },
         "strip-meta": {
@@ -293,7 +322,12 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "deps", "doctor.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "deps",
+        "doctor.js"
+      ]
     },
     "deps:install": {
       "aliases": [],
@@ -327,7 +361,10 @@
           "default": "standard",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": ["standard", "max"],
+          "options": [
+            "standard",
+            "max"
+          ],
           "type": "option"
         },
         "strip-meta": {
@@ -360,10 +397,17 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "deps", "install.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "deps",
+        "install.js"
+      ]
     },
     "metadata:strip": {
-      "aliases": ["exif"],
+      "aliases": [
+        "exif"
+      ],
       "args": {
         "patterns": {
           "description": "Files, directories, or glob patterns whose metadata should be removed.",
@@ -416,7 +460,10 @@
           "default": "auto",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": ["auto", "off"],
+          "options": [
+            "auto",
+            "off"
+          ],
           "type": "option"
         },
         "verbose": {
@@ -449,7 +496,12 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "metadata", "strip.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "metadata",
+        "strip.js"
+      ]
     },
     "update:apply": {
       "aliases": [],
@@ -468,7 +520,11 @@
           "name": "pm",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": ["npm", "bun", "brew"],
+          "options": [
+            "npm",
+            "bun",
+            "brew"
+          ],
           "type": "option"
         },
         "yes": {
@@ -495,7 +551,12 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "update", "apply.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "update",
+        "apply.js"
+      ]
     },
     "update:check": {
       "aliases": [],
@@ -514,7 +575,11 @@
           "name": "pm",
           "hasDynamicHelp": false,
           "multiple": false,
-          "options": ["npm", "bun", "brew"],
+          "options": [
+            "npm",
+            "bun",
+            "brew"
+          ],
           "type": "option"
         },
         "verbose": {
@@ -534,8 +599,13 @@
       "strict": true,
       "enableJsonFlag": true,
       "isESM": true,
-      "relativePath": ["dist", "commands", "update", "check.js"]
+      "relativePath": [
+        "dist",
+        "commands",
+        "update",
+        "check.js"
+      ]
     }
   },
-  "version": "2.0.2"
+  "version": "2.0.3"
 }

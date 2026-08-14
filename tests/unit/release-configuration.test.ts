@@ -91,4 +91,13 @@ describe("release configuration", () => {
       },
     ]);
   });
+
+  test("keeps the generated Oclif manifest out of Prettier rewrites", async () => {
+    const prettierIgnore = await readFile(
+      resolve(root, ".prettierignore"),
+      "utf8"
+    ).catch(() => "");
+
+    expect(prettierIgnore.split(/\r?\n/)).toContain("oclif.manifest.json");
+  });
 });

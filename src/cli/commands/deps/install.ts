@@ -1,13 +1,14 @@
 import { Args, Flags } from "@oclif/core";
 
 import {
+  collectDependencyInstallTargets,
   collectRequiredDependencies,
   detectPlatform,
   findMissingDependencies,
+  formatDependencyInstallCommand,
   installDependencies,
   resolveCompressOptions,
   resolveInputs,
-  uniquePackages,
 } from "../../../utils";
 import { confirmDependencyInstall } from "../../../utils/prompts";
 import { SqueezitCommand } from "../../base-command";
@@ -72,12 +73,27 @@ export default class DependenciesInstall extends SqueezitCommand {
       (args.patterns?.length ?? 0) === 0
     );
     const missing = await findMissingDependencies(dependencies);
-    const packages = uniquePackages(missing, platform);
+    const targets = collectDependencyInstallTargets(missing, platform);
+    const packages = Array.from(
+      new Set(targets.map((target) => target.package))
+    );
+    const installers = Array.from(
+      new Set(
+        targets.map((target) =>
+          target.installer === "brew"
+            ? "Homebrew"
+            : target.installer === "apt"
+              ? "APT"
+              : "Cargo"
+        )
+      )
+    );
 
     if (missing.length === 0) {
       const data = {
         inputs: inputs.length,
         packages: [],
+        installTargets: [],
         installed: false,
         missing: [],
       };
@@ -102,18 +118,22 @@ export default class DependenciesInstall extends SqueezitCommand {
     }
 
     const confirmed =
-      flags.yes || (await confirmDependencyInstall(platform, packages));
+      flags.yes ||
+      (await confirmDependencyInstall(platform, packages, installers));
     if (!confirmed) {
       this.error("Dependency installation cancelled.");
     }
 
     if (flags.verbose && !this.jsonEnabled()) {
-      this.logToStderr(`Installing ${packages.join(", ")}`);
+      this.logToStderr(
+        `Installing ${formatDependencyInstallCommand(platform, targets).join("; ")}`
+      );
     }
-    await installDependencies(platform, packages);
+    await installDependencies(platform, targets);
     const data = {
       inputs: inputs.length,
       packages,
+      installTargets: targets,
       installed: true,
       missing: missing.map((dependency) => dependency.binary),
       ...(flags.verbose

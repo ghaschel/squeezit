@@ -184,6 +184,19 @@ describe("tag release workflow", () => {
     expect(run).not.toMatch(/test:(?:full|max)|--max\b/);
   });
 
+  test("installs the PNG tools needed by the CLI dry-run contract before CLI tests", async () => {
+    const validate = requiredJobs(await readWorkflow()).validate;
+    const run = scripts(validate);
+
+    expect(run).toContain("sudo apt-get update");
+    expect(run).toContain("sudo apt-get install --yes pngcrush optipng");
+    expect(run).toContain("cargo install oxipng --version 10.1.0 --locked");
+    expect(run).toContain('echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"');
+    expect(
+      run.indexOf("cargo install oxipng --version 10.1.0 --locked")
+    ).toBeLessThan(run.indexOf("bun run test:cli"));
+  });
+
   test("publishes an exact verified npm tarball through OIDC", async () => {
     const publish = requiredJobs(await readWorkflow()).publish_npm;
     const run = scripts(publish);
@@ -211,7 +224,7 @@ describe("tag release workflow", () => {
         resolve(root, "tests/fixtures/release/expected-archives.json"),
         "utf8"
       )
-    ) as Array<{ archive: string; target: string }>;
+    ) as string[];
     const packageJob = requiredJobs(await readWorkflow()).package_archives;
     const run = scripts(packageJob);
     const uploadPath = action(packageJob, "actions/upload-artifact")?.with
@@ -252,10 +265,12 @@ describe("tag release workflow", () => {
     ]);
     expect(uploadPath).not.toMatch(/linux-smoke|oclif-package|[*?]/);
 
-    expect(packageJson.oclif.update.node.targets).toEqual(
-      fixtures.map(({ target }) => target)
-    );
-    expect(fixtures.map(({ archive }) => archive)).toEqual(
+    expect(packageJson.oclif.update.node.targets).toEqual(fixtures);
+    expect(
+      fixtures.map(
+        (target) => `squeezit-v${packageJson.version}-${target}.tar.gz`
+      )
+    ).toEqual(
       packageJson.oclif.update.node.targets.map(
         (target: string) => `squeezit-v${packageJson.version}-${target}.tar.gz`
       )

@@ -43,6 +43,23 @@ export type DependencyProvider =
   | "system"
   | "unknown";
 
+export type DependencyInstaller = "apt" | "brew" | "cargo";
+
+export interface DependencyInstallTarget {
+  installer: DependencyInstaller;
+  package: string;
+  version?: string;
+}
+
+export interface DependencyInstallOptions {
+  commandExists?: (binary: string) => Promise<boolean>;
+  runCheckedCommand?: (
+    command: string,
+    args: string[],
+    options: { stdio: "inherit" }
+  ) => Promise<unknown>;
+}
+
 export type DependencyHealthStatus =
   | "healthy"
   | "missing"
@@ -164,7 +181,10 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "oxipng",
     required: true,
     brewPackage: "oxipng",
-    aptPackage: "oxipng",
+    cargoPackage: {
+      crate: "oxipng",
+      version: "10.1.0",
+    },
     minimumVersion: "10.1.0",
     versionArgs: ["--version"],
     versionReporting: "self",
@@ -510,6 +530,10 @@ function remediationFor(
     return `Install APT package: ${dependency.aptPackage}`;
   }
 
+  if (platform === "debian" && dependency.cargoPackage) {
+    return `Install with Cargo: cargo install ${dependency.cargoPackage.crate} --version ${dependency.cargoPackage.version} --locked`;
+  }
+
   if (dependency.systemProvided && platform === "macos") {
     return `${dependency.binary} should be provided by macOS`;
   }
@@ -683,34 +707,130 @@ export async function findMissingDependencies(
 
 export async function installDependencies(
   platform: SupportedPlatform,
-  packages: string[]
+  targets: DependencyInstallTarget[],
+  options: DependencyInstallOptions = {}
 ): Promise<void> {
-  if (platform === "macos") {
-    await runCheckedCommand("brew", ["install", ...packages], {
+  const commandRunner = options.runCheckedCommand ?? runCheckedCommand;
+  const binaryExists = options.commandExists ?? commandExists;
+  const packagesFor = (installer: DependencyInstaller) =>
+    targets
+      .filter((target) => target.installer === installer)
+      .map((target) => target.package);
+  const brewPackages = packagesFor("brew");
+  const aptPackages = packagesFor("apt");
+  const cargoPackages = targets.filter(
+    (target) => target.installer === "cargo"
+  );
+
+  if (platform === "macos" && brewPackages.length > 0) {
+    await commandRunner("brew", ["install", ...brewPackages], {
       stdio: "inherit",
     });
-    return;
   }
 
-  await runCheckedCommand("sudo", ["apt", "update"], { stdio: "inherit" });
-  await runCheckedCommand("sudo", ["apt", "install", "-y", ...packages], {
-    stdio: "inherit",
-  });
+  if (platform === "debian" && aptPackages.length > 0) {
+    await commandRunner("sudo", ["apt", "update"], { stdio: "inherit" });
+    await commandRunner("sudo", ["apt", "install", "-y", ...aptPackages], {
+      stdio: "inherit",
+    });
+  }
+
+  if (platform === "debian" && cargoPackages.length > 0) {
+    if (!(await binaryExists("cargo"))) {
+      throw new Error(
+        "Cargo is required to install this tool on Debian/Ubuntu. Install Rust and Cargo, then retry."
+      );
+    }
+
+    for (const target of cargoPackages) {
+      if (!target.version) {
+        throw new Error(
+          `Cargo dependency ${target.package} must declare an exact version.`
+        );
+      }
+
+      await commandRunner(
+        "cargo",
+        ["install", target.package, "--version", target.version, "--locked"],
+        { stdio: "inherit" }
+      );
+    }
+  }
 }
 
-export function uniquePackages(
+export function collectDependencyInstallTargets(
   dependencies: DependencySpec[],
   platform: SupportedPlatform
-): string[] {
+): DependencyInstallTarget[] {
+  const targets: DependencyInstallTarget[] = [];
+
+  for (const dependency of dependencies) {
+    if (platform === "macos" && dependency.brewPackage) {
+      targets.push({ installer: "brew", package: dependency.brewPackage });
+      continue;
+    }
+
+    if (platform === "debian" && dependency.aptPackage) {
+      targets.push({ installer: "apt", package: dependency.aptPackage });
+      continue;
+    }
+
+    if (platform === "debian" && dependency.cargoPackage) {
+      targets.push({
+        installer: "cargo",
+        package: dependency.cargoPackage.crate,
+        version: dependency.cargoPackage.version,
+      });
+    }
+  }
+
   return Array.from(
-    new Set(
-      dependencies
-        .map((dependency) =>
-          platform === "macos" ? dependency.brewPackage : dependency.aptPackage
-        )
-        .filter((value): value is string => Boolean(value))
-    )
+    new Map(
+      targets.map((target) => [
+        `${target.installer}:${target.package}:${target.version ?? ""}`,
+        target,
+      ])
+    ).values()
   );
+}
+
+export function formatDependencyInstallCommand(
+  platform: SupportedPlatform,
+  targets: DependencyInstallTarget[]
+): string[] {
+  const packagesFor = (installer: DependencyInstaller) =>
+    targets
+      .filter((target) => target.installer === installer)
+      .map((target) => target.package);
+  const commands: string[] = [];
+  const brewPackages = packagesFor("brew");
+  const aptPackages = packagesFor("apt");
+
+  if (platform === "macos" && brewPackages.length > 0) {
+    commands.push(`brew install ${brewPackages.join(" ")}`);
+  }
+
+  if (platform === "debian" && aptPackages.length > 0) {
+    commands.push(`sudo apt install ${aptPackages.join(" ")}`);
+  }
+
+  if (platform === "debian") {
+    for (const target of targets.filter(
+      (candidate) => candidate.installer === "cargo"
+    )) {
+      if (!target.version) {
+        throw new Error(
+          `Cargo dependency ${target.package} must declare an exact version.`
+        );
+      }
+
+      commands.push(
+        `cargo install ${target.package} --version ${target.version} --locked`
+      );
+    }
+  }
+
+  return commands;
 }
 
 export function buildMissingDependencyMessage(
@@ -723,10 +843,13 @@ export function buildMissingDependencyMessage(
     return `Missing required tools: ${binaries}`;
   }
 
-  const packages = uniquePackages(missing, platform).join(", ");
+  const commands = formatDependencyInstallCommand(
+    platform,
+    collectDependencyInstallTargets(missing, platform)
+  );
   return [
     `Missing required tools: ${binaries}`,
-    `Install these packages manually: ${packages}`,
+    `Install manually: ${commands.join("; ")}`,
   ].join("\n");
 }
 

@@ -1,7 +1,13 @@
 import { describe, expect, test } from "vitest";
 
 import { toReportedPath } from "../../src/api";
-import { createBufferAsset, createFileAsset } from "../../src/core";
+import {
+  collectDependencyInstallTargets,
+  createBufferAsset,
+  createFileAsset,
+  DEPENDENCY_CATALOG,
+  installDependencies,
+} from "../../src/core";
 import { collectRequiredDependencies } from "../../src/utils/dependencies";
 import {
   buildJxlArgs,
@@ -140,6 +146,54 @@ describe("optimization result summaries", () => {
 });
 
 describe("dependency planning", () => {
+  test("uses APT and the pinned Cargo fallback for Debian PNG dependencies", () => {
+    expect(
+      collectDependencyInstallTargets(
+        [
+          DEPENDENCY_CATALOG.pngcrush,
+          DEPENDENCY_CATALOG.optipng,
+          DEPENDENCY_CATALOG.oxipng,
+        ],
+        "debian"
+      )
+    ).toEqual([
+      { installer: "apt", package: "pngcrush" },
+      { installer: "apt", package: "optipng" },
+      { installer: "cargo", package: "oxipng", version: "10.1.0" },
+    ]);
+  });
+
+  test("installs Debian packages before the pinned Cargo crate", async () => {
+    const commands: Array<{ command: string; args: string[] }> = [];
+    const targets = collectDependencyInstallTargets(
+      [
+        DEPENDENCY_CATALOG.pngcrush,
+        DEPENDENCY_CATALOG.optipng,
+        DEPENDENCY_CATALOG.oxipng,
+      ],
+      "debian"
+    );
+
+    await installDependencies("debian", targets, {
+      commandExists: async (binary) => binary === "cargo",
+      runCheckedCommand: async (command, args) => {
+        commands.push({ command, args });
+      },
+    });
+
+    expect(commands).toEqual([
+      { command: "sudo", args: ["apt", "update"] },
+      {
+        command: "sudo",
+        args: ["apt", "install", "-y", "pngcrush", "optipng"],
+      },
+      {
+        command: "cargo",
+        args: ["install", "oxipng", "--version", "10.1.0", "--locked"],
+      },
+    ]);
+  });
+
   test("collects heavy dependencies for png max mode", () => {
     const options = resolveCompressOptions([], { max: true }, process.cwd());
     const dependencies = collectRequiredDependencies(

@@ -545,6 +545,8 @@ sqz deps install "images/**/*.{png,jpg}"
 
 `deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON or non-interactive environments; piping an affirmative response is intentionally unsupported.
 
+On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.1.0, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo first if it is not already available.
+
 ## Self-Update
 
 Squeezit can check for a new published version and update itself without conflating the read-only and state-changing operations:

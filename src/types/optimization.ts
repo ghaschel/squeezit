@@ -26,6 +26,10 @@ export interface DependencySpec {
   required: boolean;
   brewPackage?: string;
   aptPackage?: string;
+  cargoPackage?: {
+    crate: string;
+    version: string;
+  };
   systemProvided?: boolean;
 }
 

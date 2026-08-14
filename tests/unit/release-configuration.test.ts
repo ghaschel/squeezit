@@ -70,5 +70,8 @@ describe("release configuration", () => {
     expect(scripts["release:push"]).toBe(
       "bun run release:check && bun run push"
     );
+    expect(scripts.postbump).toBe(
+      "bun run build:cli && bun run build:manifest"
+    );
   });
 });

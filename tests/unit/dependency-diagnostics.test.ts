@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import {
+  buildMissingDependencyMessage,
   compareDependencyVersions,
   DEPENDENCY_CATALOG,
   diagnoseDependency,
@@ -18,6 +19,17 @@ describe("dependency catalog diagnostics", () => {
     expect(DEPENDENCY_CATALOG.file.systemProvided).toBe(true);
     expect(DEPENDENCY_CATALOG.jpegtran.brewPackage).toBe("jpeg-turbo");
     expect(DEPENDENCY_CATALOG.svgo.brewPackage).toBe("svgo");
+  });
+
+  test("uses the pinned Cargo fallback for oxipng on Debian and describes it accurately", () => {
+    expect(DEPENDENCY_CATALOG.oxipng.aptPackage).toBeUndefined();
+    expect(DEPENDENCY_CATALOG.oxipng.cargoPackage).toEqual({
+      crate: "oxipng",
+      version: "10.1.0",
+    });
+    expect(
+      buildMissingDependencyMessage([DEPENDENCY_CATALOG.oxipng], "debian")
+    ).toContain("cargo install oxipng --version 10.1.0 --locked");
   });
 
   test("uses supported version probe arguments for WebP and TIFF tools", () => {

@@ -14,13 +14,14 @@ export async function confirmImageOptimization(
 
 export async function confirmDependencyInstall(
   platform: "macos" | "debian",
-  packages: string[]
+  packages: string[],
+  installers: string[] = [platform === "macos" ? "Homebrew" : "APT"]
 ): Promise<boolean> {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
     return true;
   }
 
-  const packageManager = platform === "macos" ? "Homebrew" : "APT";
+  const packageManager = installers.join(" and ");
   return confirm({
     default: true,
     message: `Install ${packages.length} missing package${packages.length === 1 ? "" : "s"} with ${packageManager}?`,

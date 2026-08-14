@@ -537,5 +537,5 @@
       "relativePath": ["dist", "commands", "update", "check.js"]
     }
   },
-  "version": "1.17.1"
+  "version": "2.0.0"
 }

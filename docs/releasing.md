@@ -35,6 +35,11 @@ release checks and push the release commit and tag:
 bun run release:push
 ```
 
+The release lifecycle rebuilds the Oclif CLI and regenerates
+`oclif.manifest.json` after the version bump, before the version commit and tag
+are created. The committed manifest therefore always carries the same version
+as `package.json`.
+
 `release:push` runs locked dependency installation, typechecking, unit tests,
 and package-export checks before `git push --follow-tags`. It intentionally does
 not run a maximum-compression suite.

@@ -3,17 +3,18 @@ import ora from "ora";
 
 import {
   buildMissingDependencyMessage,
+  collectDependencyInstallTargets,
   collectRequiredDependencies,
   detectPlatform,
   findMissingDependencies,
   installDependencies,
-  uniquePackages,
 } from "../core";
 import type { CompressCommandOptions, ResolvedInput } from "../types";
 import { confirmDependencyInstall } from "./prompts";
 
 export {
   buildMissingDependencyMessage,
+  collectDependencyInstallTargets,
   collectRequiredDependencies,
   compareDependencyVersions,
   DEPENDENCY_CATALOG,
@@ -21,9 +22,9 @@ export {
   diagnoseDependencies,
   diagnoseDependency,
   findMissingDependencies,
+  formatDependencyInstallCommand,
   installDependencies,
   normalizeDependencyVersion,
-  uniquePackages,
 } from "../core";
 
 export async function ensureDependencies(
@@ -60,19 +61,35 @@ export async function ensureDependencies(
     );
   }
 
-  const packages = uniquePackages(missing, platform);
+  const targets = collectDependencyInstallTargets(missing, platform);
+  const packages = Array.from(new Set(targets.map((target) => target.package)));
+  const installers = Array.from(
+    new Set(
+      targets.map((target) =>
+        target.installer === "brew"
+          ? "Homebrew"
+          : target.installer === "apt"
+            ? "APT"
+            : "Cargo"
+      )
+    )
+  );
   spinner?.stop();
 
-  const confirmed = await confirmDependencyInstall(platform, packages);
+  const confirmed = await confirmDependencyInstall(
+    platform,
+    packages,
+    installers
+  );
   if (!confirmed) {
     throw new Error("Dependency installation cancelled.");
   }
 
   spinner?.start(
-    `Installing ${packages.length} package${packages.length === 1 ? "" : "s"}`
+    `Installing ${packages.length} tool${packages.length === 1 ? "" : "s"}`
   );
   spinner?.stop();
-  await installDependencies(platform, packages);
+  await installDependencies(platform, targets);
   spinner?.start("Re-checking required system tools");
 
   missing = await findMissingDependencies(dependencies);

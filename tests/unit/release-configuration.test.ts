@@ -96,13 +96,13 @@ describe("release configuration", () => {
     ]);
   });
 
-  test("keeps the generated Oclif manifest out of Prettier rewrites", async () => {
-    const prettierIgnore = await readFile(
-      resolve(root, ".prettierignore"),
-      "utf8"
-    ).catch(() => "");
+  test("keeps the generated Oclif manifest stable through Prettier", async () => {
+    const packageJson = await readPackageJson();
+    const scripts = packageJson.scripts as Record<string, string>;
 
-    expect(prettierIgnore.split(/\r?\n/)).toContain("oclif.manifest.json");
+    expect(scripts["build:manifest"]).toBe(
+      "oclif manifest && printf '\\n' >> oclif.manifest.json"
+    );
   });
 
   test("keeps the prepare lifecycle silent outside a Git worktree", async () => {

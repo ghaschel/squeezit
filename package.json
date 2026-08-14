@@ -1,6 +1,6 @@
 {
   "name": "squeezit",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "Lossless image optimizer CLI, JS/TS API, and bundler plugins for PNG, JPEG, GIF, WebP, SVG, AVIF, HEIC, JXL, ICO, BMP, and more.",
   "license": "MIT",
   "homepage": "https://github.com/ghaschel/squeezit#readme",
@@ -207,7 +207,7 @@
     "build": "rm -rf dist oclif.manifest.json && bun run build:library && bun run build:cli && bun run build:manifest",
     "build:library": "tsup",
     "build:cli": "tsup --config tsup.oclif.config.ts",
-    "build:manifest": "oclif manifest",
+    "build:manifest": "oclif manifest && printf '\\n' >> oclif.manifest.json",
     "prepack": "bun run build",
     "postinstall": "node ./postinstall.mjs",
     "test": "vitest run",

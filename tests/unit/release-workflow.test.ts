@@ -246,9 +246,7 @@ describe("tag release workflow", () => {
     expect(run).toContain("npm install --package-lock-only --ignore-scripts");
     expect(run).toContain("test ! -e package-lock.json");
     expect(run).toContain("oclif pack tarballs --no-xz --prune-lockfiles");
-    expect(run).toContain(
-      "HUSKY=0 bunx oclif pack tarballs --no-xz --prune-lockfiles"
-    );
+    expect(run).not.toContain("HUSKY=0 bunx oclif pack tarballs");
     expect(run).toContain("oclif.update.node.targets.join");
     expect(run).toContain('normalized="squeezit-v${VERSION}-${target}.tar.gz"');
     expect(run).toContain("SHA256SUMS");

@@ -200,7 +200,7 @@ jobs:
           test -f package-lock.json
           bun run build
           TARGETS="$(node -e 'process.stdout.write(require("./package.json").oclif.update.node.targets.join(","))')"
-          HUSKY=0 bunx oclif pack tarballs --no-xz --prune-lockfiles --root "$STAGE" --targets "$TARGETS" --sha "${GITHUB_SHA::7}"
+          bunx oclif pack tarballs --no-xz --prune-lockfiles --root "$STAGE" --targets "$TARGETS" --sha "${GITHUB_SHA::7}"
           popd
 
           IFS=',' read -ra targets <<<"$TARGETS"

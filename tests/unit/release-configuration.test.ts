@@ -1,11 +1,15 @@
-import { readFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { resolve } from "node:path";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { promisify } from "node:util";
 
 import { describe, expect, test } from "vitest";
 
 const root = resolve(import.meta.dirname, "../..");
 const require = createRequire(import.meta.url);
+const execFileAsync = promisify(execFile);
 
 async function readPackageJson(): Promise<Record<string, unknown>> {
   return JSON.parse(await readFile(resolve(root, "package.json"), "utf8"));
@@ -99,5 +103,27 @@ describe("release configuration", () => {
     ).catch(() => "");
 
     expect(prettierIgnore.split(/\r?\n/)).toContain("oclif.manifest.json");
+  });
+
+  test("keeps the prepare lifecycle silent outside a Git worktree", async () => {
+    const packageJson = await readPackageJson();
+    const scripts = packageJson.scripts as Record<string, string>;
+    const stagingDirectory = await mkdtemp(join(tmpdir(), "squeezit-prepare-"));
+
+    try {
+      const { stderr, stdout } = await execFileAsync(
+        "sh",
+        [
+          "-c",
+          `PATH="${resolve(root, "node_modules", ".bin")}:$PATH"\n${scripts.prepare}`,
+        ],
+        { cwd: stagingDirectory }
+      );
+
+      expect(stdout).toBe("");
+      expect(stderr).toBe("");
+    } finally {
+      await rm(stagingDirectory, { force: true, recursive: true });
+    }
   });
 });

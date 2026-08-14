@@ -238,7 +238,7 @@
     "push": "git push --follow-tags",
     "release:check": "bun install --frozen-lockfile && bun run typecheck && bun run test:unit && bun run check:exports",
     "release:push": "bun run release:check && bun run push",
-    "prepare": "husky"
+    "prepare": "if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then husky; fi"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",

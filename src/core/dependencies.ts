@@ -1,6 +1,6 @@
 import { constants } from "node:fs";
 import { access, readFile } from "node:fs/promises";
-import { extname } from "node:path";
+import { extname, join } from "node:path";
 
 import type {
   CoreOptimizationOptions,
@@ -12,7 +12,6 @@ import { commandExists, runCheckedCommand, runCommand } from "../utils/exec";
 export type DependencyName =
   | "file"
   | "jpegtran"
-  | "jpegrescan"
   | "jpegoptim"
   | "pngcrush"
   | "optipng"
@@ -92,6 +91,7 @@ export type DependencyCommandRunner = (
 export interface DependencyDiagnosticOptions {
   platform?: SupportedPlatform | null;
   commandExists?: (binary: string) => Promise<boolean>;
+  resolveMozjpegBinary?: () => Promise<string | undefined>;
   runCommand?: DependencyCommandRunner;
   providerVersionLookup?: (
     dependency: DependencyDiagnosticSpec,
@@ -110,6 +110,13 @@ export interface DependencyDiagnostic {
   remediation: string;
 }
 
+export interface MozjpegResolutionOptions {
+  commandExists?: (binary: string) => Promise<boolean>;
+  environment?: Readonly<Record<string, string | undefined>>;
+  pathExists?: (path: string) => Promise<boolean>;
+  runCommand?: DependencyCommandRunner;
+}
+
 export const DEPENDENCY_CATALOG: Record<
   DependencyName,
   DependencyDiagnosticSpec
@@ -126,20 +133,13 @@ export const DEPENDENCY_CATALOG: Record<
   jpegtran: {
     binary: "jpegtran",
     required: true,
-    brewPackage: "jpeg-turbo",
-    aptPackage: "libjpeg-turbo-progs",
-    minimumVersion: "3.1.3",
+    brewPackage: "mozjpeg",
+    manualInstall:
+      "Install MozJPEG and set SQUEEZIT_MOZJPEGTRAN to its jpegtran executable",
+    minimumVersion: "4.1.5",
+    requiresMozjpeg: true,
     versionArgs: ["-version"],
     versionReporting: "self",
-  },
-  jpegrescan: {
-    binary: "jpegrescan",
-    required: true,
-    brewPackage: "jpegrescan",
-    aptPackage: "jpegrescan",
-    minimumVersion: "1.1.0",
-    versionArgs: ["--version"],
-    versionReporting: "provider",
   },
   jpegoptim: {
     binary: "jpegoptim",
@@ -370,6 +370,35 @@ export function compareDependencyVersions(
   return 0;
 }
 
+export async function resolveMozjpegBinary(
+  options: MozjpegResolutionOptions = {}
+): Promise<string | undefined> {
+  const environment = options.environment ?? process.env;
+  const pathExists = options.pathExists ?? executablePathExists;
+  const override = environment.SQUEEZIT_MOZJPEGTRAN;
+
+  if (override) {
+    return (await pathExists(override)) ? override : undefined;
+  }
+
+  const exists = options.commandExists ?? commandExists;
+  const commandRunner = options.runCommand ?? runCommand;
+  if (await exists("jpegtran")) {
+    const result = await commandRunner("jpegtran", ["-version"]);
+    if (isMozjpegVersion(result.all)) {
+      return "jpegtran";
+    }
+  }
+
+  const brewPrefix = await commandRunner("brew", ["--prefix", "mozjpeg"]);
+  if (brewPrefix.exitCode !== 0 || !brewPrefix.stdout.trim()) {
+    return undefined;
+  }
+
+  const candidate = join(brewPrefix.stdout.trim(), "bin", "jpegtran");
+  return (await pathExists(candidate)) ? candidate : undefined;
+}
+
 export async function diagnoseDependency(
   name: DependencyName,
   options: DependencyDiagnosticOptions = {}
@@ -377,8 +406,13 @@ export async function diagnoseDependency(
   const dependency = DEPENDENCY_CATALOG[name];
   const platform = options.platform ?? (await detectPlatform());
   const exists = options.commandExists ?? commandExists;
+  const resolvedBinary = dependency.requiresMozjpeg
+    ? await (options.resolveMozjpegBinary ?? resolveMozjpegBinary)()
+    : (await exists(dependency.binary))
+      ? dependency.binary
+      : undefined;
 
-  if (!(await exists(dependency.binary))) {
+  if (!resolvedBinary) {
     return {
       binary: dependency.binary,
       present: false,
@@ -397,7 +431,7 @@ export async function diagnoseDependency(
     : undefined;
   const provider =
     providerVersion?.provider ?? providerFor(dependency, platform);
-  const probe = await commandRunner(dependency.binary, dependency.versionArgs);
+  const probe = await commandRunner(resolvedBinary, dependency.versionArgs);
   const directVersion =
     dependency.versionReporting === "self"
       ? normalizeDependencyVersion(probe.all, dependency.binary)
@@ -534,6 +568,10 @@ function remediationFor(
     return `Install with Cargo: cargo install ${dependency.cargoPackage.crate} --version ${dependency.cargoPackage.version} --locked`;
   }
 
+  if (dependency.manualInstall) {
+    return dependency.manualInstall;
+  }
+
   if (dependency.systemProvided && platform === "macos") {
     return `${dependency.binary} should be provided by macOS`;
   }
@@ -549,6 +587,19 @@ function packageVersionFromOutput(
     .split("\n")
     .find((line) => line.trim().startsWith(`${packageName} `));
   return packageLine?.trim().slice(packageName.length).trim();
+}
+
+async function executablePathExists(path: string): Promise<boolean> {
+  try {
+    await access(path, constants.X_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isMozjpegVersion(output: string): boolean {
+  return /\bmozjpeg\b/i.test(output);
 }
 
 function versionParts(version: string): number[] {
@@ -568,7 +619,7 @@ const RAW_EXTENSIONS = new Set([
 ]);
 
 const FORMAT_DEPENDENCIES: Record<string, DependencyName[]> = {
-  jpeg: ["jpegtran", "jpegrescan", "jpegoptim"],
+  jpeg: ["jpegtran"],
   png: ["pngcrush", "optipng", "oxipng"],
   apng: ["oxipng"],
   gif: ["gifsicle"],
@@ -651,6 +702,10 @@ export function collectRequiredDependencies(
       required.add("zopflipng");
     }
 
+    if (format === "jpeg" && options.max) {
+      required.add("jpegoptim");
+    }
+
     if (format === "raw" && options.max) {
       required.add("dnglab");
     }
@@ -697,7 +752,12 @@ export async function findMissingDependencies(
   const missing: DependencySpec[] = [];
 
   for (const dependency of dependencies) {
-    if (!(await commandExists(dependency.binary))) {
+    const present = dependency.requiresMozjpeg
+      ? await resolveMozjpegBinary()
+      : (await commandExists(dependency.binary))
+        ? dependency.binary
+        : undefined;
+    if (!present) {
       missing.push(dependency);
     }
   }
@@ -847,9 +907,19 @@ export function buildMissingDependencyMessage(
     platform,
     collectDependencyInstallTargets(missing, platform)
   );
+  const manualInstructions = missing
+    .filter(
+      (dependency) =>
+        dependency.manualInstall &&
+        ((platform === "macos" && !dependency.brewPackage) ||
+          (platform === "debian" &&
+            !dependency.aptPackage &&
+            !dependency.cargoPackage))
+    )
+    .map((dependency) => dependency.manualInstall!);
   return [
     `Missing required tools: ${binaries}`,
-    `Install manually: ${commands.join("; ")}`,
+    `Install manually: ${[...commands, ...manualInstructions].join("; ")}`,
   ].join("\n");
 }
 

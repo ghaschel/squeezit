@@ -11,6 +11,7 @@ import { basename, dirname, extname, join, parse } from "node:path";
 
 import fsExtra from "fs-extra";
 
+import { resolveMozjpegBinary } from "../core/dependencies";
 import type {
   CoreOptimizationOptions,
   DetectedImage,
@@ -539,11 +540,47 @@ async function optimizeJpeg(
   workDir: string,
   options: CoreOptimizationOptions
 ): Promise<PipelineResult> {
-  const jpegtranOutput = join(workDir, "stage-1.jpg");
-  const optimizedPath = join(workDir, "optimized.jpg");
+  const mozjpegBinary = await resolveMozjpegBinary();
+  if (!mozjpegBinary) {
+    throw new Error(
+      "MozJPEG's jpegtran is required for JPEG optimization. Install mozjpeg or set SQUEEZIT_MOZJPEGTRAN."
+    );
+  }
 
+  const candidates: CandidateResult[] = [
+    await optimizeWithMozjpeg(
+      mozjpegBinary,
+      inputPath,
+      join(workDir, "optimized-mozjpeg.jpg"),
+      options
+    ),
+  ];
+
+  if (options.max) {
+    candidates.push(
+      await optimizeWithJpegoptim(
+        inputPath,
+        join(workDir, "optimized-jpegoptim.jpg"),
+        options
+      )
+    );
+  }
+
+  const best =
+    candidates.length === 1
+      ? candidates[0]!
+      : await selectSmallestCandidate(candidates);
+  return { outputPath: best.outputPath, label: "[JPEG]" };
+}
+
+async function optimizeWithMozjpeg(
+  mozjpegBinary: string,
+  inputPath: string,
+  outputPath: string,
+  options: CoreOptimizationOptions
+): Promise<CandidateResult> {
   await writeCommandStdoutToFile(
-    "jpegtran",
+    mozjpegBinary,
     [
       "-copy",
       options.stripMeta ? "none" : "all",
@@ -551,25 +588,24 @@ async function optimizeJpeg(
       "-progressive",
       inputPath,
     ],
-    jpegtranOutput
+    outputPath
   );
-  const jpegrescanArgs = [jpegtranOutput, optimizedPath];
-  if (options.max) {
-    jpegrescanArgs.unshift("-i");
-  }
-  await runCheckedCommand("jpegrescan", jpegrescanArgs);
+  return { outputPath };
+}
 
-  if (options.max) {
-    const jpegoptimArgs = ["--retry", "--all-progressive"];
-    if (options.stripMeta) {
-      jpegoptimArgs.push("--strip-all");
-    }
-    jpegoptimArgs.push(optimizedPath);
-    await runCheckedCommand("jpegoptim", jpegoptimArgs);
-  } else if (options.stripMeta) {
-    await runCheckedCommand("jpegoptim", ["--strip-all", optimizedPath]);
+async function optimizeWithJpegoptim(
+  inputPath: string,
+  outputPath: string,
+  options: CoreOptimizationOptions
+): Promise<CandidateResult> {
+  await copy(inputPath, outputPath, { overwrite: true });
+  const args = ["--retry", "--all-progressive"];
+  if (options.stripMeta) {
+    args.push("--strip-all");
   }
-  return { outputPath: optimizedPath, label: "[JPEG]" };
+  args.push(outputPath);
+  await runCheckedCommand("jpegoptim", args);
+  return { outputPath };
 }
 
 async function optimizeGif(

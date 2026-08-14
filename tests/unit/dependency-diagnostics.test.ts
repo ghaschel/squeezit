@@ -6,6 +6,7 @@ import {
   DEPENDENCY_CATALOG,
   diagnoseDependency,
   normalizeDependencyVersion,
+  resolveMozjpegBinary,
 } from "../../src/core";
 import { diagnoseDependency as diagnoseDependencyFromUtils } from "../../src/utils";
 
@@ -14,10 +15,11 @@ describe("dependency catalog diagnostics", () => {
     expect(diagnoseDependencyFromUtils).toBe(diagnoseDependency);
   });
 
-  test("uses system file on macOS and the linked jpeg-turbo provider", () => {
+  test("uses macOS system file and Homebrew MozJPEG", () => {
     expect(DEPENDENCY_CATALOG.file.brewPackage).toBeUndefined();
     expect(DEPENDENCY_CATALOG.file.systemProvided).toBe(true);
-    expect(DEPENDENCY_CATALOG.jpegtran.brewPackage).toBe("jpeg-turbo");
+    expect(DEPENDENCY_CATALOG.jpegtran.brewPackage).toBe("mozjpeg");
+    expect(DEPENDENCY_CATALOG.jpegtran.aptPackage).toBeUndefined();
     expect(DEPENDENCY_CATALOG.svgo.brewPackage).toBe("svgo");
   });
 
@@ -82,10 +84,10 @@ describe("dependency catalog diagnostics", () => {
     expect(compareDependencyVersions("1.5.5", "1.5.6")).toBe(-1);
   });
 
-  test("reports a missing binary with its package remediation", async () => {
+  test("reports a missing MozJPEG binary with its package remediation", async () => {
     const diagnostic = await diagnoseDependency("jpegtran", {
       platform: "macos",
-      commandExists: async () => false,
+      resolveMozjpegBinary: async () => undefined,
     });
 
     expect(diagnostic).toMatchObject({
@@ -93,15 +95,71 @@ describe("dependency catalog diagnostics", () => {
       present: false,
       provider: "unknown",
       status: "missing",
-      minimumVersion: "3.1.3",
-      remediation: "Install Homebrew package: jpeg-turbo",
+      minimumVersion: "4.1.5",
+      remediation: "Install Homebrew package: mozjpeg",
     });
   });
 
-  test("uses provider fallback for a present tool that does not self-report a version", async () => {
-    const diagnostic = await diagnoseDependency("jpegrescan", {
+  test("resolves MozJPEG through the formula wrapper environment", async () => {
+    await expect(
+      resolveMozjpegBinary({
+        environment: {
+          SQUEEZIT_MOZJPEGTRAN: "/opt/homebrew/opt/mozjpeg/bin/jpegtran",
+        },
+        pathExists: async (path) =>
+          path === "/opt/homebrew/opt/mozjpeg/bin/jpegtran",
+      })
+    ).resolves.toBe("/opt/homebrew/opt/mozjpeg/bin/jpegtran");
+  });
+
+  test("resolves a keg-only Homebrew MozJPEG binary when PATH has no jpegtran", async () => {
+    await expect(
+      resolveMozjpegBinary({
+        commandExists: async () => false,
+        environment: {},
+        pathExists: async (path) =>
+          path === "/opt/homebrew/opt/mozjpeg/bin/jpegtran",
+        runCommand: async (command, args) => {
+          expect([command, args]).toEqual(["brew", ["--prefix", "mozjpeg"]]);
+          return {
+            exitCode: 0,
+            stdout: "/opt/homebrew/opt/mozjpeg\n",
+            stderr: "",
+            all: "/opt/homebrew/opt/mozjpeg\n",
+          };
+        },
+      })
+    ).resolves.toBe("/opt/homebrew/opt/mozjpeg/bin/jpegtran");
+  });
+
+  test("rejects a PATH jpegtran that is not MozJPEG", async () => {
+    await expect(
+      resolveMozjpegBinary({
+        commandExists: async () => true,
+        environment: {},
+        pathExists: async () => false,
+        runCommand: async (command, args) => {
+          if (command === "jpegtran") {
+            expect(args).toEqual(["-version"]);
+            return {
+              exitCode: 0,
+              stdout: "libjpeg-turbo version 3.1.3",
+              stderr: "",
+              all: "libjpeg-turbo version 3.1.3",
+            };
+          }
+
+          return { exitCode: 1, stdout: "", stderr: "", all: "" };
+        },
+      })
+    ).resolves.toBeUndefined();
+  });
+
+  test("uses the installed formula version when a present MozJPEG binary does not self-report", async () => {
+    const diagnostic = await diagnoseDependency("jpegtran", {
       platform: "macos",
-      commandExists: async () => true,
+      resolveMozjpegBinary: async () =>
+        "/opt/homebrew/opt/mozjpeg/bin/jpegtran",
       runCommand: async () => ({
         exitCode: 1,
         stdout: "",
@@ -110,17 +168,25 @@ describe("dependency catalog diagnostics", () => {
       }),
       providerVersionLookup: async () => ({
         provider: "brew",
-        rawVersion: "1.1.0_1",
+        rawVersion: "4.1.5_1",
       }),
     });
 
     expect(diagnostic).toMatchObject({
       present: true,
       provider: "brew",
-      rawVersion: "1.1.0_1",
-      normalizedVersion: "1.1.0",
+      rawVersion: "4.1.5_1",
+      normalizedVersion: "4.1.5",
       status: "healthy",
     });
+  });
+
+  test("gives Debian users a manual MozJPEG remediation rather than substituting jpeg-turbo", () => {
+    expect(
+      buildMissingDependencyMessage([DEPENDENCY_CATALOG.jpegtran], "debian")
+    ).toContain(
+      "Install MozJPEG and set SQUEEZIT_MOZJPEGTRAN to its jpegtran executable"
+    );
   });
 
   test("marks a manually installed version-unreporting tool as unhealthy", async () => {

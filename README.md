@@ -506,6 +506,7 @@ Notes:
 - `sqz metadata strip` is metadata-only and does not run recompression pipelines
 - `--profile max` always strips metadata in addition to raising encoder effort across the supported recompression pipelines
 - `--profile max` forces the replacement threshold to `0`, so any positive lossless reduction is accepted
+- JPEG standard mode uses one lossless MozJPEG pass; JPEG max mode also runs JPEGoptim from the original input and keeps the smaller result, trading additional CPU time for that comparison
 - ICO support is focused on modernizing containers while preserving icon sizes, not preserving original legacy BMP-style encoding byte-for-byte
 - CUR support is focused on modernizing containers while preserving entry sizes and cursor hotspots, not preserving original legacy BMP-style encoding byte-for-byte
 - BMP metadata-only writing is not supported; BMP optimization only rewrites eligible indexed BMP image data
@@ -518,7 +519,7 @@ Notes:
 Squeezit orchestrates native image tools based on the inputs you actually process. It may require binaries such as:
 
 - `file`
-- `jpegtran`, `jpegrescan`, `jpegoptim`
+- MozJPEG's `jpegtran`; `jpegoptim` for the additional `--profile max` candidate
 - `pngcrush`, `optipng`, `zopflipng`, `oxipng`
 - `gifsicle`
 - `svgo`
@@ -534,7 +535,7 @@ Squeezit orchestrates native image tools based on the inputs you actually proces
 
 Not every run needs every tool. `sqz deps doctor [patterns...]` is format-aware; without patterns it checks the full supported toolchain. `sqz doctor` also checks Node 22.13+, the current platform, and update readiness.
 
-The doctor enforces minimum tool versions, including `jpegtran` 3.1.3, `jpegoptim` 1.5.6, `oxipng` 10.1.0, `svgo` 4.0.1, WebP tools 1.6.0, ImageMagick 7.1.2-9, ExifTool 13.50, and the approved versions of every remaining optimizer. It reports the executable version, provider, health, and a remediation. macOS supplies `file` itself; Homebrew supplies `jpegtran` through `jpeg-turbo`.
+The doctor enforces minimum tool versions, including MozJPEG 4.1.5, `jpegoptim` 1.5.6, `oxipng` 10.1.0, `svgo` 4.0.1, WebP tools 1.6.0, ImageMagick 7.1.2-9, ExifTool 13.50, and the approved versions of every remaining optimizer. It reports the executable version, provider, health, and a remediation. macOS supplies `file` itself; Homebrew supplies MozJPEG through its keg-only `mozjpeg` formula, which Squeezit resolves automatically.
 
 Install missing tools explicitly:
 
@@ -545,7 +546,7 @@ sqz deps install "images/**/*.{png,jpg}"
 
 `deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON or non-interactive environments; piping an affirmative response is intentionally unsupported.
 
-On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.1.0, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo first if it is not already available.
+On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.1.0, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo first if it is not already available. Debian/Ubuntu does not provide a supported MozJPEG package: install MozJPEG yourself and point `SQUEEZIT_MOZJPEGTRAN` at its `jpegtran` executable. Squeezit intentionally does not substitute `jpeg-turbo` for MozJPEG.
 
 ## Self-Update
 

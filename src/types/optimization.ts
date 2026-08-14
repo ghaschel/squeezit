@@ -30,6 +30,8 @@ export interface DependencySpec {
     crate: string;
     version: string;
   };
+  manualInstall?: string;
+  requiresMozjpeg?: boolean;
   systemProvided?: boolean;
 }
 

@@ -31,7 +31,6 @@ From [src/core/dependencies.ts](/Users/guilhermehaschel/Documents/Workspace/Pers
 
 - `file`
 - `jpegtran`
-- `jpegrescan`
 - `jpegoptim`
 - `pngcrush`
 - `optipng`

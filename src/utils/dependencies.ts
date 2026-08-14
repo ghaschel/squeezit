@@ -25,6 +25,7 @@ export {
   formatDependencyInstallCommand,
   installDependencies,
   normalizeDependencyVersion,
+  resolveMozjpegBinary,
 } from "../core";
 
 export async function ensureDependencies(

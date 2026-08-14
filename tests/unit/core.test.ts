@@ -218,6 +218,43 @@ describe("dependency planning", () => {
     );
   });
 
+  test("uses only MozJPEG for standard JPEG optimization", () => {
+    const options = resolveCompressOptions([], {}, process.cwd());
+    const dependencies = collectRequiredDependencies(
+      [
+        {
+          absolutePath: "/tmp/sample.jpg",
+          displayPath: "sample.jpg",
+        },
+      ],
+      options
+    );
+
+    expect(dependencies.map((entry) => entry.binary)).toEqual([
+      "file",
+      "jpegtran",
+    ]);
+  });
+
+  test("adds JPEGoptim as an independent candidate only for max JPEG optimization", () => {
+    const options = resolveCompressOptions([], { max: true }, process.cwd());
+    const dependencies = collectRequiredDependencies(
+      [
+        {
+          absolutePath: "/tmp/sample.jpg",
+          displayPath: "sample.jpg",
+        },
+      ],
+      options
+    );
+
+    expect(dependencies.map((entry) => entry.binary)).toEqual([
+      "file",
+      "jpegtran",
+      "jpegoptim",
+    ]);
+  });
+
   test("uses svgo instead of exiftool for svg exif-only mode", () => {
     const options = resolveCompressOptions([], { exif: true }, process.cwd());
     const dependencies = collectRequiredDependencies(

@@ -37,11 +37,14 @@ describe("Homebrew formula renderer", () => {
     expect(formula).toContain(`sha256 "${"a".repeat(64)}"`);
     expect(formula).toContain('depends_on "node"');
     expect(formula).not.toContain('depends_on "file"');
-    expect(formula).toContain('depends_on "jpeg-turbo"');
+    expect(formula).toContain('depends_on "mozjpeg"');
     expect(formula).toContain('depends_on "webp"');
     expect(formula).toContain('system "npm", "install", *std_npm_args');
-    expect(formula).toContain('bin.install_symlink libexec/"bin/sqz"');
-    expect(formula).toContain('bin.install_symlink libexec/"bin/squeezit"');
+    expect(formula).toContain('bin.write_env_script libexec/"bin/sqz"');
+    expect(formula).toContain('bin.write_env_script libexec/"bin/squeezit"');
+    expect(formula).toContain(
+      'SQUEEZIT_MOZJPEGTRAN: Formula["mozjpeg"].opt_bin/"jpegtran"'
+    );
     expect(formula).toContain(
       'JSON.parse(shell_output("#{bin}/sqz version --json")).dig("data", "version")'
     );
@@ -58,13 +61,12 @@ describe("Homebrew formula renderer", () => {
       '  depends_on "gifsicle"',
       '  depends_on "icoutils"',
       '  depends_on "imagemagick"',
-      '  depends_on "jpeg-turbo"',
       '  depends_on "jpeg-xl"',
       '  depends_on "jpegoptim"',
-      '  depends_on "jpegrescan"',
       '  depends_on "libavif"',
       '  depends_on "libheif"',
       '  depends_on "libtiff"',
+      '  depends_on "mozjpeg"',
       '  depends_on "optipng"',
       '  depends_on "oxipng"',
       '  depends_on "pngcrush"',

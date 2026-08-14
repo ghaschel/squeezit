@@ -134,8 +134,8 @@ describe("tag release workflow", () => {
 
     expect(uses).toEqual(
       expect.arrayContaining([
-        "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683",
-        "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+        "actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
+        "actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444",
         "oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6",
         "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
         "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
@@ -146,10 +146,10 @@ describe("tag release workflow", () => {
       true
     );
     expect(workflowSource).toMatch(
-      /actions\/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4\.2\.2/
+      /actions\/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5\.0\.0/
     );
     expect(workflowSource).toMatch(
-      /actions\/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4\.4\.0/
+      /actions\/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5\.0\.0/
     );
     expect(workflowSource).toMatch(
       /oven-sh\/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2\.2\.0/

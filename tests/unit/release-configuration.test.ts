@@ -80,12 +80,15 @@ describe("release configuration", () => {
 
   test("commits the regenerated Oclif manifest with every version bump", () => {
     const versionrc = require(resolve(root, ".versionrc.cjs")) as {
-      bumpFiles?: string[];
+      bumpFiles?: Array<string | { filename: string; type: "json" }>;
     };
 
     expect(versionrc.bumpFiles).toEqual([
       "package.json",
-      "oclif.manifest.json",
+      {
+        filename: "oclif.manifest.json",
+        type: "json",
+      },
     ]);
   });
 });

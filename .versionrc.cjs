@@ -1,6 +1,9 @@
 module.exports = {
   skip: { tag: false },
-  bumpFiles: ["package.json", "oclif.manifest.json"],
+  bumpFiles: [
+    "package.json",
+    { filename: "oclif.manifest.json", type: "json" },
+  ],
   infile: "CHANGELOG.md",
   header: "# Changelog\n\n",
   scripts: {

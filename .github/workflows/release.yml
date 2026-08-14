@@ -125,8 +125,12 @@ jobs:
           set -euo pipefail
           PUBLISH_DIR="$RUNNER_TEMP/npm-publish"
           mkdir -p "$PUBLISH_DIR"
-          HUSKY=0 npm pack --json --pack-destination "$PUBLISH_DIR" > "$PUBLISH_DIR/pack.json"
-          NPM_TARBALL="$PUBLISH_DIR/$(node -e 'process.stdout.write(JSON.parse(require("node:fs").readFileSync(process.argv[1], "utf8"))[0].filename)' "$PUBLISH_DIR/pack.json")"
+          bun run build
+          HUSKY=0 npm pack --ignore-scripts --pack-destination "$PUBLISH_DIR"
+          shopt -s nullglob
+          tarballs=("$PUBLISH_DIR"/*.tgz)
+          test "${#tarballs[@]}" -eq 1
+          NPM_TARBALL="${tarballs[0]}"
           test -f "$NPM_TARBALL"
           LOCAL_INTEGRITY="sha512-$(openssl dgst -sha512 -binary "$NPM_TARBALL" | base64 | tr -d '\n')"
 

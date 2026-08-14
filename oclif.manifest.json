@@ -362,91 +362,6 @@
       "isESM": true,
       "relativePath": ["dist", "commands", "deps", "install.js"]
     },
-    "update:apply": {
-      "aliases": [],
-      "args": {},
-      "description": "Apply the latest Squeezit update.",
-      "flags": {
-        "json": {
-          "description": "Format output as json.",
-          "helpGroup": "GLOBAL",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "pm": {
-          "description": "Installation source.",
-          "name": "pm",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "options": ["npm", "bun", "brew"],
-          "type": "option"
-        },
-        "yes": {
-          "char": "y",
-          "description": "Confirm update without a prompt.",
-          "name": "yes",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "Print diagnostic details to stderr.",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "update:apply",
-      "pluginAlias": "squeezit",
-      "pluginName": "squeezit",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": true,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "update", "apply.js"]
-    },
-    "update:check": {
-      "aliases": [],
-      "args": {},
-      "description": "Check for a Squeezit update without changing installation state.",
-      "flags": {
-        "json": {
-          "description": "Format output as json.",
-          "helpGroup": "GLOBAL",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "pm": {
-          "description": "Installation source.",
-          "name": "pm",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "options": ["npm", "bun", "brew"],
-          "type": "option"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "Print diagnostic details to stderr.",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "update:check",
-      "pluginAlias": "squeezit",
-      "pluginName": "squeezit",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": true,
-      "isESM": true,
-      "relativePath": ["dist", "commands", "update", "check.js"]
-    },
     "metadata:strip": {
       "aliases": ["exif"],
       "args": {
@@ -535,7 +450,92 @@
       "enableJsonFlag": true,
       "isESM": true,
       "relativePath": ["dist", "commands", "metadata", "strip.js"]
+    },
+    "update:apply": {
+      "aliases": [],
+      "args": {},
+      "description": "Apply the latest Squeezit update.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "pm": {
+          "description": "Installation source.",
+          "name": "pm",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["npm", "bun", "brew"],
+          "type": "option"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm update without a prompt.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update:apply",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "update", "apply.js"]
+    },
+    "update:check": {
+      "aliases": [],
+      "args": {},
+      "description": "Check for a Squeezit update without changing installation state.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "pm": {
+          "description": "Installation source.",
+          "name": "pm",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": ["npm", "bun", "brew"],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "update:check",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": ["dist", "commands", "update", "check.js"]
     }
   },
-  "version": "2.0.1"
+  "version": "2.0.2"
 }

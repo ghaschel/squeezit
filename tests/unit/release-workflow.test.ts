@@ -203,7 +203,18 @@ describe("tag release workflow", () => {
     const serialized = JSON.stringify(publish);
 
     expect(publish.needs).toBe("validate");
-    expect(run).toContain("HUSKY=0 npm pack --json --pack-destination");
+    expect(run).toContain("bun run build");
+    expect(run).toContain(
+      "HUSKY=0 npm pack --ignore-scripts --pack-destination"
+    );
+    expect(run.indexOf("bun run build")).toBeLessThan(
+      run.indexOf("npm pack --ignore-scripts")
+    );
+    expect(run).toContain("shopt -s nullglob");
+    expect(run).toContain('tarballs=("$PUBLISH_DIR"/*.tgz)');
+    expect(run).toContain('test "${#tarballs[@]}" -eq 1');
+    expect(run).toContain('NPM_TARBALL="${tarballs[0]}"');
+    expect(run).not.toContain("pack.json");
     expect(run).toContain('npm view "squeezit@$VERSION" dist.integrity');
     expect(run).toContain("openssl dgst -sha512 -binary");
     expect(run).toContain("base64");

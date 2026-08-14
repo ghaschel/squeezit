@@ -40,8 +40,10 @@ describe("Homebrew formula renderer", () => {
     expect(formula).toContain('depends_on "mozjpeg"');
     expect(formula).toContain('depends_on "webp"');
     expect(formula).toContain('system "npm", "install", *std_npm_args');
-    expect(formula).toContain('bin.write_env_script libexec/"bin/sqz"');
-    expect(formula).toContain('bin.write_env_script libexec/"bin/squeezit"');
+    expect(formula).toContain('(bin/"sqz").write_env_script libexec/"bin/sqz"');
+    expect(formula).toContain(
+      '(bin/"squeezit").write_env_script libexec/"bin/squeezit"'
+    );
     expect(formula).toContain(
       'SQUEEZIT_MOZJPEGTRAN: Formula["mozjpeg"].opt_bin/"jpegtran"'
     );

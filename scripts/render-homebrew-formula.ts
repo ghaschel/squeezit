@@ -69,9 +69,9 @@ ${dependencies}
 
   def install
     system "npm", "install", *std_npm_args
-    bin.write_env_script libexec/"bin/sqz",
+    (bin/"sqz").write_env_script libexec/"bin/sqz",
       SQUEEZIT_MOZJPEGTRAN: Formula["mozjpeg"].opt_bin/"jpegtran"
-    bin.write_env_script libexec/"bin/squeezit",
+    (bin/"squeezit").write_env_script libexec/"bin/squeezit",
       SQUEEZIT_MOZJPEGTRAN: Formula["mozjpeg"].opt_bin/"jpegtran"
   end
 

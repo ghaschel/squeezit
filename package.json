@@ -209,7 +209,7 @@
     "build": "rm -rf dist oclif.manifest.json && bun run build:library && bun run build:cli && bun run build:manifest",
     "build:library": "tsup",
     "build:cli": "tsup --config tsup.oclif.config.ts",
-    "build:manifest": "oclif manifest && printf '\\n' >> oclif.manifest.json",
+    "build:manifest": "oclif manifest && bun scripts/sort-oclif-manifest.ts",
     "prepack": "bun run build",
     "postinstall": "node ./postinstall.mjs",
     "test": "vitest run",

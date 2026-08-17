@@ -214,141 +214,6 @@
         "compress.js"
       ]
     },
-    "doctor": {
-      "aliases": [],
-      "args": {},
-      "description": "Check runtime, platform, update source, and optimizer readiness.",
-      "flags": {
-        "json": {
-          "description": "Format output as json.",
-          "helpGroup": "GLOBAL",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "events": {
-          "description": "Stream structured command events as JSON Lines.",
-          "name": "events",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "options": [
-            "jsonl"
-          ],
-          "type": "option"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "Print diagnostic details to stderr.",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "doctor",
-      "pluginAlias": "squeezit",
-      "pluginName": "squeezit",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": true,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "doctor.js"
-      ]
-    },
-    "help": {
-      "aliases": [],
-      "args": {
-        "command": {
-          "description": "Command to show help for.",
-          "multiple": true,
-          "name": "command",
-          "required": false
-        }
-      },
-      "description": "Display help for Squeezit commands.",
-      "flags": {
-        "json": {
-          "description": "Format output as json.",
-          "helpGroup": "GLOBAL",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "events": {
-          "description": "Stream structured command events as JSON Lines.",
-          "name": "events",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "options": [
-            "jsonl"
-          ],
-          "type": "option"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "help",
-      "pluginAlias": "squeezit",
-      "pluginName": "squeezit",
-      "pluginType": "core",
-      "strict": false,
-      "enableJsonFlag": true,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "help.js"
-      ]
-    },
-    "version": {
-      "aliases": [],
-      "args": {},
-      "description": "Display the installed Squeezit version.",
-      "flags": {
-        "json": {
-          "description": "Format output as json.",
-          "helpGroup": "GLOBAL",
-          "name": "json",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "events": {
-          "description": "Stream structured command events as JSON Lines.",
-          "name": "events",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "options": [
-            "jsonl"
-          ],
-          "type": "option"
-        },
-        "verbose": {
-          "char": "v",
-          "description": "Print version diagnostics to stderr.",
-          "name": "verbose",
-          "allowNo": false,
-          "type": "boolean"
-        }
-      },
-      "hasDynamicHelp": false,
-      "hiddenAliases": [],
-      "id": "version",
-      "pluginAlias": "squeezit",
-      "pluginName": "squeezit",
-      "pluginType": "core",
-      "strict": true,
-      "enableJsonFlag": true,
-      "isESM": true,
-      "relativePath": [
-        "dist",
-        "commands",
-        "version.js"
-      ]
-    },
     "deps:doctor": {
       "aliases": [],
       "args": {
@@ -510,6 +375,205 @@
         "commands",
         "deps",
         "install.js"
+      ]
+    },
+    "doctor": {
+      "aliases": [],
+      "args": {},
+      "description": "Check runtime, platform, update source, and optimizer readiness.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "events": {
+          "description": "Stream structured command events as JSON Lines.",
+          "name": "events",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "jsonl"
+          ],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "doctor",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "doctor.js"
+      ]
+    },
+    "help": {
+      "aliases": [],
+      "args": {
+        "command": {
+          "description": "Command to show help for.",
+          "multiple": true,
+          "name": "command",
+          "required": false
+        }
+      },
+      "description": "Display help for Squeezit commands.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "events": {
+          "description": "Stream structured command events as JSON Lines.",
+          "name": "events",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "jsonl"
+          ],
+          "type": "option"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "help",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": false,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "help.js"
+      ]
+    },
+    "metadata:strip": {
+      "aliases": [
+        "exif"
+      ],
+      "args": {
+        "patterns": {
+          "description": "Files, directories, or glob patterns whose metadata should be removed.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Remove EXIF/IPTC/XMP metadata without recompressing images.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "events": {
+          "description": "Stream structured command events as JSON Lines.",
+          "name": "events",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "jsonl"
+          ],
+          "type": "option"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "dry-run": {
+          "char": "d",
+          "description": "Report changes without modifying files.",
+          "name": "dry-run",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "keep-time": {
+          "char": "k",
+          "description": "Preserve original atime/mtime.",
+          "name": "keep-time",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "concurrency": {
+          "char": "c",
+          "description": "Concurrent workers.",
+          "name": "concurrency",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "progress": {
+          "description": "Progress display mode.",
+          "name": "progress",
+          "default": "auto",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "auto",
+            "off"
+          ],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm image changes without a prompt.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "in-place": {
+          "description": "Create temporary artifacts next to source files.",
+          "name": "in-place",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "metadata:strip",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "metadata",
+        "strip.js"
       ]
     },
     "plan:apply": {
@@ -697,9 +761,9 @@
         "compress.js"
       ]
     },
-    "metadata:strip": {
+    "plan:metadata:strip": {
       "aliases": [
-        "exif"
+        "plan:exif"
       ],
       "args": {
         "patterns": {
@@ -709,7 +773,7 @@
           "required": false
         }
       },
-      "description": "Remove EXIF/IPTC/XMP metadata without recompressing images.",
+      "description": "Create a reviewable metadata-removal plan without changing images.",
       "flags": {
         "json": {
           "description": "Format output as json.",
@@ -728,6 +792,14 @@
           ],
           "type": "option"
         },
+        "output": {
+          "description": "Path for the new plan artifact.",
+          "name": "output",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "recursive": {
           "char": "r",
           "description": "Recurse into directories.",
@@ -735,39 +807,26 @@
           "allowNo": false,
           "type": "boolean"
         },
-        "dry-run": {
-          "char": "d",
-          "description": "Report changes without modifying files.",
-          "name": "dry-run",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "keep-time": {
           "char": "k",
-          "description": "Preserve original atime/mtime.",
+          "description": "Preserve original atime/mtime when the plan is applied.",
           "name": "keep-time",
           "allowNo": false,
           "type": "boolean"
         },
         "concurrency": {
           "char": "c",
-          "description": "Concurrent workers.",
+          "description": "Concurrent workers recorded in the plan.",
           "name": "concurrency",
           "hasDynamicHelp": false,
           "multiple": false,
           "type": "option"
         },
-        "progress": {
-          "description": "Progress display mode.",
-          "name": "progress",
-          "default": "auto",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "options": [
-            "auto",
-            "off"
-          ],
-          "type": "option"
+        "in-place": {
+          "description": "Create temporary artifacts next to source files when applying.",
+          "name": "in-place",
+          "allowNo": false,
+          "type": "boolean"
         },
         "verbose": {
           "char": "v",
@@ -775,24 +834,11 @@
           "name": "verbose",
           "allowNo": false,
           "type": "boolean"
-        },
-        "yes": {
-          "char": "y",
-          "description": "Confirm image changes without a prompt.",
-          "name": "yes",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "in-place": {
-          "description": "Create temporary artifacts next to source files.",
-          "name": "in-place",
-          "allowNo": false,
-          "type": "boolean"
         }
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "metadata:strip",
+      "id": "plan:metadata:strip",
       "pluginAlias": "squeezit",
       "pluginName": "squeezit",
       "pluginType": "core",
@@ -802,6 +848,7 @@
       "relativePath": [
         "dist",
         "commands",
+        "plan",
         "metadata",
         "strip.js"
       ]
@@ -929,19 +976,10 @@
         "check.js"
       ]
     },
-    "plan:metadata:strip": {
-      "aliases": [
-        "plan:exif"
-      ],
-      "args": {
-        "patterns": {
-          "description": "Files, directories, or glob patterns whose metadata should be removed.",
-          "multiple": true,
-          "name": "patterns",
-          "required": false
-        }
-      },
-      "description": "Create a reviewable metadata-removal plan without changing images.",
+    "version": {
+      "aliases": [],
+      "args": {},
+      "description": "Display the installed Squeezit version.",
       "flags": {
         "json": {
           "description": "Format output as json.",
@@ -960,45 +998,9 @@
           ],
           "type": "option"
         },
-        "output": {
-          "description": "Path for the new plan artifact.",
-          "name": "output",
-          "required": true,
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "recursive": {
-          "char": "r",
-          "description": "Recurse into directories.",
-          "name": "recursive",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "keep-time": {
-          "char": "k",
-          "description": "Preserve original atime/mtime when the plan is applied.",
-          "name": "keep-time",
-          "allowNo": false,
-          "type": "boolean"
-        },
-        "concurrency": {
-          "char": "c",
-          "description": "Concurrent workers recorded in the plan.",
-          "name": "concurrency",
-          "hasDynamicHelp": false,
-          "multiple": false,
-          "type": "option"
-        },
-        "in-place": {
-          "description": "Create temporary artifacts next to source files when applying.",
-          "name": "in-place",
-          "allowNo": false,
-          "type": "boolean"
-        },
         "verbose": {
           "char": "v",
-          "description": "Print diagnostic details to stderr.",
+          "description": "Print version diagnostics to stderr.",
           "name": "verbose",
           "allowNo": false,
           "type": "boolean"
@@ -1006,7 +1008,7 @@
       },
       "hasDynamicHelp": false,
       "hiddenAliases": [],
-      "id": "plan:metadata:strip",
+      "id": "version",
       "pluginAlias": "squeezit",
       "pluginName": "squeezit",
       "pluginType": "core",
@@ -1016,9 +1018,7 @@
       "relativePath": [
         "dist",
         "commands",
-        "plan",
-        "metadata",
-        "strip.js"
+        "version.js"
       ]
     }
   },

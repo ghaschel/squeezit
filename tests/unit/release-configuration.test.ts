@@ -96,12 +96,12 @@ describe("release configuration", () => {
     ]);
   });
 
-  test("keeps the generated Oclif manifest stable through Prettier", async () => {
+  test("sorts generated Oclif manifest commands deterministically", async () => {
     const packageJson = await readPackageJson();
     const scripts = packageJson.scripts as Record<string, string>;
 
     expect(scripts["build:manifest"]).toBe(
-      "oclif manifest && printf '\\n' >> oclif.manifest.json"
+      "oclif manifest && bun scripts/sort-oclif-manifest.ts"
     );
   });
 

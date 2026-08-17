@@ -1,7 +1,7 @@
 import { Args, loadHelpClass } from "@oclif/core";
 
 import { SqueezitCommand } from "../base-command";
-import { createCommandErrorEnvelope } from "../output";
+import { SqueezitError } from "../output";
 
 export default class Help extends SqueezitCommand {
   static override args = {
@@ -32,24 +32,22 @@ export default class Help extends SqueezitCommand {
         : true;
       process.exitCode = known ? 0 : 1;
       if (!known) {
-        return createCommandErrorEnvelope(
-          "help",
-          new Error(`Unknown command: ${command}`)
-        );
+        throw new SqueezitError({
+          code: "UNKNOWN_COMMAND",
+          details: { command },
+          message: `Unknown command: ${command}`,
+          remediation:
+            "Run sqz commands or sqz help to discover available commands.",
+        });
       }
-      return {
-        schemaVersion: 1,
-        command: "help",
-        ok: known,
-        data: {
-          requestedCommand: command || null,
-          commands: command
-            ? [command]
-            : commands
-                .map((candidate) => candidate.id.replaceAll(":", " "))
-                .sort(),
-        },
-      };
+      return this.emitStatus("help", known, {
+        requestedCommand: command || null,
+        commands: command
+          ? [command]
+          : commands
+              .map((candidate) => candidate.id.replaceAll(":", " "))
+              .sort(),
+      });
     }
 
     const HelpClass = await loadHelpClass(this.config);

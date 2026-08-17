@@ -1,5 +1,6 @@
 import { cpus } from "node:os";
 
+import { SqueezitError } from "../cli/output";
 import type { CompressCliFlags, CompressCommandOptions } from "../types";
 
 export function resolveCompressOptions(
@@ -8,7 +9,12 @@ export function resolveCompressOptions(
   cwd: string
 ): CompressCommandOptions {
   if (flags.profile === "max" && flags.threshold !== undefined) {
-    throw new Error("--threshold cannot be used with --profile max");
+    throw new SqueezitError({
+      code: "VALIDATION_ERROR",
+      details: { profile: "max", threshold: flags.threshold },
+      message: "--threshold cannot be used with --profile max",
+      remediation: "Remove --threshold or choose --profile standard.",
+    });
   }
 
   const max = flags.profile === "max" || (flags.max ?? false);

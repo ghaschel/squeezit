@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import ora from "ora";
 
+import { SqueezitError } from "../cli/output";
 import {
   buildMissingDependencyMessage,
   collectDependencyInstallTargets,
@@ -40,7 +41,12 @@ export async function ensureDependencies(
 
   if (!platform) {
     spinner?.fail("Unsupported OS");
-    throw new Error("squeezit supports macOS and Debian/Ubuntu Linux only.");
+    throw new SqueezitError({
+      code: "UNSUPPORTED_PLATFORM",
+      details: { platform: process.platform },
+      message: "squeezit supports macOS and Debian/Ubuntu Linux only.",
+      remediation: "Run Squeezit on macOS or Debian/Ubuntu Linux.",
+    });
   }
 
   const dependencies = collectRequiredDependencies(
@@ -57,9 +63,7 @@ export async function ensureDependencies(
 
   if (!options.installDeps) {
     spinner?.fail("Missing required system tools");
-    throw new Error(
-      `${buildMissingDependencyMessage(missing, platform)}\nInstall with ${chalk.cyan("sqz deps install")} or install these packages manually.`
-    );
+    throw missingDependenciesError(missing, platform);
   }
 
   const targets = collectDependencyInstallTargets(missing, platform);
@@ -83,7 +87,12 @@ export async function ensureDependencies(
     installers
   );
   if (!confirmed) {
-    throw new Error("Dependency installation cancelled.");
+    throw new SqueezitError({
+      code: "OPERATION_CANCELLED",
+      message: "Dependency installation cancelled.",
+      remediation:
+        "Re-run sqz deps install and confirm the operation when prompted.",
+    });
   }
 
   spinner?.start(
@@ -96,10 +105,24 @@ export async function ensureDependencies(
   missing = await findMissingDependencies(dependencies);
   if (missing.length > 0) {
     spinner?.fail("Dependencies are still missing after installation");
-    throw new Error(
-      `${buildMissingDependencyMessage(missing, platform)}\nInstall with ${chalk.cyan("sqz deps install")} or install these packages manually.`
-    );
+    throw missingDependenciesError(missing, platform);
   }
 
   spinner?.succeed("System tools are available");
+}
+
+function missingDependenciesError(
+  missing: Awaited<ReturnType<typeof findMissingDependencies>>,
+  platform: Awaited<ReturnType<typeof detectPlatform>>
+): SqueezitError {
+  return new SqueezitError({
+    code: "DEPENDENCY_MISSING",
+    details: {
+      binaries: missing.map((dependency) => dependency.binary),
+      platform,
+    },
+    message: `${buildMissingDependencyMessage(missing, platform)}\nInstall with ${chalk.cyan("sqz deps install")} or install these packages manually.`,
+    remediation:
+      "Install the missing tools with sqz deps install, then retry the command.",
+  });
 }

@@ -7,6 +7,7 @@ import {
   readInstallerConfig,
 } from "../../utils";
 import { SqueezitCommand } from "../base-command";
+import { inspectSqueezitInstallations } from "../installations";
 
 export default class Doctor extends SqueezitCommand {
   static override description =
@@ -21,7 +22,7 @@ export default class Doctor extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { flags } = await this.parse(Doctor);
-    const [platform, tools, installer] = await Promise.all([
+    const [platform, tools, installer, installation] = await Promise.all([
       detectPlatform(),
       diagnoseDependencies(
         Object.keys(DEPENDENCY_CATALOG) as Array<
@@ -29,6 +30,10 @@ export default class Doctor extends SqueezitCommand {
         >
       ),
       readInstallerConfig(),
+      inspectSqueezitInstallations({
+        activePackageRoot: this.config.root,
+        activeVersion: this.config.version,
+      }),
     ]);
     const nodeVersion = process.versions.node;
     const runtimeHealthy = compareNodeVersion(nodeVersion, "22.13.0") >= 0;
@@ -51,6 +56,7 @@ export default class Doctor extends SqueezitCommand {
               : null),
         configured: Boolean(installer),
       },
+      installation,
       tools,
       ...(flags.verbose
         ? {
@@ -63,7 +69,7 @@ export default class Doctor extends SqueezitCommand {
 
     process.exitCode = ok ? 0 : 1;
     if (this.jsonEnabled()) {
-      return { schemaVersion: 1, command: "doctor", ok, data };
+      return this.emitStatus("doctor", ok, data);
     }
 
     this.log(
@@ -73,6 +79,9 @@ export default class Doctor extends SqueezitCommand {
     this.log(
       `${tools.filter((tool) => tool.status === "healthy").length}/${tools.length} optimizer tools healthy`
     );
+    for (const warning of installation.warnings) {
+      this.log(`⚠ ${warning.message}`);
+    }
     if (flags.verbose) {
       this.logToStderr(
         `Checked ${tools.length} tool(s) and runtime readiness.`

@@ -348,6 +348,7 @@ The fixture-value helper and JS/TS API report `filePath` and `outputPath` relati
 ## Documentation
 
 - [API reference](https://github.com/ghaschel/squeezit/blob/main/docs/API.md)
+- [Agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md)
 - [Release and maintainer guide](https://github.com/ghaschel/squeezit/blob/main/docs/releasing.md)
 
 ### Usage
@@ -366,6 +367,7 @@ sqz <command> [arguments] [flags]
 | `sqz deps install [patterns...]`                    | Install missing tools for all formats or selected inputs.          |
 | `sqz doctor`                                        | Check Node, platform, update source, and the complete toolchain.   |
 | `sqz update check` / `sqz update apply`             | Check or apply a global update.                                    |
+| `sqz capabilities --json`                           | Discover commands, flags, side effects, and JSON schemas.          |
 | `sqz commands`, `sqz help [command]`, `sqz version` | Discover the installed CLI.                                        |
 
 `sqz` is the canonical binary; `squeezit` remains a full alias. `sqz` with no command shows help.
@@ -576,18 +578,29 @@ sqz update apply --pm brew --yes
 
 ### JSON and automation
 
-Every Squeezit-owned operational/display command accepts `--json` and writes exactly one JSON object to stdout:
+Every Squeezit-owned operational/display command accepts `--json` and writes exactly one version-2 JSON document to stdout. It includes the installation and runtime provenance that produced the result:
 
 ```json
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "command": "deps doctor",
   "ok": true,
-  "data": {}
+  "data": {},
+  "meta": {
+    "squeezitVersion": "2.0.7",
+    "invocationPath": "/path/to/bin/sqz",
+    "executablePath": "/path/to/squeezit/bin/run.js",
+    "packageRoot": "/path/to/squeezit",
+    "nodeVersion": "24.16.0",
+    "cwd": "/path/to/project",
+    "platform": "darwin-arm64"
+  }
 }
 ```
 
-Expected unhealthy states set `ok` to `false` and exit with code `1`; validation and unexpected failures use the same envelope with an `error.message`. Human diagnostics go to stderr with `--verbose`; JSON places them in `data.diagnostics`. The upstream `sqz autocomplete` command is the only intentional exception to this JSON contract.
+Expected unhealthy states set `ok` to `false` and exit with code `1`. Failures include `error.code`, `error.message`, `error.remediation`, and optional structured `error.details`, so automation can branch on stable semantics rather than text. Human diagnostics go to stderr with `--verbose`; JSON places them in `data.diagnostics`.
+
+Start an automated integration with `sqz capabilities --json`: it reports every command, alias, argument, flag/default/enum, side effect, confirmation policy, and output-schema reference. `sqz doctor --json` also detects stale or shadowed Squeezit binaries on `PATH`; these installation warnings remain visible without making runtime/tool readiness unhealthy. The complete contract, error-code reference, and schema locations are in the [agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md). The upstream `sqz autocomplete` command is the only intentional exception to this JSON contract.
 
 ### Shell completion
 

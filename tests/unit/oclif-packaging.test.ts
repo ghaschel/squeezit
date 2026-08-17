@@ -18,8 +18,11 @@ describe("Oclif package configuration", () => {
       squeezit: "./bin/run.js",
     });
     expect(packageJson.files).toEqual(
-      expect.arrayContaining(["bin", "dist", "oclif.manifest.json"])
+      expect.arrayContaining(["bin", "dist", "oclif.manifest.json", "schemas"])
     );
+    expect(packageJson.exports).toMatchObject({
+      "./schemas/*.json": "./schemas/*.json",
+    });
     expect(packageJson.oclif).toMatchObject({
       bin: "sqz",
       binAliases: ["squeezit"],

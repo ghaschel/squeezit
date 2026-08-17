@@ -358,33 +358,33 @@ sqz <command> [arguments] [flags]
 
 ### Commands
 
-| Command                                             | Purpose                                                          |
-| --------------------------------------------------- | ---------------------------------------------------------------- | -------------------------- |
-| `sqz compress [patterns...]`                        | Optimize images. `--profile standard                             | max` selects the strategy. |
-| `sqz metadata strip [patterns...]`                  | Remove metadata without recompression. `sqz exif` is its alias.  |
-| `sqz deps doctor [patterns...]`                     | Check all tools, or only the tools required by selected inputs.  |
-| `sqz deps install [patterns...]`                    | Install missing tools for all formats or selected inputs.        |
-| `sqz doctor`                                        | Check Node, platform, update source, and the complete toolchain. |
-| `sqz update check` / `sqz update apply`             | Check or apply a global update.                                  |
-| `sqz commands`, `sqz help [command]`, `sqz version` | Discover the installed CLI.                                      |
+| Command                                             | Purpose                                                            |
+| --------------------------------------------------- | ------------------------------------------------------------------ |
+| `sqz compress [patterns...]`                        | Optimize images. `--profile standard \| max` selects the strategy. |
+| `sqz metadata strip [patterns...]`                  | Remove metadata without recompression. `sqz exif` is its alias.    |
+| `sqz deps doctor [patterns...]`                     | Check all tools, or only the tools required by selected inputs.    |
+| `sqz deps install [patterns...]`                    | Install missing tools for all formats or selected inputs.          |
+| `sqz doctor`                                        | Check Node, platform, update source, and the complete toolchain.   |
+| `sqz update check` / `sqz update apply`             | Check or apply a global update.                                    |
+| `sqz commands`, `sqz help [command]`, `sqz version` | Discover the installed CLI.                                        |
 
 `sqz` is the canonical binary; `squeezit` remains a full alias. `sqz` with no command shows help.
 
 ### Compression flags
 
-| Flag                      | Description                                                                                                |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--profile standard       | max`                                                                                                       | `max` preserves the former full/max behavior: heaviest lossless passes, metadata removal, threshold `0`, and a default concurrency cap of `2`. It cannot be combined with `--threshold`. |
-| `-r, --recursive`         | Recurse into input directories.                                                                            |
-| `-s, --strip-meta`        | Remove EXIF, IPTC, and XMP metadata during compression.                                                    |
-| `-d, --dry-run`           | Report potential changes without writing files.                                                            |
-| `-k, --keep-time`         | Preserve input timestamps.                                                                                 |
-| `-c, --concurrency <n>`   | Set worker count.                                                                                          |
-| `--progress auto          | off`                                                                                                       | Use TTY progress automatically or force streaming output.                                                                                                                                |
-| `-t, --threshold <bytes>` | Minimum bytes saved before replacement; invalid with `--profile max`.                                      |
-| `-i, --in-place`          | Create temporary artifacts beside source files.                                                            |
-| `-y, --yes`               | Confirm non-dry-run image changes without an interactive prompt. Required in JSON or non-interactive mode. |
-| `-v, --verbose`           | Print diagnostics to stderr, or include them in JSON output.                                               |
+| Flag                        | Description                                                                                                                                                                              |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--profile standard \| max` | `max` preserves the former full/max behavior: heaviest lossless passes, metadata removal, threshold `0`, and a default concurrency cap of `2`. It cannot be combined with `--threshold`. |
+| `-r, --recursive`           | Recurse into input directories.                                                                                                                                                          |
+| `-s, --strip-meta`          | Remove EXIF, IPTC, and XMP metadata during compression.                                                                                                                                  |
+| `-d, --dry-run`             | Report potential changes without writing files.                                                                                                                                          |
+| `-k, --keep-time`           | Preserve input timestamps.                                                                                                                                                               |
+| `-c, --concurrency <n>`     | Set worker count.                                                                                                                                                                        |
+| `--progress auto \| off`    | Use TTY progress automatically or force streaming output.                                                                                                                                |
+| `-t, --threshold <bytes>`   | Minimum bytes saved before replacement; invalid with `--profile max`.                                                                                                                    |
+| `-i, --in-place`            | Create temporary artifacts beside source files.                                                                                                                                          |
+| `-y, --yes`                 | Confirm non-dry-run image changes without an interactive prompt. Required in JSON or non-interactive mode.                                                                               |
+| `-v, --verbose`             | Print diagnostics to stderr, or include them in JSON output.                                                                                                                             |
 
 Patterns can be explicit paths, directories, shell patterns, or glob expressions. A `compress` command with no patterns scans supported image extensions in the current directory; scanning is non-recursive unless `--recursive` is supplied.
 

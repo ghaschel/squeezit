@@ -633,6 +633,253 @@
         "update",
         "check.js"
       ]
+    },
+    "plan:apply": {
+      "aliases": [],
+      "args": {
+        "plan": {
+          "description": "Path to the reviewed Squeezit optimization plan.",
+          "name": "plan",
+          "required": true
+        }
+      },
+      "description": "Apply a reviewed plan after verifying its files, runtime, and toolchain.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm application of the reviewed plan.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "progress": {
+          "description": "Progress display mode.",
+          "name": "progress",
+          "default": "auto",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "auto",
+            "off"
+          ],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "plan:apply",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "plan",
+        "apply.js"
+      ]
+    },
+    "plan:compress": {
+      "aliases": [],
+      "args": {
+        "patterns": {
+          "description": "Files, directories, or glob patterns to include in the plan.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Create a reviewable compression plan without changing images.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "output": {
+          "description": "Path for the new plan artifact.",
+          "name": "output",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "profile": {
+          "description": "Optimization profile recorded in the plan.",
+          "name": "profile",
+          "default": "standard",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "standard",
+            "max"
+          ],
+          "type": "option"
+        },
+        "strip-meta": {
+          "description": "Remove EXIF/IPTC/XMP metadata when the plan is applied.",
+          "name": "strip-meta",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "keep-time": {
+          "char": "k",
+          "description": "Preserve original atime/mtime when the plan is applied.",
+          "name": "keep-time",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "concurrency": {
+          "char": "c",
+          "description": "Concurrent workers recorded in the plan.",
+          "name": "concurrency",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "threshold": {
+          "description": "Minimum bytes saved before replacement.",
+          "name": "threshold",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "in-place": {
+          "description": "Create temporary artifacts next to source files when applying.",
+          "name": "in-place",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "plan:compress",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "plan",
+        "compress.js"
+      ]
+    },
+    "plan:metadata:strip": {
+      "aliases": [
+        "plan:exif"
+      ],
+      "args": {
+        "patterns": {
+          "description": "Files, directories, or glob patterns whose metadata should be removed.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Create a reviewable metadata-removal plan without changing images.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "output": {
+          "description": "Path for the new plan artifact.",
+          "name": "output",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "keep-time": {
+          "char": "k",
+          "description": "Preserve original atime/mtime when the plan is applied.",
+          "name": "keep-time",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "concurrency": {
+          "char": "c",
+          "description": "Concurrent workers recorded in the plan.",
+          "name": "concurrency",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "in-place": {
+          "description": "Create temporary artifacts next to source files when applying.",
+          "name": "in-place",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "plan:metadata:strip",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "plan",
+        "metadata",
+        "strip.js"
+      ]
     }
   },
   "version": "2.0.7"

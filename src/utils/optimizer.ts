@@ -107,16 +107,21 @@ const MAX_JXL_EFFORTS = [7, 9, 10, 11] as const;
 
 class SkippableOptimizationError extends Error {}
 
+export interface OptimizationInputGuard {
+  verify(input: ResolvedInput): Promise<void>;
+}
+
 export async function optimizeImages(
   inputs: ResolvedInput[],
   options: CoreOptimizationOptions,
-  onResult?: (result: OptimizationResult) => void
+  onResult?: (result: OptimizationResult) => void,
+  inputGuard?: OptimizationInputGuard
 ): Promise<Summary> {
   const startedAt = Date.now();
   const results: OptimizationResult[] = [];
 
   await runWithConcurrency(options.concurrency, inputs, async (input) => {
-    const result = await optimizeImage(input, options);
+    const result = await optimizeImage(input, options, inputGuard);
     results.push(result);
     onResult?.(result);
   });
@@ -157,7 +162,8 @@ export function summarizeOptimizationResults(
 
 export async function optimizeImage(
   input: ResolvedInput,
-  options: CoreOptimizationOptions
+  options: CoreOptimizationOptions,
+  inputGuard?: OptimizationInputGuard
 ): Promise<OptimizationResult> {
   try {
     if (options.exifOnly) {
@@ -171,6 +177,7 @@ export async function optimizeImage(
       }
 
       const originalStats = await stat(input.absolutePath);
+      await inputGuard?.verify(input);
       const workDir = await createWorkDirectory(
         input.absolutePath,
         options.inPlace
@@ -187,7 +194,8 @@ export async function optimizeImage(
             originalStats,
             input.outputPath ?? input.absolutePath,
             input.preserveOriginal ?? false,
-            options
+            options,
+            inputGuard
           );
         }
 
@@ -221,7 +229,8 @@ export async function optimizeImage(
           originalStats,
           input.outputPath ?? input.absolutePath,
           input.preserveOriginal ?? false,
-          options
+          options,
+          inputGuard
         );
       } finally {
         await remove(workDir);
@@ -242,6 +251,7 @@ export async function optimizeImage(
     }
 
     const originalStats = await stat(input.absolutePath);
+    await inputGuard?.verify(input);
     const workDir = await createWorkDirectory(
       input.absolutePath,
       options.inPlace
@@ -272,6 +282,7 @@ export async function optimizeImage(
           preserveOriginal &&
           targetPath !== input.absolutePath
         ) {
+          await inputGuard?.verify(input);
           await writeSkippedOutput({
             sourcePath: input.absolutePath,
             targetPath,
@@ -305,6 +316,7 @@ export async function optimizeImage(
         };
       }
 
+      await inputGuard?.verify(input);
       await applyReplacement({
         sourcePath: pipeline.outputPath,
         originalPath: input.absolutePath,
@@ -1131,7 +1143,8 @@ async function stripExifOnly(
   originalStats: Awaited<ReturnType<typeof stat>>,
   targetPath: string,
   preserveOriginal: boolean,
-  options: CoreOptimizationOptions
+  options: CoreOptimizationOptions,
+  inputGuard?: OptimizationInputGuard
 ): Promise<OptimizationResult> {
   await stripMetadata(workingInputPath);
 
@@ -1143,6 +1156,10 @@ async function stripExifOnly(
 
   if (!changed) {
     if (!options.dryRun && preserveOriginal && targetPath !== originalPath) {
+      await inputGuard?.verify({
+        absolutePath: originalPath,
+        displayPath: basename(originalPath),
+      });
       await writeSkippedOutput({
         sourcePath: originalPath,
         targetPath,
@@ -1166,6 +1183,10 @@ async function stripExifOnly(
 
   if (savedBytes < 0) {
     if (!options.dryRun && preserveOriginal && targetPath !== originalPath) {
+      await inputGuard?.verify({
+        absolutePath: originalPath,
+        displayPath: basename(originalPath),
+      });
       await writeSkippedOutput({
         sourcePath: originalPath,
         targetPath,
@@ -1199,6 +1220,10 @@ async function stripExifOnly(
     };
   }
 
+  await inputGuard?.verify({
+    absolutePath: originalPath,
+    displayPath: basename(originalPath),
+  });
   await applyReplacement({
     sourcePath: workingInputPath,
     originalPath,
@@ -1227,7 +1252,8 @@ async function stripSvgMetadataOnly(
   originalStats: Awaited<ReturnType<typeof stat>>,
   targetPath: string,
   preserveOriginal: boolean,
-  options: CoreOptimizationOptions
+  options: CoreOptimizationOptions,
+  inputGuard?: OptimizationInputGuard
 ): Promise<OptimizationResult> {
   const optimizedPath = join(workDir, "svg-metadata-only.svg");
   await stripSvgMetadata(workingInputPath, optimizedPath);
@@ -1240,6 +1266,10 @@ async function stripSvgMetadataOnly(
 
   if (!changed) {
     if (!options.dryRun && preserveOriginal && targetPath !== originalPath) {
+      await inputGuard?.verify({
+        absolutePath: originalPath,
+        displayPath: basename(originalPath),
+      });
       await writeSkippedOutput({
         sourcePath: originalPath,
         targetPath,
@@ -1263,6 +1293,10 @@ async function stripSvgMetadataOnly(
 
   if (savedBytes < 0) {
     if (!options.dryRun && preserveOriginal && targetPath !== originalPath) {
+      await inputGuard?.verify({
+        absolutePath: originalPath,
+        displayPath: basename(originalPath),
+      });
       await writeSkippedOutput({
         sourcePath: originalPath,
         targetPath,
@@ -1296,6 +1330,10 @@ async function stripSvgMetadataOnly(
     };
   }
 
+  await inputGuard?.verify({
+    absolutePath: originalPath,
+    displayPath: basename(originalPath),
+  });
   await applyReplacement({
     sourcePath: optimizedPath,
     originalPath,

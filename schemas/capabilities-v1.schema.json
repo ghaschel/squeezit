@@ -13,10 +13,11 @@
     "schemas": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["capabilities", "envelope"],
+      "required": ["capabilities", "envelope", "optimizationPlan"],
       "properties": {
         "capabilities": { "$ref": "#/$defs/schemaLocation" },
-        "envelope": { "$ref": "#/$defs/schemaLocation" }
+        "envelope": { "$ref": "#/$defs/schemaLocation" },
+        "optimizationPlan": { "$ref": "#/$defs/schemaLocation" }
       }
     }
   },

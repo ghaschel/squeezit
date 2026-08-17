@@ -51,6 +51,42 @@
     {
       "if": {
         "properties": {
+          "command": { "const": "plan compress" },
+          "ok": { "const": true }
+        },
+        "required": ["command", "ok"]
+      },
+      "then": {
+        "properties": { "data": { "$ref": "#/$defs/planCreationData" } }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": { "const": "plan metadata strip" },
+          "ok": { "const": true }
+        },
+        "required": ["command", "ok"]
+      },
+      "then": {
+        "properties": { "data": { "$ref": "#/$defs/planCreationData" } }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "command": { "const": "plan apply" },
+          "ok": { "const": true }
+        },
+        "required": ["command", "ok"]
+      },
+      "then": {
+        "properties": { "data": { "$ref": "#/$defs/planApplyData" } }
+      }
+    },
+    {
+      "if": {
+        "properties": {
           "command": { "const": "metadata strip" },
           "ok": { "const": true }
         },
@@ -213,6 +249,11 @@
             "DEPENDENCY_MISSING",
             "INTERNAL_ERROR",
             "OPERATION_CANCELLED",
+            "PLAN_INPUT_CHANGED",
+            "PLAN_INVALID",
+            "PLAN_OUTPUT_EXISTS",
+            "PLAN_RUNTIME_CHANGED",
+            "PLAN_TOOL_CHANGED",
             "SHADOWED_INSTALLATION",
             "STALE_INSTALLATION",
             "UNKNOWN_COMMAND",
@@ -259,6 +300,29 @@
         "diagnostics": { "type": "array", "items": { "type": "string" } }
       },
       "additionalProperties": false
+    },
+    "planApplyData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["plan", "report"],
+      "properties": {
+        "plan": { "$ref": "optimization-plan-v1.schema.json" },
+        "report": { "$ref": "#/$defs/optimizationData" }
+      }
+    },
+    "planCreationData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["output", "plan"],
+      "properties": {
+        "output": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path"],
+          "properties": { "path": { "type": "string", "minLength": 1 } }
+        },
+        "plan": { "$ref": "optimization-plan-v1.schema.json" }
+      }
     },
     "updateApplyData": { "type": "object" },
     "updateCheckData": { "type": "object" },

@@ -36,12 +36,17 @@ describe("documentation coverage", () => {
 
     expect(readme).toContain("sqz compress [patterns...]");
     expect(readme).toContain("sqz metadata strip [patterns...]");
+    expect(readme).toContain(
+      "sqz plan compress [patterns...] --output <plan.json>"
+    );
+    expect(readme).toContain("sqz plan apply <plan.json> --yes");
     expect(readme).toContain("sqz deps doctor [patterns...]");
     expect(readme).toContain("sqz update check");
     expect(readme).toContain("sqz autocomplete zsh");
     expect(readme).toContain('"schemaVersion": 2');
     expect(readme).toContain("sqz capabilities --json");
     expect(readme).toContain("docs/agent-contract.md");
+    expect(readme).toContain("optimization-plan-v1.schema.json");
     expect(readme).toContain("## Migrating to 2.0");
   });
 

@@ -8,7 +8,11 @@ import type {
   ResolvedInput,
   Summary,
 } from "../types";
-import { optimizeImage, summarizeOptimizationResults } from "./optimizer";
+import {
+  type OptimizationInputGuard,
+  optimizeImage,
+  summarizeOptimizationResults,
+} from "./optimizer";
 
 interface StdoutCapabilities {
   isTTY?: boolean;
@@ -40,7 +44,8 @@ export function shouldUseInteractiveProgress(
 
 export async function runInteractiveOptimizations(
   inputs: ResolvedInput[],
-  options: CoreOptimizationOptions
+  options: CoreOptimizationOptions,
+  inputGuard?: OptimizationInputGuard
 ): Promise<InteractiveOptimizationRun> {
   const startedAt = Date.now();
   const resultSlots = new Array<OptimizationResult>(inputs.length);
@@ -48,7 +53,7 @@ export async function runInteractiveOptimizations(
     inputs.map((input, index) => ({
       title: input.displayPath,
       task: async (_context, task) => {
-        const result = await optimizeImage(input, options);
+        const result = await optimizeImage(input, options, inputGuard);
         resultSlots[index] = result;
 
         if (result.status === "skipped") {

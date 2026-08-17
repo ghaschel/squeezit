@@ -65,6 +65,10 @@ describe("agent-facing JSON CLI contract", () => {
           "compress",
           "metadata strip",
           "exif",
+          "plan compress",
+          "plan metadata strip",
+          "plan exif",
+          "plan apply",
           "deps doctor",
           "deps install",
           "doctor",
@@ -117,7 +121,12 @@ describe("agent-facing JSON CLI contract", () => {
       command: "help",
       data: {
         requestedCommand: null,
-        commands: expect.arrayContaining(["compress", "metadata strip"]),
+        commands: expect.arrayContaining([
+          "compress",
+          "metadata strip",
+          "plan compress",
+          "plan apply",
+        ]),
       },
       ok: true,
     });

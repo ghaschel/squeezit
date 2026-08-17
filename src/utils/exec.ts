@@ -28,7 +28,7 @@ export async function runCommand(
   });
 
   return {
-    exitCode: result.exitCode ?? 0,
+    exitCode: result.exitCode ?? 1,
     stdout: result.stdout ?? "",
     stderr: result.stderr ?? "",
     all:

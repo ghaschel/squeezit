@@ -75,12 +75,13 @@ export default class MetadataStrip extends SqueezitCommand {
     const report = await optimizeCommand(
       options,
       "metadata strip",
-      this.jsonEnabled(),
+      this.machineOutputEnabled(),
       {
         assumeYes: flags.yes,
         confirm: (inputCount) =>
           confirmImageOptimization("metadata strip", inputCount),
-      }
+      },
+      this.eventReporter()
     );
 
     if (this.jsonEnabled()) {

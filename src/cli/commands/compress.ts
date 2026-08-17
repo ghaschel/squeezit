@@ -22,6 +22,7 @@ import {
   shouldUseInteractiveProgress,
 } from "../../utils";
 import { SqueezitCommand } from "../base-command";
+import type { CommandProgressReporter } from "../events";
 import { requiresExplicitConfirmation, SqueezitError } from "../output";
 
 export default class Compress extends SqueezitCommand {
@@ -105,12 +106,13 @@ export default class Compress extends SqueezitCommand {
     const report = await optimizeCommand(
       options,
       "compress",
-      this.jsonEnabled(),
+      this.machineOutputEnabled(),
       {
         assumeYes: flags.yes,
         confirm: (inputCount) =>
           confirmImageOptimization("compress", inputCount),
-      }
+      },
+      this.eventReporter()
     );
 
     if (this.jsonEnabled()) {
@@ -124,13 +126,17 @@ export default class Compress extends SqueezitCommand {
 export async function optimizeCommand(
   options: CompressCommandOptions,
   command: string,
-  json: boolean,
+  machineOutput: boolean,
   confirmation: {
     assumeYes?: boolean;
     confirm: (inputCount: number) => Promise<boolean>;
-  }
+  },
+  events?: CommandProgressReporter
 ): Promise<OptimizationCommandReport> {
-  const discoverySpinner = json ? null : ora("Resolving image inputs").start();
+  const discoverySpinner = machineOutput
+    ? null
+    : ora("Resolving image inputs").start();
+  events?.phaseStarted("input-discovery");
   const [inputs, unsupportedInputs] = await Promise.all([
     resolveInputs(options),
     findUnsupportedExplicitInputs(options),
@@ -146,6 +152,8 @@ export async function optimizeCommand(
     });
   }
 
+  events?.phaseCompleted("input-discovery", { inputs: inputs.length });
+
   if (inputs.length === 0) {
     discoverySpinner?.warn("No matching image files found.");
   } else {
@@ -154,7 +162,15 @@ export async function optimizeCommand(
     );
   }
 
-  return optimizeResolvedInputs(inputs, options, command, json, confirmation);
+  return optimizeResolvedInputs(
+    inputs,
+    options,
+    command,
+    machineOutput,
+    confirmation,
+    undefined,
+    events
+  );
 }
 
 export interface OptimizationCommandReport {
@@ -168,12 +184,13 @@ export async function optimizeResolvedInputs(
   inputs: ResolvedInput[],
   options: CompressCommandOptions,
   command: string,
-  json: boolean,
+  machineOutput: boolean,
   confirmation: {
     assumeYes?: boolean;
     confirm: (inputCount: number) => Promise<boolean>;
   },
-  inputGuard?: OptimizationInputGuard
+  inputGuard?: OptimizationInputGuard,
+  events?: CommandProgressReporter
 ): Promise<{
   diagnostics?: string[];
   inputs: number;
@@ -183,7 +200,7 @@ export async function optimizeResolvedInputs(
   const diagnostics: string[] = [];
   const note = (message: string) => {
     diagnostics.push(message);
-    if (options.verbose && !json) {
+    if (options.verbose && !machineOutput) {
       process.stderr.write(`${message}\n`);
     }
   };
@@ -198,17 +215,18 @@ export async function optimizeResolvedInputs(
   }
 
   if (!options.dryRun) {
+    events?.phaseStarted("confirmation", { command });
     if (
       !confirmation.assumeYes &&
       requiresExplicitConfirmation({
-        json,
+        machineOutput,
         isTty: Boolean(process.stdin.isTTY && process.stdout.isTTY),
       })
     ) {
       throw new SqueezitError({
         code: "CONFIRMATION_REQUIRED",
         details: { command },
-        message: `--yes is required for ${command} in JSON or non-interactive mode.`,
+        message: `--yes is required for ${command} in JSON, JSON Lines, or non-interactive mode.`,
         remediation:
           "Re-run with --yes after reviewing the files that will change.",
       });
@@ -225,13 +243,16 @@ export async function optimizeResolvedInputs(
           "Re-run the command and confirm the operation when prompted.",
       });
     }
+    events?.phaseCompleted("confirmation", { approved: true });
   }
   note(`Resolved ${inputs.length} input file(s).`);
+  events?.phaseStarted("dependency-validation");
   await ensureDependencies({ ...options, installDeps: false }, inputs, {
-    silent: json,
+    silent: machineOutput,
   });
+  events?.phaseCompleted("dependency-validation");
 
-  if (!json) {
+  if (!machineOutput) {
     console.log("");
     console.log(
       chalk.dim(
@@ -241,13 +262,20 @@ export async function optimizeResolvedInputs(
     console.log("");
   }
 
-  const interactive = shouldUseInteractiveProgress(options);
+  const interactive = !machineOutput && shouldUseInteractiveProgress(options);
   note(`Progress renderer: ${interactive ? "TTY interactive" : "streaming"}.`);
+  events?.phaseStarted("optimization");
   const { results, summary } = interactive
-    ? await runInteractiveOptimizations(inputs, options, inputGuard)
-    : await runStreaming(inputs, options, json, inputGuard);
+    ? await runInteractiveOptimizations(
+        inputs,
+        options,
+        inputGuard,
+        lifecycleReporter(events)
+      )
+    : await runStreaming(inputs, options, machineOutput, inputGuard, events);
+  events?.phaseCompleted("optimization", { processed: summary.processed });
 
-  if (!json) {
+  if (!machineOutput) {
     if (interactive) {
       for (const result of results) {
         console.log(formatOptimizationResult(result));
@@ -268,8 +296,9 @@ export async function optimizeResolvedInputs(
 async function runStreaming(
   inputs: ResolvedInput[],
   options: CompressCommandOptions,
-  json: boolean,
-  inputGuard?: OptimizationInputGuard
+  machineOutput: boolean,
+  inputGuard?: OptimizationInputGuard,
+  events?: CommandProgressReporter
 ): Promise<{
   results: OptimizationResult[];
   summary: Awaited<ReturnType<typeof optimizeImages>>;
@@ -280,14 +309,32 @@ async function runStreaming(
     options,
     (result) => {
       results.push(result);
-      if (!json) {
+      if (!machineOutput) {
         logOptimizationResult(result);
       }
     },
-    inputGuard
+    inputGuard,
+    lifecycleReporter(events)
   );
 
   return { results, summary };
+}
+
+function lifecycleReporter(events?: CommandProgressReporter) {
+  return events
+    ? {
+        onInputCompleted: (
+          input: ResolvedInput,
+          index: number,
+          result: OptimizationResult
+        ) =>
+          events.inputCompleted(index, input.absolutePath, {
+            result,
+          }),
+        onInputStarted: (input: ResolvedInput, index: number) =>
+          events.inputStarted(index, input.absolutePath),
+      }
+    : undefined;
 }
 
 function emptySummary(): Awaited<ReturnType<typeof optimizeImages>> {

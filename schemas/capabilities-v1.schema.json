@@ -13,10 +13,11 @@
     "schemas": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["capabilities", "envelope", "optimizationPlan"],
+      "required": ["capabilities", "envelope", "events", "optimizationPlan"],
       "properties": {
         "capabilities": { "$ref": "#/$defs/schemaLocation" },
         "envelope": { "$ref": "#/$defs/schemaLocation" },
+        "events": { "$ref": "#/$defs/schemaLocation" },
         "optimizationPlan": { "$ref": "#/$defs/schemaLocation" }
       }
     }
@@ -42,6 +43,7 @@
         "confirmation",
         "description",
         "effects",
+        "events",
         "flags",
         "id",
         "json",
@@ -62,6 +64,7 @@
         },
         "description": { "type": ["string", "null"] },
         "effects": { "type": "array", "items": { "type": "string" } },
+        "events": { "$ref": "#/$defs/events" },
         "flags": { "type": "array", "items": { "$ref": "#/$defs/flag" } },
         "id": { "type": "string" },
         "json": { "type": "boolean" },
@@ -89,6 +92,16 @@
         "options": { "type": "array", "items": { "type": "string" } },
         "required": { "type": "boolean" },
         "type": { "type": "string" }
+      }
+    },
+    "events": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "lifecycle", "schema"],
+      "properties": {
+        "format": { "type": ["string", "null"] },
+        "lifecycle": { "type": "array", "items": { "type": "string" } },
+        "schema": { "type": ["string", "null"] }
       }
     },
     "schemaLocation": {

@@ -111,20 +111,36 @@ export interface OptimizationInputGuard {
   verify(input: ResolvedInput): Promise<void>;
 }
 
+export interface OptimizationLifecycle {
+  onInputCompleted?: (
+    input: ResolvedInput,
+    index: number,
+    result: OptimizationResult
+  ) => void;
+  onInputStarted?: (input: ResolvedInput, index: number) => void;
+}
+
 export async function optimizeImages(
   inputs: ResolvedInput[],
   options: CoreOptimizationOptions,
   onResult?: (result: OptimizationResult) => void,
-  inputGuard?: OptimizationInputGuard
+  inputGuard?: OptimizationInputGuard,
+  lifecycle?: OptimizationLifecycle
 ): Promise<Summary> {
   const startedAt = Date.now();
   const results: OptimizationResult[] = [];
 
-  await runWithConcurrency(options.concurrency, inputs, async (input) => {
-    const result = await optimizeImage(input, options, inputGuard);
-    results.push(result);
-    onResult?.(result);
-  });
+  await runWithConcurrency(
+    options.concurrency,
+    inputs,
+    async (input, index) => {
+      lifecycle?.onInputStarted?.(input, index);
+      const result = await optimizeImage(input, options, inputGuard);
+      results.push(result);
+      onResult?.(result);
+      lifecycle?.onInputCompleted?.(input, index, result);
+    }
+  );
 
   return summarizeOptimizationResults(results, startedAt);
 }
@@ -1895,10 +1911,10 @@ function formatByteCount(bytes: number): string {
 async function runWithConcurrency<T>(
   limit: number,
   items: T[],
-  worker: (item: T) => Promise<void>
+  worker: (item: T, index: number) => Promise<void>
 ): Promise<void> {
   const concurrency = Math.max(1, limit);
-  const iterator = items[Symbol.iterator]();
+  const iterator = items.entries();
 
   await Promise.all(
     Array.from(
@@ -1910,7 +1926,7 @@ async function runWithConcurrency<T>(
             return;
           }
 
-          await worker(next.value);
+          await worker(next.value[1], next.value[0]);
         }
       }
     )

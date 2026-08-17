@@ -51,13 +51,19 @@ export default class DependenciesDoctor extends SqueezitCommand {
       },
       process.cwd()
     );
+    this.phaseStarted("input-discovery");
     const inputs = await resolveInputs(options);
+    this.phaseCompleted("input-discovery", { inputs: inputs.length });
     const dependencies = collectRequiredDependencies(
       inputs,
       options,
       (args.patterns?.length ?? 0) === 0
     );
+    this.phaseStarted("dependency-validation");
     const diagnostics = await diagnoseDependencies(dependencies);
+    this.phaseCompleted("dependency-validation", {
+      tools: diagnostics.length,
+    });
     const ok = diagnostics.every(
       (diagnostic) => diagnostic.status === "healthy"
     );

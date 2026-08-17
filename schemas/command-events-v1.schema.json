@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ghaschel/squeezit/schemas/command-events-v1.schema.json",
+  "title": "Squeezit command events v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command",
+    "event",
+    "runId",
+    "schemaVersion",
+    "sequence",
+    "timestamp"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "command": { "type": "string", "minLength": 1 },
+    "event": {
+      "enum": [
+        "command.completed",
+        "command.failed",
+        "command.started",
+        "input.completed",
+        "input.started",
+        "phase.completed",
+        "phase.started"
+      ]
+    },
+    "runId": { "type": "string", "format": "uuid" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "data": { "type": "object" },
+    "error": { "$ref": "#/$defs/issue" },
+    "input": { "$ref": "#/$defs/input" },
+    "meta": { "$ref": "#/$defs/meta" },
+    "ok": { "type": "boolean" },
+    "phase": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "event": { "const": "command.started" } },
+        "required": ["event"]
+      },
+      "then": { "required": ["meta"] }
+    },
+    {
+      "if": {
+        "properties": {
+          "event": { "enum": ["phase.started", "phase.completed"] }
+        },
+        "required": ["event"]
+      },
+      "then": { "required": ["phase"] }
+    },
+    {
+      "if": {
+        "properties": {
+          "event": { "enum": ["input.started", "input.completed"] }
+        },
+        "required": ["event"]
+      },
+      "then": { "required": ["input"] }
+    },
+    {
+      "if": {
+        "properties": {
+          "event": { "enum": ["command.completed", "command.failed"] }
+        },
+        "required": ["event"]
+      },
+      "then": { "required": ["data", "ok"] }
+    },
+    {
+      "if": {
+        "properties": { "event": { "const": "command.failed" } },
+        "required": ["event"]
+      },
+      "then": {
+        "required": ["error"],
+        "properties": { "ok": { "const": false } }
+      }
+    }
+  ],
+  "$defs": {
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "path"],
+      "properties": {
+        "index": { "type": "integer", "minimum": 0 },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "remediation"],
+      "properties": {
+        "code": {
+          "enum": [
+            "CONFIRMATION_REQUIRED",
+            "DEPENDENCY_MISSING",
+            "INTERNAL_ERROR",
+            "OPERATION_CANCELLED",
+            "PLAN_INPUT_CHANGED",
+            "PLAN_INVALID",
+            "PLAN_OUTPUT_EXISTS",
+            "PLAN_RUNTIME_CHANGED",
+            "PLAN_TOOL_CHANGED",
+            "SHADOWED_INSTALLATION",
+            "STALE_INSTALLATION",
+            "UNKNOWN_COMMAND",
+            "UNSUPPORTED_FORMAT",
+            "UNSUPPORTED_PLATFORM",
+            "UPDATE_UNAVAILABLE",
+            "VALIDATION_ERROR"
+          ]
+        },
+        "message": { "type": "string" },
+        "remediation": { "type": "string" },
+        "details": { "type": "object" }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cwd",
+        "executablePath",
+        "invocationPath",
+        "nodeVersion",
+        "packageRoot",
+        "platform",
+        "squeezitVersion"
+      ],
+      "properties": {
+        "cwd": { "type": "string" },
+        "executablePath": { "type": "string" },
+        "invocationPath": { "type": "string" },
+        "nodeVersion": { "type": "string" },
+        "packageRoot": { "type": "string" },
+        "platform": { "type": "string", "pattern": "^[a-z0-9]+-[a-z0-9]+$" },
+        "squeezitVersion": { "type": "string" }
+      }
+    }
+  }
+}

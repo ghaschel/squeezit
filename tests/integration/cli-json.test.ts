@@ -233,7 +233,7 @@ describe("agent-facing JSON CLI contract", () => {
         data: {},
         error: {
           code: "CONFIRMATION_REQUIRED",
-          message: `--yes is required for ${command} in JSON or non-interactive mode.`,
+          message: `--yes is required for ${command} in JSON, JSON Lines, or non-interactive mode.`,
         },
       });
       expect(await hashFile(input)).toBe(before);

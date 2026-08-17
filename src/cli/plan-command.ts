@@ -1,6 +1,7 @@
 import type { CompressCommandOptions, ResolvedInput } from "../types";
 import type { OptimizationInputGuard } from "../utils";
 import { findUnsupportedExplicitInputs, resolveInputs } from "../utils";
+import type { CommandProgressReporter } from "./events";
 import {
   createOptimizationPlan,
   type OptimizationPlan,
@@ -20,10 +21,12 @@ export async function createPlanArtifact(params: {
   options: CompressCommandOptions;
   output: string;
   runtime: PlanRuntimeSnapshot;
+  events?: CommandProgressReporter;
 }): Promise<{
   output: { path: string };
   plan: OptimizationPlan;
 }> {
+  params.events?.phaseStarted("input-discovery");
   const [inputs, unsupportedInputs] = await Promise.all([
     resolveInputs(params.options),
     findUnsupportedExplicitInputs(params.options),
@@ -38,19 +41,41 @@ export async function createPlanArtifact(params: {
     });
   }
 
+  params.events?.phaseCompleted("input-discovery", { inputs: inputs.length });
+
+  params.events?.phaseStarted("dependency-validation");
+  const tools = await snapshotPlanTools(inputs, params.options, true);
+  params.events?.phaseCompleted("dependency-validation");
+
+  params.events?.phaseStarted("fingerprinting");
   const plan = await createOptimizationPlan({
     inputs,
+    lifecycle: params.events
+      ? {
+          onInputCompleted: (input, index, fingerprint) =>
+            params.events?.inputCompleted(index, input.absolutePath, {
+              fingerprint,
+            }),
+          onInputStarted: (input, index) =>
+            params.events?.inputStarted(index, input.absolutePath),
+        }
+      : undefined,
     operation: params.operation,
     options: toPlanOptions(params.options),
     runtime: params.runtime,
-    tools: await snapshotPlanTools(inputs, params.options, true),
+    tools,
   });
+  params.events?.phaseCompleted("fingerprinting", { inputs: inputs.length });
+
+  params.events?.phaseStarted("plan-writing");
   const output = await writeOptimizationPlan(params.output, plan);
+  params.events?.phaseCompleted("plan-writing", { path: output });
 
   return { output: { path: output }, plan };
 }
 
 export async function preparePlanApply(params: {
+  events?: CommandProgressReporter;
   path: string;
   runtime: PlanRuntimeSnapshot;
   verbose: boolean;
@@ -63,11 +88,13 @@ export async function preparePlanApply(params: {
 }> {
   const plan = await readOptimizationPlan(params.path);
   const options = optionsFromPlan(plan, params);
+  params.events?.phaseStarted("dependency-validation");
   const tools = await snapshotPlanTools(
     plan.inputs.map(toResolvedInput),
     options,
     false
   );
+  params.events?.phaseCompleted("dependency-validation");
   const inputs = await verifyOptimizationPlan({
     plan,
     runtime: params.runtime,

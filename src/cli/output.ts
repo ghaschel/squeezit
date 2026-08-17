@@ -123,8 +123,8 @@ export function toSqueezitIssue(error: unknown): SqueezitIssue {
 }
 
 export function requiresExplicitConfirmation(options: {
-  json: boolean;
+  machineOutput: boolean;
   isTty: boolean;
 }): boolean {
-  return options.json || !options.isTty;
+  return options.machineOutput || !options.isTty;
 }

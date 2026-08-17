@@ -388,7 +388,7 @@ sqz <command> [arguments] [flags]
 | `--progress auto \| off`    | Use TTY progress automatically or force streaming output.                                                                                                                                |
 | `-t, --threshold <bytes>`   | Minimum bytes saved before replacement; invalid with `--profile max`.                                                                                                                    |
 | `-i, --in-place`            | Create temporary artifacts beside source files.                                                                                                                                          |
-| `-y, --yes`                 | Confirm non-dry-run image changes without an interactive prompt. Required in JSON or non-interactive mode.                                                                               |
+| `-y, --yes`                 | Confirm non-dry-run image changes without an interactive prompt. Required in JSON, JSON Lines, or non-interactive mode.                                                                  |
 | `-v, --verbose`             | Print diagnostics to stderr, or include them in JSON output.                                                                                                                             |
 
 Patterns can be explicit paths, directories, shell patterns, or glob expressions. A `compress` command with no patterns scans supported image extensions in the current directory; scanning is non-recursive unless `--recursive` is supplied.
@@ -398,6 +398,10 @@ Patterns can be explicit paths, directories, shell patterns, or glob expressions
 With the default `--progress auto`, Squeezit shows a transient concurrent task list in supported interactive terminals. When every file has finished, it clears that live view and prints the usual durable per-file report in discovery order, followed by the summary.
 
 The interactive view is enabled only when stdout is a TTY, `TERM` is not `dumb`, and `CI` is unset. In CI, redirected output, and unsupported terminals, Squeezit keeps the existing streaming result lines as each file finishes. Use `--progress off` to choose that streaming output explicitly.
+
+`--events jsonl` is a machine-output mode, so it always suppresses the TTY
+renderer and prose output. It writes structured progress records instead; see
+[JSON and automation](#json-and-automation).
 
 ### Reviewable plan and apply workflow
 
@@ -573,7 +577,7 @@ sqz deps install
 sqz deps install "images/**/*.{png,jpg}"
 ```
 
-`deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON or non-interactive environments; piping an affirmative response is intentionally unsupported.
+`deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON, JSON Lines, or non-interactive environments; piping an affirmative response is intentionally unsupported.
 
 On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.1.0, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo first if it is not already available. Debian/Ubuntu does not provide a supported MozJPEG package: install MozJPEG yourself and point `SQUEEZIT_MOZJPEGTRAN` at its `jpegtran` executable. Squeezit intentionally does not substitute `jpeg-turbo` for MozJPEG.
 
@@ -627,12 +631,28 @@ Every Squeezit-owned operational/display command accepts `--json` and writes exa
 
 Expected unhealthy states set `ok` to `false` and exit with code `1`. Failures include `error.code`, `error.message`, `error.remediation`, and optional structured `error.details`, so automation can branch on stable semantics rather than text. Human diagnostics go to stderr with `--verbose`; JSON places them in `data.diagnostics`.
 
-Start an automated integration with `sqz capabilities --json`: it reports every command, alias, argument, flag/default/enum, side effect, confirmation policy, and output-schema reference. `sqz doctor --json` also detects stale or shadowed Squeezit binaries on `PATH`; these installation warnings remain visible without making runtime/tool readiness unhealthy. The complete contract, error-code reference, and schema locations are in the [agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md). The upstream `sqz autocomplete` command is the only intentional exception to this JSON contract.
+For a large job that an orchestrator must observe while it runs, use the
+separate JSON Lines transport instead:
+
+```bash
+sqz compress "images/**/*.{png,jpg}" --dry-run --events jsonl
+```
+
+Each stdout line is a JSON event. `command.started` is first and contains the
+same runtime provenance as `--json`; phase and per-file events follow as work
+progresses; exactly one `command.completed` or `command.failed` record ends the
+run. All records share a UUID `runId` and monotonically increasing `sequence`.
+The terminal record has the same `ok`, `data`, and typed `error` semantics as
+the final JSON envelope. JSON Lines never emits spinners or prose, and it is
+mutually exclusive with `--json`.
+
+Start an automated integration with `sqz capabilities --json`: it reports every command, alias, argument, flag/default/enum, side effect, confirmation policy, JSON Lines lifecycle, and output-schema reference. `sqz doctor --json` also detects stale or shadowed Squeezit binaries on `PATH`; these installation warnings remain visible without making runtime/tool readiness unhealthy. The complete contract, error-code reference, and schema locations are in the [agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md). The upstream `sqz autocomplete` command is the only intentional exception to this JSON contract.
 
 The same capability response reports the version-pinned local and unpkg
-locations of `schemas/optimization-plan-v1.schema.json`. Agents can create a
-plan, review its digest/input/tool snapshot, and invoke `sqz plan apply <plan.json> --yes`
-only when the reviewed plan remains valid.
+locations of `schemas/optimization-plan-v1.schema.json` and
+`schemas/command-events-v1.schema.json`. Agents can create a plan, review its
+digest/input/tool snapshot, and invoke `sqz plan apply <plan.json> --yes` only
+when the reviewed plan remains valid.
 
 ### Shell completion
 

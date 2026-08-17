@@ -25,10 +25,11 @@ export default class UpdateApply extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { flags } = await this.parse(UpdateApply);
+    this.phaseStarted("confirmation", { operation: "update apply" });
     if (
       !flags.yes &&
       requiresExplicitConfirmation({
-        json: this.jsonEnabled(),
+        machineOutput: this.machineOutputEnabled(),
         isTty: Boolean(process.stdin.isTTY && process.stdout.isTTY),
       })
     ) {
@@ -40,9 +41,13 @@ export default class UpdateApply extends SqueezitCommand {
           "Re-run with --yes after reviewing the selected update source.",
       });
     }
+    this.phaseCompleted("confirmation", { approved: true });
     const service = defaultUpdateService();
     const request = runtimeRequest(flags.pm);
+    this.phaseStarted("update-check");
     const checked = await service.check(request);
+    this.phaseCompleted("update-check", { ok: checked.ok });
+    this.phaseStarted("update-application");
     const result = await service.apply(
       request,
       async () => {
@@ -55,6 +60,10 @@ export default class UpdateApply extends SqueezitCommand {
         );
       },
       checked
+    );
+    this.phaseCompleted(
+      "update-application",
+      result.ok ? { status: result.status } : { code: result.code }
     );
     const ok = result.ok && result.status !== "cancelled";
     process.exitCode = ok ? 0 : 1;

@@ -64,11 +64,13 @@ export default class PlanMetadataStrip extends SqueezitCommand {
     const data = await createPlanArtifact({
       operation: "metadata strip",
       options,
+      events: this.eventReporter(),
       output: flags.output,
       runtime: runtimeSnapshot({ squeezitVersion: this.config.version }),
     });
 
-    if (this.jsonEnabled()) return this.emit("plan metadata strip", data);
+    if (this.machineOutputEnabled())
+      return this.emit("plan metadata strip", data);
 
     this.log(
       `Created metadata plan for ${data.plan.inputs.length} input${data.plan.inputs.length === 1 ? "" : "s"}: ${data.output.path}`

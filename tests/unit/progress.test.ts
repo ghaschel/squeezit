@@ -240,6 +240,28 @@ describe("interactive optimization runner", () => {
       guard
     );
   });
+
+  test("reports concurrent input lifecycle with stable discovery indexes", async () => {
+    hoisted.optimizeImage.mockImplementation(async (input: ResolvedInput) => {
+      await delay(input.displayPath === "first.png" ? 20 : 1);
+      return resultFor(input, "optimized");
+    });
+    const events: string[] = [];
+
+    await runInteractiveOptimizations(inputs, options, undefined, {
+      onInputCompleted: (_input, index) => events.push(`completed:${index}`),
+      onInputStarted: (_input, index) => events.push(`started:${index}`),
+    });
+
+    expect(events).toEqual([
+      "started:0",
+      "started:1",
+      "completed:1",
+      "started:2",
+      "completed:2",
+      "completed:0",
+    ]);
+  });
 });
 
 function resultFor(

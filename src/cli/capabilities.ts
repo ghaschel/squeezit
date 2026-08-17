@@ -11,6 +11,11 @@ export interface CommandCapability {
   confirmation: { requiredWhen: string };
   description: string | null;
   effects: string[];
+  events: {
+    format: "jsonl" | null;
+    lifecycle: string[];
+    schema: string | null;
+  };
   flags: Array<{
     char: string | null;
     default: unknown;
@@ -25,6 +30,34 @@ export interface CommandCapability {
   origin: "external" | "squeezit";
   outputSchema: string | null;
 }
+
+const EVENT_SCHEMA_PATH = "schemas/command-events-v1.schema.json";
+const TERMINAL_EVENT_LIFECYCLE = [
+  "command.started",
+  "command.completed",
+  "command.failed",
+];
+const PHASE_EVENT_LIFECYCLE = ["phase.started", "phase.completed"];
+const INPUT_EVENT_LIFECYCLE = ["input.started", "input.completed"];
+const PHASE_COMMANDS = new Set([
+  "compress",
+  "deps doctor",
+  "deps install",
+  "doctor",
+  "metadata strip",
+  "plan apply",
+  "plan compress",
+  "plan metadata strip",
+  "update apply",
+  "update check",
+]);
+const INPUT_COMMANDS = new Set([
+  "compress",
+  "metadata strip",
+  "plan apply",
+  "plan compress",
+  "plan metadata strip",
+]);
 
 interface CommandSemantics {
   confirmation: { requiredWhen: string };
@@ -47,7 +80,7 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
   },
   compress: {
     confirmation: {
-      requiredWhen: "writes-files-in-json-or-non-interactive-mode",
+      requiredWhen: "writes-files-in-json-events-or-non-interactive-mode",
     },
     effects: ["writes-files"],
     outputSchema: "#/$defs/optimizationData",
@@ -59,7 +92,8 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
   },
   "deps install": {
     confirmation: {
-      requiredWhen: "installs-dependencies-in-json-or-non-interactive-mode",
+      requiredWhen:
+        "installs-dependencies-in-json-events-or-non-interactive-mode",
     },
     effects: ["installs-dependencies"],
     outputSchema: "#/$defs/dependenciesInstallData",
@@ -76,7 +110,7 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
   },
   "metadata strip": {
     confirmation: {
-      requiredWhen: "writes-files-in-json-or-non-interactive-mode",
+      requiredWhen: "writes-files-in-json-events-or-non-interactive-mode",
     },
     effects: ["writes-files"],
     outputSchema: "#/$defs/optimizationData",
@@ -98,7 +132,8 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
   },
   "update apply": {
     confirmation: {
-      requiredWhen: "updates-installation-in-json-or-non-interactive-mode",
+      requiredWhen:
+        "updates-installation-in-json-events-or-non-interactive-mode",
     },
     effects: ["updates-installation"],
     outputSchema: "#/$defs/updateApplyData",
@@ -158,6 +193,7 @@ function toCommandCapability(
     confirmation: semantics?.confirmation ?? { requiredWhen: "unknown" },
     description: command.description ?? null,
     effects: semantics?.effects ?? [],
+    events: eventCapability(id, firstParty),
     flags: Object.entries(command.flags)
       .map(([name, flag]) => ({
         char: flag.char ?? null,
@@ -174,6 +210,23 @@ function toCommandCapability(
     json: firstParty,
     origin: firstParty ? "squeezit" : "external",
     outputSchema: semantics?.outputSchema ?? null,
+  };
+}
+
+function eventCapability(
+  command: string,
+  firstParty: boolean
+): CommandCapability["events"] {
+  if (!firstParty) return { format: null, lifecycle: [], schema: null };
+
+  return {
+    format: "jsonl",
+    lifecycle: [
+      ...TERMINAL_EVENT_LIFECYCLE,
+      ...(PHASE_COMMANDS.has(command) ? PHASE_EVENT_LIFECYCLE : []),
+      ...(INPUT_COMMANDS.has(command) ? INPUT_EVENT_LIFECYCLE : []),
+    ],
+    schema: EVENT_SCHEMA_PATH,
   };
 }
 

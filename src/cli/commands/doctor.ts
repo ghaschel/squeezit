@@ -22,6 +22,7 @@ export default class Doctor extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { flags } = await this.parse(Doctor);
+    this.phaseStarted("environment-inspection");
     const [platform, tools, installer, installation] = await Promise.all([
       detectPlatform(),
       diagnoseDependencies(
@@ -35,6 +36,7 @@ export default class Doctor extends SqueezitCommand {
         activeVersion: this.config.version,
       }),
     ]);
+    this.phaseCompleted("environment-inspection", { tools: tools.length });
     const nodeVersion = process.versions.node;
     const runtimeHealthy = compareNodeVersion(nodeVersion, "22.13.0") >= 0;
     const toolsHealthy = tools.every((tool) => tool.status === "healthy");

@@ -26,6 +26,10 @@ describe("agent capability discovery", () => {
             localPath: "schemas/command-envelope-v2.schema.json",
             url: expect.stringContaining("unpkg.com/squeezit@"),
           },
+          events: {
+            localPath: "schemas/command-events-v1.schema.json",
+            url: expect.stringContaining("unpkg.com/squeezit@"),
+          },
           optimizationPlan: {
             localPath: "schemas/optimization-plan-v1.schema.json",
             url: expect.stringContaining("unpkg.com/squeezit@"),
@@ -44,9 +48,22 @@ describe("agent capability discovery", () => {
         },
       ],
       confirmation: {
-        requiredWhen: "writes-files-in-json-or-non-interactive-mode",
+        requiredWhen: "writes-files-in-json-events-or-non-interactive-mode",
       },
       effects: ["writes-files"],
+      events: {
+        format: "jsonl",
+        lifecycle: expect.arrayContaining([
+          "command.started",
+          "command.completed",
+          "command.failed",
+          "phase.started",
+          "phase.completed",
+          "input.started",
+          "input.completed",
+        ]),
+        schema: "schemas/command-events-v1.schema.json",
+      },
       id: "compress",
       json: true,
       outputSchema: "#/$defs/optimizationData",
@@ -101,8 +118,13 @@ describe("agent capability discovery", () => {
       expect.arrayContaining([
         expect.objectContaining({
           flags: expect.arrayContaining([
+            expect.objectContaining({
+              name: "events",
+              options: ["jsonl"],
+            }),
             expect.objectContaining({ name: "json", type: "boolean" }),
           ]),
+          events: expect.objectContaining({ format: "jsonl" }),
           json: true,
         }),
       ])
@@ -130,13 +152,15 @@ describe("agent capability discovery", () => {
     });
     expect(commandById.get("deps install")).toMatchObject({
       confirmation: {
-        requiredWhen: "installs-dependencies-in-json-or-non-interactive-mode",
+        requiredWhen:
+          "installs-dependencies-in-json-events-or-non-interactive-mode",
       },
       effects: ["installs-dependencies"],
     });
     expect(commandById.get("update apply")).toMatchObject({
       confirmation: {
-        requiredWhen: "updates-installation-in-json-or-non-interactive-mode",
+        requiredWhen:
+          "updates-installation-in-json-events-or-non-interactive-mode",
       },
       effects: ["updates-installation"],
     });
@@ -149,6 +173,7 @@ describe("agent capability discovery", () => {
       ]),
     });
     expect(commandById.get("autocomplete")).toMatchObject({
+      events: { format: null, lifecycle: [], schema: null },
       json: false,
       origin: "external",
       outputSchema: null,

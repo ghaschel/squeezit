@@ -30,7 +30,12 @@ export default class UpdateCheck extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { flags } = await this.parse(UpdateCheck);
+    this.phaseStarted("update-check");
     const result = await defaultUpdateService().check(runtimeRequest(flags.pm));
+    this.phaseCompleted(
+      "update-check",
+      result.ok ? { status: result.status } : { code: result.code }
+    );
     const ok = result.ok;
     process.exitCode = ok ? 0 : 1;
     const data = flags.verbose

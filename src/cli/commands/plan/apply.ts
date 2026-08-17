@@ -34,6 +34,7 @@ export default class PlanApply extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { args, flags } = await this.parse(PlanApply);
+    this.phaseStarted("confirmation", { operation: "plan apply" });
     if (!flags.yes) {
       throw new SqueezitError({
         code: "CONFIRMATION_REQUIRED",
@@ -43,14 +44,18 @@ export default class PlanApply extends SqueezitCommand {
           "Review the plan artifact, then re-run with --yes to apply exactly that plan.",
       });
     }
+    this.phaseCompleted("confirmation", { approved: true });
 
+    this.phaseStarted("plan-validation");
     const prepared = await preparePlanApply({
+      events: this.eventReporter(),
       path: args.plan,
       progress: flags.progress,
       runtime: runtimeSnapshot({ squeezitVersion: this.config.version }),
       verbose: flags.verbose,
     });
-    if (!this.jsonEnabled()) {
+    this.phaseCompleted("plan-validation", { inputs: prepared.inputs.length });
+    if (!this.machineOutputEnabled()) {
       this.log(
         `Applying plan ${prepared.plan.planDigest} to ${prepared.inputs.length} input${prepared.inputs.length === 1 ? "" : "s"}.`
       );
@@ -60,13 +65,14 @@ export default class PlanApply extends SqueezitCommand {
       prepared.inputs,
       prepared.options,
       "plan apply",
-      this.jsonEnabled(),
+      this.machineOutputEnabled(),
       { assumeYes: true, confirm: async () => true },
-      prepared.inputGuard
+      prepared.inputGuard,
+      this.eventReporter()
     );
     const data = { plan: prepared.plan, report };
 
-    if (this.jsonEnabled()) {
+    if (this.machineOutputEnabled()) {
       return this.emitStatus("plan apply", report.summary.failed === 0, data);
     }
 

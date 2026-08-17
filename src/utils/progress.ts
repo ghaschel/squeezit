@@ -10,6 +10,7 @@ import type {
 } from "../types";
 import {
   type OptimizationInputGuard,
+  type OptimizationLifecycle,
   optimizeImage,
   summarizeOptimizationResults,
 } from "./optimizer";
@@ -45,7 +46,8 @@ export function shouldUseInteractiveProgress(
 export async function runInteractiveOptimizations(
   inputs: ResolvedInput[],
   options: CoreOptimizationOptions,
-  inputGuard?: OptimizationInputGuard
+  inputGuard?: OptimizationInputGuard,
+  lifecycle?: OptimizationLifecycle
 ): Promise<InteractiveOptimizationRun> {
   const startedAt = Date.now();
   const resultSlots = new Array<OptimizationResult>(inputs.length);
@@ -53,8 +55,10 @@ export async function runInteractiveOptimizations(
     inputs.map((input, index) => ({
       title: input.displayPath,
       task: async (_context, task) => {
+        lifecycle?.onInputStarted?.(input, index);
         const result = await optimizeImage(input, options, inputGuard);
         resultSlots[index] = result;
+        lifecycle?.onInputCompleted?.(input, index, result);
 
         if (result.status === "skipped") {
           task.skip(result.message ?? "skipped");

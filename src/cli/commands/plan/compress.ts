@@ -76,11 +76,12 @@ export default class PlanCompress extends SqueezitCommand {
     const data = await createPlanArtifact({
       operation: "compress",
       options,
+      events: this.eventReporter(),
       output: flags.output,
       runtime: runtimeSnapshot({ squeezitVersion: this.config.version }),
     });
 
-    if (this.jsonEnabled()) return this.emit("plan compress", data);
+    if (this.machineOutputEnabled()) return this.emit("plan compress", data);
 
     this.log(
       `Created compression plan for ${data.plan.inputs.length} input${data.plan.inputs.length === 1 ? "" : "s"}: ${data.output.path}`

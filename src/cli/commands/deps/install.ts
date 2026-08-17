@@ -71,12 +71,15 @@ export default class DependenciesInstall extends SqueezitCommand {
       });
     }
 
+    this.phaseStarted("input-discovery");
     const inputs = await resolveInputs(options);
+    this.phaseCompleted("input-discovery", { inputs: inputs.length });
     const dependencies = collectRequiredDependencies(
       inputs,
       options,
       (args.patterns?.length ?? 0) === 0
     );
+    this.phaseStarted("dependency-validation");
     const missing = await findMissingDependencies(dependencies);
     const targets = collectDependencyInstallTargets(missing, platform);
     const packages = Array.from(
@@ -93,6 +96,7 @@ export default class DependenciesInstall extends SqueezitCommand {
         )
       )
     );
+    this.phaseCompleted("dependency-validation", { missing: missing.length });
 
     if (missing.length === 0) {
       const data = {
@@ -113,10 +117,11 @@ export default class DependenciesInstall extends SqueezitCommand {
     if (
       !flags.yes &&
       requiresExplicitConfirmation({
-        json: this.jsonEnabled(),
+        machineOutput: this.machineOutputEnabled(),
         isTty: Boolean(process.stdin.isTTY && process.stdout.isTTY),
       })
     ) {
+      this.phaseStarted("confirmation", { operation: "deps install" });
       throw new SqueezitError({
         code: "CONFIRMATION_REQUIRED",
         message:
@@ -126,6 +131,7 @@ export default class DependenciesInstall extends SqueezitCommand {
       });
     }
 
+    this.phaseStarted("confirmation", { operation: "deps install" });
     const confirmed =
       flags.yes ||
       (await confirmDependencyInstall(platform, packages, installers));
@@ -137,13 +143,16 @@ export default class DependenciesInstall extends SqueezitCommand {
           "Re-run sqz deps install and confirm the operation when prompted.",
       });
     }
+    this.phaseCompleted("confirmation", { approved: true });
 
     if (flags.verbose && !this.jsonEnabled()) {
       this.logToStderr(
         `Installing ${formatDependencyInstallCommand(platform, targets).join("; ")}`
       );
     }
+    this.phaseStarted("dependency-installation", { packages });
     await installDependencies(platform, targets);
+    this.phaseCompleted("dependency-installation", { packages });
     const data = {
       inputs: inputs.length,
       packages,

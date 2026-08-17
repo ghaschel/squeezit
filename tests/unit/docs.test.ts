@@ -45,7 +45,9 @@ describe("documentation coverage", () => {
     expect(readme).toContain("sqz autocomplete zsh");
     expect(readme).toContain('"schemaVersion": 2');
     expect(readme).toContain("sqz capabilities --json");
+    expect(readme).toContain("--events jsonl");
     expect(readme).toContain("docs/agent-contract.md");
+    expect(readme).toContain("command-events-v1.schema.json");
     expect(readme).toContain("optimization-plan-v1.schema.json");
     expect(readme).toContain("## Migrating to 2.0");
   });

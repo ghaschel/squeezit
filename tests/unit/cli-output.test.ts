@@ -98,9 +98,11 @@ test("marks a completed command with per-file failures as unhealthy", () => {
 describe("CLI unattended safeguards", () => {
   test.each([
     ["interactive human output", false, true, false],
-    ["JSON output", true, true, true],
+    ["machine output", true, true, true],
     ["non-TTY output", false, false, true],
-  ])("requires --yes for %s", (_label, json, isTty, expected) => {
-    expect(requiresExplicitConfirmation({ json, isTty })).toBe(expected);
+  ])("requires --yes for %s", (_label, machineOutput, isTty, expected) => {
+    expect(requiresExplicitConfirmation({ machineOutput, isTty })).toBe(
+      expected
+    );
   });
 });

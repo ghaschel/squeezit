@@ -73,9 +73,19 @@ export interface OptimizationPlan {
   tools: PlanToolSnapshot[];
 }
 
+export interface PlanInputLifecycle {
+  onInputCompleted?: (
+    input: ResolvedInput,
+    index: number,
+    fingerprint: PlanFingerprint
+  ) => void;
+  onInputStarted?: (input: ResolvedInput, index: number) => void;
+}
+
 export async function createOptimizationPlan(params: {
   createdAt?: string;
   inputs: ResolvedInput[];
+  lifecycle?: PlanInputLifecycle;
   operation: OptimizationPlanOperation;
   options: PlanOptimizationOptions;
   runtime: PlanRuntimeSnapshot;
@@ -84,11 +94,16 @@ export async function createOptimizationPlan(params: {
   const plan = {
     createdAt: params.createdAt ?? new Date().toISOString(),
     inputs: await Promise.all(
-      params.inputs.map(async (input) => ({
-        displayPath: input.displayPath,
-        fingerprint: await fingerprintFile(input.absolutePath),
-        path: input.absolutePath,
-      }))
+      params.inputs.map(async (input, index) => {
+        params.lifecycle?.onInputStarted?.(input, index);
+        const fingerprint = await fingerprintFile(input.absolutePath);
+        params.lifecycle?.onInputCompleted?.(input, index, fingerprint);
+        return {
+          displayPath: input.displayPath,
+          fingerprint,
+          path: input.absolutePath,
+        };
+      })
     ),
     kind: PLAN_KIND,
     operation: params.operation,

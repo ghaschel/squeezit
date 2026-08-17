@@ -74,6 +74,22 @@ export async function resolveInputs(
   return sortInputs(Array.from(resolved.values()));
 }
 
+export async function findUnsupportedExplicitInputs(
+  options: CoreInputResolutionOptions
+): Promise<string[]> {
+  const unsupported: string[] = [];
+
+  for (const pattern of options.patterns) {
+    const input = resolve(options.cwd, pattern);
+    const stats = await lstat(input).catch(() => undefined);
+    if (stats?.isFile() && !isSupportedImagePath(input)) {
+      unsupported.push(input);
+    }
+  }
+
+  return Array.from(new Set(unsupported)).sort();
+}
+
 export async function resolvePattern(
   pattern: string,
   cwd: string

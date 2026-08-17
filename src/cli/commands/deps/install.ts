@@ -12,7 +12,7 @@ import {
 } from "../../../utils";
 import { confirmDependencyInstall } from "../../../utils/prompts";
 import { SqueezitCommand } from "../../base-command";
-import { requiresExplicitConfirmation } from "../../output";
+import { requiresExplicitConfirmation, SqueezitError } from "../../output";
 
 export default class DependenciesInstall extends SqueezitCommand {
   static override args = {
@@ -63,7 +63,12 @@ export default class DependenciesInstall extends SqueezitCommand {
     );
     const platform = await detectPlatform();
     if (!platform) {
-      this.error("squeezit supports macOS and Debian/Ubuntu Linux only.");
+      throw new SqueezitError({
+        code: "UNSUPPORTED_PLATFORM",
+        details: { platform: process.platform },
+        message: "squeezit supports macOS and Debian/Ubuntu Linux only.",
+        remediation: "Run Squeezit on macOS or Debian/Ubuntu Linux.",
+      });
     }
 
     const inputs = await resolveInputs(options);
@@ -112,16 +117,25 @@ export default class DependenciesInstall extends SqueezitCommand {
         isTty: Boolean(process.stdin.isTTY && process.stdout.isTTY),
       })
     ) {
-      this.error(
-        "--yes is required for dependency installation in JSON or non-interactive mode."
-      );
+      throw new SqueezitError({
+        code: "CONFIRMATION_REQUIRED",
+        message:
+          "--yes is required for dependency installation in JSON or non-interactive mode.",
+        remediation:
+          "Re-run with --yes after reviewing the packages that will be installed.",
+      });
     }
 
     const confirmed =
       flags.yes ||
       (await confirmDependencyInstall(platform, packages, installers));
     if (!confirmed) {
-      this.error("Dependency installation cancelled.");
+      throw new SqueezitError({
+        code: "OPERATION_CANCELLED",
+        message: "Dependency installation cancelled.",
+        remediation:
+          "Re-run sqz deps install and confirm the operation when prompted.",
+      });
     }
 
     if (flags.verbose && !this.jsonEnabled()) {

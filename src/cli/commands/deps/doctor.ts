@@ -72,12 +72,7 @@ export default class DependenciesDoctor extends SqueezitCommand {
 
     process.exitCode = ok ? 0 : 1;
     if (this.jsonEnabled()) {
-      return {
-        schemaVersion: 1,
-        command: "deps doctor",
-        ok,
-        data,
-      };
+      return this.emitStatus("deps doctor", ok, data);
     }
 
     for (const tool of diagnostics) {

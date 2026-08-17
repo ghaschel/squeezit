@@ -6,6 +6,7 @@ import type { CompressCommandOptions, OptimizationResult } from "../../types";
 import {
   confirmImageOptimization,
   ensureDependencies,
+  findUnsupportedExplicitInputs,
   formatOptimizationResult,
   logOptimizationResult,
   optimizeImages,
@@ -16,7 +17,7 @@ import {
   shouldUseInteractiveProgress,
 } from "../../utils";
 import { SqueezitCommand } from "../base-command";
-import { requiresExplicitConfirmation } from "../output";
+import { requiresExplicitConfirmation, SqueezitError } from "../output";
 
 export default class Compress extends SqueezitCommand {
   static override args = {
@@ -137,7 +138,20 @@ export async function optimizeCommand(
     }
   };
   const discoverySpinner = json ? null : ora("Resolving image inputs").start();
-  const inputs = await resolveInputs(options);
+  const [inputs, unsupportedInputs] = await Promise.all([
+    resolveInputs(options),
+    findUnsupportedExplicitInputs(options),
+  ]);
+
+  if (unsupportedInputs.length > 0) {
+    discoverySpinner?.fail("Unsupported image input");
+    throw new SqueezitError({
+      code: "UNSUPPORTED_FORMAT",
+      details: { paths: unsupportedInputs },
+      message: `Unsupported image format: ${unsupportedInputs.join(", ")}`,
+      remediation: "Use a supported image format or remove this input.",
+    });
+  }
 
   if (inputs.length === 0) {
     discoverySpinner?.warn("No matching image files found.");
@@ -161,15 +175,25 @@ export async function optimizeCommand(
         isTty: Boolean(process.stdin.isTTY && process.stdout.isTTY),
       })
     ) {
-      throw new Error(
-        `--yes is required for ${command} in JSON or non-interactive mode.`
-      );
+      throw new SqueezitError({
+        code: "CONFIRMATION_REQUIRED",
+        details: { command },
+        message: `--yes is required for ${command} in JSON or non-interactive mode.`,
+        remediation:
+          "Re-run with --yes after reviewing the files that will change.",
+      });
     }
     if (
       !confirmation.assumeYes &&
       !(await confirmation.confirm(inputs.length))
     ) {
-      throw new Error(`${command} cancelled.`);
+      throw new SqueezitError({
+        code: "OPERATION_CANCELLED",
+        details: { command },
+        message: `${command} cancelled.`,
+        remediation:
+          "Re-run the command and confirm the operation when prompted.",
+      });
     }
   }
   note(`Resolved ${inputs.length} input file(s).`);

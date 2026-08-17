@@ -41,8 +41,14 @@ export default class UpdateCheck extends SqueezitCommand {
           ],
         }
       : result;
-    if (this.jsonEnabled())
-      return { schemaVersion: 1, command: "update check", ok, data };
+    if (this.jsonEnabled()) {
+      return this.emitStatus(
+        "update check",
+        ok,
+        data,
+        !result.ok ? updateUnavailableIssue(result) : undefined
+      );
+    }
     if (!ok) this.error(result.message);
     if (result.status === "up-to-date")
       this.log(`Squeezit is up to date (${result.currentVersion}).`);
@@ -56,6 +62,16 @@ export default class UpdateCheck extends SqueezitCommand {
       );
     return data;
   }
+}
+
+function updateUnavailableIssue(result: { code: string; message: string }) {
+  return {
+    code: "UPDATE_UNAVAILABLE" as const,
+    details: { updateCode: result.code },
+    message: result.message,
+    remediation:
+      "Specify a valid installation source with --pm npm, --pm bun, or --pm brew.",
+  };
 }
 
 export function defaultUpdateService() {

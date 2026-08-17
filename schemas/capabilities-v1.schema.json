@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ghaschel/squeezit/schemas/capabilities-v1.schema.json",
+  "title": "Squeezit capabilities v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["commands", "schemas"],
+  "properties": {
+    "commands": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/command" }
+    },
+    "schemas": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capabilities", "envelope"],
+      "properties": {
+        "capabilities": { "$ref": "#/$defs/schemaLocation" },
+        "envelope": { "$ref": "#/$defs/schemaLocation" }
+      }
+    }
+  },
+  "$defs": {
+    "argument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description", "multiple", "name", "required"],
+      "properties": {
+        "description": { "type": ["string", "null"] },
+        "multiple": { "type": "boolean" },
+        "name": { "type": "string" },
+        "required": { "type": "boolean" }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aliases",
+        "arguments",
+        "confirmation",
+        "description",
+        "effects",
+        "flags",
+        "id",
+        "json",
+        "origin",
+        "outputSchema"
+      ],
+      "properties": {
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "arguments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/argument" }
+        },
+        "confirmation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["requiredWhen"],
+          "properties": { "requiredWhen": { "type": "string" } }
+        },
+        "description": { "type": ["string", "null"] },
+        "effects": { "type": "array", "items": { "type": "string" } },
+        "flags": { "type": "array", "items": { "$ref": "#/$defs/flag" } },
+        "id": { "type": "string" },
+        "json": { "type": "boolean" },
+        "origin": { "enum": ["external", "squeezit"] },
+        "outputSchema": { "type": ["string", "null"] }
+      }
+    },
+    "flag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "char",
+        "default",
+        "description",
+        "name",
+        "options",
+        "required",
+        "type"
+      ],
+      "properties": {
+        "char": { "type": ["string", "null"] },
+        "default": {},
+        "description": { "type": ["string", "null"] },
+        "name": { "type": "string" },
+        "options": { "type": "array", "items": { "type": "string" } },
+        "required": { "type": "boolean" },
+        "type": { "type": "string" }
+      }
+    },
+    "schemaLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["localPath", "url"],
+      "properties": {
+        "localPath": { "type": "string" },
+        "url": { "type": "string", "format": "uri" }
+      }
+    }
+  }
+}

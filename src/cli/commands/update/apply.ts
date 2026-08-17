@@ -2,7 +2,7 @@ import { Flags } from "@oclif/core";
 
 import { confirmSelfUpdate } from "../../../utils/prompts";
 import { SqueezitCommand } from "../../base-command";
-import { requiresExplicitConfirmation } from "../../output";
+import { requiresExplicitConfirmation, SqueezitError } from "../../output";
 import { defaultUpdateService, runtimeRequest } from "./check";
 
 export default class UpdateApply extends SqueezitCommand {
@@ -32,9 +32,13 @@ export default class UpdateApply extends SqueezitCommand {
         isTty: Boolean(process.stdin.isTTY && process.stdout.isTTY),
       })
     ) {
-      this.error(
-        "--yes is required for update apply in JSON or non-interactive mode."
-      );
+      throw new SqueezitError({
+        code: "CONFIRMATION_REQUIRED",
+        message:
+          "--yes is required for update apply in JSON or non-interactive mode.",
+        remediation:
+          "Re-run with --yes after reviewing the selected update source.",
+      });
     }
     const service = defaultUpdateService();
     const request = runtimeRequest(flags.pm);
@@ -57,8 +61,23 @@ export default class UpdateApply extends SqueezitCommand {
     const data = flags.verbose
       ? { ...result, diagnostics: ["Update apply completed."] }
       : result;
-    if (this.jsonEnabled())
-      return { schemaVersion: 1, command: "update apply", ok, data };
+    if (this.jsonEnabled()) {
+      return this.emitStatus(
+        "update apply",
+        ok,
+        data,
+        result.ok
+          ? result.status === "cancelled"
+            ? {
+                code: "OPERATION_CANCELLED",
+                message: "Self-update cancelled.",
+                remediation:
+                  "Re-run update apply and confirm the operation when prompted.",
+              }
+            : undefined
+          : updateUnavailableIssue(result)
+      );
+    }
     if (!result.ok) this.error(result.message);
     this.log(
       result.status === "updated"
@@ -70,4 +89,14 @@ export default class UpdateApply extends SqueezitCommand {
     if (flags.verbose) this.logToStderr("Update apply completed.");
     return data;
   }
+}
+
+function updateUnavailableIssue(result: { code: string; message: string }) {
+  return {
+    code: "UPDATE_UNAVAILABLE" as const,
+    details: { updateCode: result.code },
+    message: result.message,
+    remediation:
+      "Specify a valid installation source with --pm npm, --pm bun, or --pm brew.",
+  };
 }

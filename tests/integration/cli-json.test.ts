@@ -17,11 +17,25 @@ const launcher = resolve(root, "bin/run.js");
 const workspaces: string[] = [];
 
 interface JsonEnvelope {
-  schemaVersion: 1;
+  schemaVersion: 2;
   command: string;
   ok: boolean;
   data: unknown;
-  error?: { message: string };
+  meta: {
+    cwd: string;
+    executablePath: string;
+    invocationPath: string;
+    nodeVersion: string;
+    packageRoot: string;
+    platform: string;
+    squeezitVersion: string;
+  };
+  error?: {
+    code: string;
+    details?: Record<string, unknown>;
+    message: string;
+    remediation: string;
+  };
 }
 
 interface JsonCommandResult {
@@ -47,6 +61,7 @@ describe("agent-facing JSON CLI contract", () => {
       data: {
         commands: expect.arrayContaining([
           "commands",
+          "capabilities",
           "compress",
           "metadata strip",
           "exif",
@@ -60,7 +75,7 @@ describe("agent-facing JSON CLI contract", () => {
         ]),
       },
       ok: true,
-      schemaVersion: 1,
+      schemaVersion: 2,
     });
   });
 
@@ -118,12 +133,15 @@ describe("agent-facing JSON CLI contract", () => {
     const result = await runJson(["help", "not-a-command", "--json"]);
 
     expect(result.exitCode).toBe(1);
-    expect(result.envelope).toEqual({
-      schemaVersion: 1,
+    expect(result.envelope).toMatchObject({
+      schemaVersion: 2,
       command: "help",
       ok: false,
       data: {},
-      error: { message: "Unknown command: not-a-command" },
+      error: {
+        code: "UNKNOWN_COMMAND",
+        message: "Unknown command: not-a-command",
+      },
     });
   });
 
@@ -199,12 +217,13 @@ describe("agent-facing JSON CLI contract", () => {
       });
 
       expect(result.exitCode).toBe(1);
-      expect(result.envelope).toEqual({
-        schemaVersion: 1,
+      expect(result.envelope).toMatchObject({
+        schemaVersion: 2,
         command,
         ok: false,
         data: {},
         error: {
+          code: "CONFIRMATION_REQUIRED",
           message: `--yes is required for ${command} in JSON or non-interactive mode.`,
         },
       });
@@ -225,10 +244,11 @@ describe("agent-facing JSON CLI contract", () => {
       command: "compress",
       data: {},
       error: {
+        code: "VALIDATION_ERROR",
         message: expect.stringContaining("Expected --profile=invalid"),
       },
       ok: false,
-      schemaVersion: 1,
+      schemaVersion: 2,
     });
   });
 
@@ -243,12 +263,15 @@ describe("agent-facing JSON CLI contract", () => {
     ]);
 
     expect(result.exitCode).toBe(1);
-    expect(result.envelope).toEqual({
-      schemaVersion: 1,
+    expect(result.envelope).toMatchObject({
+      schemaVersion: 2,
       command: "compress",
       ok: false,
       data: {},
-      error: { message: "--threshold cannot be used with --profile max" },
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "--threshold cannot be used with --profile max",
+      },
     });
   });
 
@@ -284,6 +307,7 @@ describe("agent-facing JSON CLI contract", () => {
       expect(result.envelope).toMatchObject({
         command: "deps install",
         error: {
+          code: "CONFIRMATION_REQUIRED",
           message: expect.stringContaining("--yes is required"),
         },
       });
@@ -318,8 +342,11 @@ describe("agent-facing JSON CLI contract", () => {
       data: {
         code: "BREW_NOT_FORMULA_MANAGED",
       },
+      error: {
+        code: "UPDATE_UNAVAILABLE",
+      },
       ok: false,
-      schemaVersion: 1,
+      schemaVersion: 2,
     });
   });
 
@@ -327,12 +354,13 @@ describe("agent-facing JSON CLI contract", () => {
     const result = await runJson(["update", "apply", "--json"]);
 
     expect(result.exitCode).toBe(1);
-    expect(result.envelope).toEqual({
-      schemaVersion: 1,
+    expect(result.envelope).toMatchObject({
+      schemaVersion: 2,
       command: "update apply",
       ok: false,
       data: {},
       error: {
+        code: "CONFIRMATION_REQUIRED",
         message:
           "--yes is required for update apply in JSON or non-interactive mode.",
       },
@@ -371,14 +399,23 @@ async function runJson(
   expect(stdout).not.toContain(String.fromCharCode(27));
 
   const envelope = JSON.parse(stdout) as JsonEnvelope;
-  expect(envelope.schemaVersion).toBe(1);
+  expect(envelope.schemaVersion).toBe(2);
   expect(envelope.command).toEqual(expect.any(String));
   expect(envelope.ok).toEqual(expect.any(Boolean));
   expect(envelope.data).toBeDefined();
+  expect(envelope.meta).toMatchObject({
+    cwd: expect.any(String),
+    executablePath: expect.any(String),
+    invocationPath: expect.any(String),
+    nodeVersion: expect.stringMatching(/^\d+\.\d+\.\d+$/),
+    packageRoot: expect.any(String),
+    platform: expect.stringMatching(/^[a-z0-9]+-[a-z0-9]+$/),
+    squeezitVersion: expect.stringMatching(/^\d+\.\d+\.\d+$/),
+  });
   expect(Object.keys(envelope).sort()).toEqual(
     envelope.error
-      ? ["command", "data", "error", "ok", "schemaVersion"]
-      : ["command", "data", "ok", "schemaVersion"]
+      ? ["command", "data", "error", "meta", "ok", "schemaVersion"]
+      : ["command", "data", "meta", "ok", "schemaVersion"]
   );
   expect(result.exitCode ?? 1).toBe(envelope.ok ? 0 : 1);
 

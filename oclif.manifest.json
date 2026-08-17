@@ -1,5 +1,33 @@
 {
   "commands": {
+    "capabilities": {
+      "aliases": [],
+      "args": {},
+      "description": "Describe Squeezit's machine-readable command and output contract.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "capabilities",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "capabilities.js"
+      ]
+    },
     "commands": {
       "aliases": [],
       "args": {},

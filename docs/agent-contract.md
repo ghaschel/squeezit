@@ -97,6 +97,11 @@ human-readable `message`.
 | `CONFIRMATION_REQUIRED` | A state-changing action was requested in JSON or non-interactive mode without `--yes`. | Review the operation and re-run with `--yes`.                               |
 | `OPERATION_CANCELLED`   | An interactive confirmation was declined.                                              | Stop, or re-run and approve intentionally.                                  |
 | `UPDATE_UNAVAILABLE`    | The requested update source or release cannot be applied.                              | Use the reported details/remediation or choose an explicit package manager. |
+| `PLAN_INVALID`          | A plan is malformed, unsupported, or its deterministic digest does not match.          | Create and review a new plan with the current CLI.                          |
+| `PLAN_OUTPUT_EXISTS`    | A requested plan artifact path already exists.                                         | Choose a new `--output` path or remove the reviewed artifact intentionally. |
+| `PLAN_INPUT_CHANGED`    | A planned source changed, disappeared, or was replaced after planning began.           | Create and review a new plan before writing images.                         |
+| `PLAN_TOOL_CHANGED`     | A required native optimizer's provider or normalized version changed.                  | Restore the expected toolchain or create a new plan.                        |
+| `PLAN_RUNTIME_CHANGED`  | The Squeezit version or platform differs from the reviewed plan.                       | Create a new plan in the current environment.                               |
 | `INTERNAL_ERROR`        | An unexpected error reached the command boundary.                                      | Re-run; report the complete envelope if it persists.                        |
 
 `STALE_INSTALLATION` and `SHADOWED_INSTALLATION` are normally doctor warnings,
@@ -106,6 +111,36 @@ than, or appears earlier on `PATH` than, the active Squeezit installation.
 Explicit existing unsupported files fail early—before confirmations,
 dependency checks, or writes. Directory scans and glob patterns still ignore
 non-image files so mixed asset directories remain convenient.
+
+## Reviewable plan and apply workflow
+
+Use plans when an agent must separate analysis from file writes:
+
+```bash
+sqz capabilities --json
+sqz plan compress "assets/**/*.{png,jpg}" --output .squeezit/plans/assets.json --json
+sqz plan apply .squeezit/plans/assets.json --yes --json
+```
+
+`plan compress` and `plan metadata strip` are lightweight: they resolve inputs,
+take streaming SHA-256 and byte-size fingerprints, record only semantic
+optimization settings, and require every needed optimizer to be healthy. They
+do not optimize an image or predict savings. `plan exif` is the alias for
+`plan metadata strip`.
+
+Review the raw artifact's `planDigest`, absolute `inputs`, `options`, and
+`tools` before approving an apply. The artifact also retains the Squeezit
+version, platform, Node version, and original working directory for audit.
+Node is informational; Squeezit version and platform are strict apply gates.
+
+`plan apply` accepts no optimizer overrides and always requires `--yes`, even
+in a human TTY. Before any optimizer starts it validates the artifact version
+and digest, every planned source fingerprint, the Squeezit version/platform,
+and each required tool's provider plus normalized version. It checks each
+source again immediately before working-copy creation and before replacement.
+The preflight prevents writes when any file changed before apply; files changed
+after another optimization started are reported individually and are not
+overwritten. This is deliberately not a filesystem-wide transaction.
 
 ## Installation health
 
@@ -130,12 +165,14 @@ The package publishes JSON Schema draft 2020-12 documents:
 
 - Local: `squeezit/schemas/command-envelope-v2.schema.json`
 - Local: `squeezit/schemas/capabilities-v1.schema.json`
+- Local: `squeezit/schemas/optimization-plan-v1.schema.json`
 
 `sqz capabilities --json` supplies the exact version-pinned unpkg URLs for
-both files in `data.schemas`. Validate the outer response against the envelope
+all three files in `data.schemas`. Validate the outer response against the envelope
 schema. For `capabilities`, validate `data` against the capabilities schema as
 well; the envelope schema references it for the successful `capabilities`
-response.
+response. Validate the raw plan artifact against the optimization-plan schema;
+the envelope schema references it for successful plan creation and apply data.
 
 Schema v2 supersedes the JSON envelope used by older Squeezit releases. Agents
 should require `schemaVersion: 2` before relying on this contract.

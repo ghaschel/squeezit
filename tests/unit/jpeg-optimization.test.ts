@@ -11,7 +11,7 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import type { CoreOptimizationOptions } from "../../src/types";
 import { optimizeImage } from "../../src/utils/optimizer";
@@ -54,6 +54,23 @@ describe("JPEG optimization", () => {
         status: "optimized",
       });
       expect((await readFile(inputPath)).length).toBe(1);
+    });
+  });
+
+  test("checks a guarded input before creating a working copy and replacing it", async () => {
+    await withFakeJpegTools(async ({ inputPath }) => {
+      const input = { absolutePath: inputPath, displayPath: "input.jpg" };
+      const guard = { verify: vi.fn().mockResolvedValue(undefined) };
+
+      await optimizeImage(
+        input,
+        createOptions({ max: false, stripMeta: false }),
+        guard
+      );
+
+      expect(guard.verify).toHaveBeenCalledTimes(2);
+      expect(guard.verify).toHaveBeenNthCalledWith(1, input);
+      expect(guard.verify).toHaveBeenNthCalledWith(2, input);
     });
   });
 });

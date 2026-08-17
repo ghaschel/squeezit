@@ -220,6 +220,26 @@ describe("interactive optimization runner", () => {
       savedBytes: 200,
     });
   });
+
+  test("passes an input guard to every concurrent optimization", async () => {
+    const guard = { verify: vi.fn().mockResolvedValue(undefined) };
+    hoisted.optimizeImage.mockImplementation(async (input: ResolvedInput) =>
+      resultFor(input, "optimized")
+    );
+
+    await runInteractiveOptimizations(inputs.slice(0, 2), options, guard);
+
+    expect(hoisted.optimizeImage).toHaveBeenCalledWith(
+      inputs[0],
+      options,
+      guard
+    );
+    expect(hoisted.optimizeImage).toHaveBeenCalledWith(
+      inputs[1],
+      options,
+      guard
+    );
+  });
 });
 
 function resultFor(

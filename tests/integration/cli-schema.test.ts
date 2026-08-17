@@ -38,6 +38,7 @@ describe("published JSON Schemas", () => {
       runJson(["compress", image, "--json"], { cwd: workspace }),
       runJson(["compress", unsupported, "--json"], { cwd: workspace }),
       runJson(["update", "check", "--pm", "brew", "--json"]),
+      runJson(["plan", "apply", "missing-plan.json", "--yes", "--json"]),
     ]);
 
     for (const result of results) {
@@ -51,18 +52,53 @@ describe("published JSON Schemas", () => {
       false,
       false,
       false,
+      false,
     ]);
+  });
+
+  test("validates a raw plan artifact and its plan-command envelope", async () => {
+    const workspace = await createWorkspace();
+    const image = await copyFixtureToWorkspace(
+      representativeFixtures.png,
+      workspace
+    );
+    const output = resolve(workspace, "plans", "compress.json");
+    const [envelopeValidator, planValidator] = await Promise.all([
+      createEnvelopeValidator(),
+      createPlanValidator(),
+    ]);
+
+    const result = await runJson(
+      ["plan", "compress", image, "--output", output, "--json"],
+      { cwd: workspace }
+    );
+    const plan = JSON.parse(await readFile(output, "utf8"));
+
+    expect(
+      envelopeValidator(result.envelope),
+      JSON.stringify(envelopeValidator.errors)
+    ).toBe(true);
+    expect(planValidator(plan), JSON.stringify(planValidator.errors)).toBe(
+      true
+    );
   });
 });
 
 async function createEnvelopeValidator() {
-  const [capabilitiesSchema, envelopeSchema] = await Promise.all([
+  const [capabilitiesSchema, envelopeSchema, planSchema] = await Promise.all([
     readSchema("capabilities-v1.schema.json"),
     readSchema("command-envelope-v2.schema.json"),
+    readSchema("optimization-plan-v1.schema.json"),
   ]);
   const ajv = new Ajv2020({ logger: false, strict: false });
   ajv.addSchema(capabilitiesSchema);
+  ajv.addSchema(planSchema);
   return ajv.compile(envelopeSchema);
+}
+
+async function createPlanValidator() {
+  const planSchema = await readSchema("optimization-plan-v1.schema.json");
+  return new Ajv2020({ logger: false, strict: false }).compile(planSchema);
 }
 
 async function createWorkspace(): Promise<string> {

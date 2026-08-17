@@ -3,6 +3,8 @@ import { collectCommandCapabilities } from "../capabilities";
 
 const ENVELOPE_SCHEMA_PATH = "schemas/command-envelope-v2.schema.json";
 const CAPABILITIES_SCHEMA_PATH = "schemas/capabilities-v1.schema.json";
+const OPTIMIZATION_PLAN_SCHEMA_PATH =
+  "schemas/optimization-plan-v1.schema.json";
 
 export default class Capabilities extends SqueezitCommand {
   static override description =
@@ -26,6 +28,11 @@ export default class Capabilities extends SqueezitCommand {
           this.config.pjson.name,
           this.config.version
         ),
+        optimizationPlan: schemaLocation(
+          OPTIMIZATION_PLAN_SCHEMA_PATH,
+          this.config.pjson.name,
+          this.config.version
+        ),
       },
     };
 
@@ -34,6 +41,7 @@ export default class Capabilities extends SqueezitCommand {
     this.log("Run sqz capabilities --json for the machine-readable contract.");
     this.log(`Envelope schema: ${ENVELOPE_SCHEMA_PATH}`);
     this.log(`Capabilities schema: ${CAPABILITIES_SCHEMA_PATH}`);
+    this.log(`Optimization plan schema: ${OPTIMIZATION_PLAN_SCHEMA_PATH}`);
     return data;
   }
 }

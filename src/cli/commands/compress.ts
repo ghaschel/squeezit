@@ -2,13 +2,18 @@ import { Args, Flags } from "@oclif/core";
 import chalk from "chalk";
 import ora from "ora";
 
-import type { CompressCommandOptions, OptimizationResult } from "../../types";
+import type {
+  CompressCommandOptions,
+  OptimizationResult,
+  ResolvedInput,
+} from "../../types";
 import {
   confirmImageOptimization,
   ensureDependencies,
   findUnsupportedExplicitInputs,
   formatOptimizationResult,
   logOptimizationResult,
+  type OptimizationInputGuard,
   optimizeImages,
   printSummary,
   resolveCompressOptions,
@@ -124,19 +129,7 @@ export async function optimizeCommand(
     assumeYes?: boolean;
     confirm: (inputCount: number) => Promise<boolean>;
   }
-): Promise<{
-  inputs: number;
-  results: OptimizationResult[];
-  summary: Awaited<ReturnType<typeof optimizeImages>>;
-  diagnostics?: string[];
-}> {
-  const diagnostics: string[] = [];
-  const note = (message: string) => {
-    diagnostics.push(message);
-    if (options.verbose && !json) {
-      process.stderr.write(`${message}\n`);
-    }
-  };
+): Promise<OptimizationCommandReport> {
   const discoverySpinner = json ? null : ora("Resolving image inputs").start();
   const [inputs, unsupportedInputs] = await Promise.all([
     resolveInputs(options),
@@ -155,6 +148,46 @@ export async function optimizeCommand(
 
   if (inputs.length === 0) {
     discoverySpinner?.warn("No matching image files found.");
+  } else {
+    discoverySpinner?.succeed(
+      `Found ${chalk.bold(inputs.length.toString())} candidate files`
+    );
+  }
+
+  return optimizeResolvedInputs(inputs, options, command, json, confirmation);
+}
+
+export interface OptimizationCommandReport {
+  diagnostics?: string[];
+  inputs: number;
+  results: OptimizationResult[];
+  summary: Awaited<ReturnType<typeof optimizeImages>>;
+}
+
+export async function optimizeResolvedInputs(
+  inputs: ResolvedInput[],
+  options: CompressCommandOptions,
+  command: string,
+  json: boolean,
+  confirmation: {
+    assumeYes?: boolean;
+    confirm: (inputCount: number) => Promise<boolean>;
+  },
+  inputGuard?: OptimizationInputGuard
+): Promise<{
+  diagnostics?: string[];
+  inputs: number;
+  results: OptimizationResult[];
+  summary: Awaited<ReturnType<typeof optimizeImages>>;
+}> {
+  const diagnostics: string[] = [];
+  const note = (message: string) => {
+    diagnostics.push(message);
+    if (options.verbose && !json) {
+      process.stderr.write(`${message}\n`);
+    }
+  };
+  if (inputs.length === 0) {
     note("No image inputs resolved.");
     return {
       inputs: 0,
@@ -164,9 +197,6 @@ export async function optimizeCommand(
     };
   }
 
-  discoverySpinner?.succeed(
-    `Found ${chalk.bold(inputs.length.toString())} candidate files`
-  );
   if (!options.dryRun) {
     if (
       !confirmation.assumeYes &&
@@ -214,8 +244,8 @@ export async function optimizeCommand(
   const interactive = shouldUseInteractiveProgress(options);
   note(`Progress renderer: ${interactive ? "TTY interactive" : "streaming"}.`);
   const { results, summary } = interactive
-    ? await runInteractiveOptimizations(inputs, options)
-    : await runStreaming(inputs, options, json);
+    ? await runInteractiveOptimizations(inputs, options, inputGuard)
+    : await runStreaming(inputs, options, json, inputGuard);
 
   if (!json) {
     if (interactive) {
@@ -236,20 +266,26 @@ export async function optimizeCommand(
 }
 
 async function runStreaming(
-  inputs: Awaited<ReturnType<typeof resolveInputs>>,
+  inputs: ResolvedInput[],
   options: CompressCommandOptions,
-  json: boolean
+  json: boolean,
+  inputGuard?: OptimizationInputGuard
 ): Promise<{
   results: OptimizationResult[];
   summary: Awaited<ReturnType<typeof optimizeImages>>;
 }> {
   const results: OptimizationResult[] = [];
-  const summary = await optimizeImages(inputs, options, (result) => {
-    results.push(result);
-    if (!json) {
-      logOptimizationResult(result);
-    }
-  });
+  const summary = await optimizeImages(
+    inputs,
+    options,
+    (result) => {
+      results.push(result);
+      if (!json) {
+        logOptimizationResult(result);
+      }
+    },
+    inputGuard
+  );
 
   return { results, summary };
 }

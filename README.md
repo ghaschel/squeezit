@@ -359,16 +359,19 @@ sqz <command> [arguments] [flags]
 
 ### Commands
 
-| Command                                             | Purpose                                                            |
-| --------------------------------------------------- | ------------------------------------------------------------------ |
-| `sqz compress [patterns...]`                        | Optimize images. `--profile standard \| max` selects the strategy. |
-| `sqz metadata strip [patterns...]`                  | Remove metadata without recompression. `sqz exif` is its alias.    |
-| `sqz deps doctor [patterns...]`                     | Check all tools, or only the tools required by selected inputs.    |
-| `sqz deps install [patterns...]`                    | Install missing tools for all formats or selected inputs.          |
-| `sqz doctor`                                        | Check Node, platform, update source, and the complete toolchain.   |
-| `sqz update check` / `sqz update apply`             | Check or apply a global update.                                    |
-| `sqz capabilities --json`                           | Discover commands, flags, side effects, and JSON schemas.          |
-| `sqz commands`, `sqz help [command]`, `sqz version` | Discover the installed CLI.                                        |
+| Command                                                      | Purpose                                                            |
+| ------------------------------------------------------------ | ------------------------------------------------------------------ |
+| `sqz compress [patterns...]`                                 | Optimize images. `--profile standard \| max` selects the strategy. |
+| `sqz metadata strip [patterns...]`                           | Remove metadata without recompression. `sqz exif` is its alias.    |
+| `sqz plan compress [patterns...] --output <plan.json>`       | Create a reviewable compression plan without writing images.       |
+| `sqz plan metadata strip [patterns...] --output <plan.json>` | Create a metadata-removal plan. `sqz plan exif` is its alias.      |
+| `sqz plan apply <plan.json> --yes`                           | Revalidate and apply exactly one reviewed plan.                    |
+| `sqz deps doctor [patterns...]`                              | Check all tools, or only the tools required by selected inputs.    |
+| `sqz deps install [patterns...]`                             | Install missing tools for all formats or selected inputs.          |
+| `sqz doctor`                                                 | Check Node, platform, update source, and the complete toolchain.   |
+| `sqz update check` / `sqz update apply`                      | Check or apply a global update.                                    |
+| `sqz capabilities --json`                                    | Discover commands, flags, side effects, and JSON schemas.          |
+| `sqz commands`, `sqz help [command]`, `sqz version`          | Discover the installed CLI.                                        |
 
 `sqz` is the canonical binary; `squeezit` remains a full alias. `sqz` with no command shows help.
 
@@ -395,6 +398,30 @@ Patterns can be explicit paths, directories, shell patterns, or glob expressions
 With the default `--progress auto`, Squeezit shows a transient concurrent task list in supported interactive terminals. When every file has finished, it clears that live view and prints the usual durable per-file report in discovery order, followed by the summary.
 
 The interactive view is enabled only when stdout is a TTY, `TERM` is not `dumb`, and `CI` is unset. In CI, redirected output, and unsupported terminals, Squeezit keeps the existing streaming result lines as each file finishes. Use `--progress off` to choose that streaming output explicitly.
+
+### Reviewable plan and apply workflow
+
+For automation that needs an explicit review boundary, create a plan before
+modifying files:
+
+```bash
+sqz plan compress "assets/**/*.{png,jpg}" --output .squeezit/plans/assets.json
+sqz plan apply .squeezit/plans/assets.json --yes
+```
+
+`plan compress` and `plan metadata strip` resolve files with the normal
+discovery rules, hash each source with SHA-256, record semantic optimization
+options, and snapshot the healthy native tools required for those inputs. They
+do not compress images or estimate savings. The artifact is written atomically;
+an existing `--output` path is never overwritten.
+
+`plan apply` accepts no optimization overrides. It always requires `--yes`,
+including in an interactive terminal, then verifies the artifact digest,
+Squeezit version, platform, tool provider/version, and every source fingerprint
+before any optimizer starts. It checks each input again immediately before
+creating a working copy and before replacement, so a source changed during the
+batch is reported instead of being overwritten. The apply run uses the normal
+TTY progress and non-TTY streaming behavior.
 
 ### Examples
 
@@ -602,6 +629,11 @@ Expected unhealthy states set `ok` to `false` and exit with code `1`. Failures i
 
 Start an automated integration with `sqz capabilities --json`: it reports every command, alias, argument, flag/default/enum, side effect, confirmation policy, and output-schema reference. `sqz doctor --json` also detects stale or shadowed Squeezit binaries on `PATH`; these installation warnings remain visible without making runtime/tool readiness unhealthy. The complete contract, error-code reference, and schema locations are in the [agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md). The upstream `sqz autocomplete` command is the only intentional exception to this JSON contract.
 
+The same capability response reports the version-pinned local and unpkg
+locations of `schemas/optimization-plan-v1.schema.json`. Agents can create a
+plan, review its digest/input/tool snapshot, and invoke `sqz plan apply <plan.json> --yes`
+only when the reviewed plan remains valid.
+
 ### Shell completion
 
 Install the completion integration for your shell:
@@ -612,7 +644,7 @@ sqz autocomplete bash
 sqz autocomplete powershell
 ```
 
-The completion command exposes Squeezit commands, both binary aliases, flags, and enumerated values such as `--profile max`. Use `sqz autocomplete --refresh-cache` after an upgrade if your shell has cached command metadata.
+The completion command exposes Squeezit commands, both binary aliases, flags, and enumerated values such as `--profile max`.
 
 ## Migrating to 2.0
 

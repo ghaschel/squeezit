@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ghaschel/squeezit/schemas/optimization-plan-v1.schema.json",
+  "title": "Squeezit optimization plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "createdAt",
+    "inputs",
+    "kind",
+    "operation",
+    "options",
+    "planDigest",
+    "runtime",
+    "schemaVersion",
+    "tools"
+  ],
+  "properties": {
+    "createdAt": { "type": "string", "minLength": 1 },
+    "inputs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/input" }
+    },
+    "kind": { "const": "squeezit-optimization-plan" },
+    "operation": { "enum": ["compress", "metadata strip"] },
+    "options": { "$ref": "#/$defs/options" },
+    "planDigest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "runtime": { "$ref": "#/$defs/runtime" },
+    "schemaVersion": { "const": 1 },
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "operation": { "const": "metadata strip" } } },
+      "then": {
+        "properties": {
+          "options": { "properties": { "exifOnly": { "const": true } } }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "operation": { "const": "compress" } } },
+      "then": {
+        "properties": {
+          "options": {
+            "allOf": [
+              { "properties": { "exifOnly": { "const": false } } },
+              {
+                "if": { "properties": { "max": { "const": true } } },
+                "then": { "properties": { "threshold": { "const": 0 } } }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "fingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "size"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "size": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["displayPath", "fingerprint", "path"],
+      "properties": {
+        "displayPath": { "type": "string", "minLength": 1 },
+        "fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "concurrency",
+        "exifOnly",
+        "inPlace",
+        "keepTime",
+        "max",
+        "stripMeta",
+        "threshold"
+      ],
+      "properties": {
+        "concurrency": { "type": "integer", "minimum": 1 },
+        "exifOnly": { "type": "boolean" },
+        "inPlace": { "type": "boolean" },
+        "keepTime": { "type": "boolean" },
+        "max": { "type": "boolean" },
+        "stripMeta": { "type": "boolean" },
+        "threshold": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cwd", "nodeVersion", "platform", "squeezitVersion"],
+      "properties": {
+        "cwd": { "type": "string", "minLength": 1 },
+        "nodeVersion": { "type": "string", "minLength": 1 },
+        "platform": { "type": "string", "minLength": 1 },
+        "squeezitVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binary",
+        "minimumVersion",
+        "normalizedVersion",
+        "provider",
+        "rawVersion"
+      ],
+      "properties": {
+        "binary": { "type": "string", "minLength": 1 },
+        "minimumVersion": { "type": "string", "minLength": 1 },
+        "normalizedVersion": { "type": "string", "minLength": 1 },
+        "provider": { "enum": ["apt", "brew", "manual", "system", "unknown"] },
+        "rawVersion": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

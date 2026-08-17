@@ -81,6 +81,21 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
     effects: ["writes-files"],
     outputSchema: "#/$defs/optimizationData",
   },
+  "plan apply": {
+    confirmation: { requiredWhen: "always-requires-yes" },
+    effects: ["writes-files"],
+    outputSchema: "#/$defs/planApplyData",
+  },
+  "plan compress": {
+    confirmation: NEVER_CONFIRM,
+    effects: ["reads-environment", "reads-files", "writes-plan-artifact"],
+    outputSchema: "#/$defs/planCreationData",
+  },
+  "plan metadata strip": {
+    confirmation: NEVER_CONFIRM,
+    effects: ["reads-environment", "reads-files", "writes-plan-artifact"],
+    outputSchema: "#/$defs/planCreationData",
+  },
   "update apply": {
     confirmation: {
       requiredWhen: "updates-installation-in-json-or-non-interactive-mode",

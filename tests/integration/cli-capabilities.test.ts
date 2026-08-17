@@ -26,6 +26,10 @@ describe("agent capability discovery", () => {
             localPath: "schemas/command-envelope-v2.schema.json",
             url: expect.stringContaining("unpkg.com/squeezit@"),
           },
+          optimizationPlan: {
+            localPath: "schemas/optimization-plan-v1.schema.json",
+            url: expect.stringContaining("unpkg.com/squeezit@"),
+          },
         },
       },
       ok: true,
@@ -86,6 +90,9 @@ describe("agent capability discovery", () => {
       "doctor",
       "help",
       "metadata strip",
+      "plan apply",
+      "plan compress",
+      "plan metadata strip",
       "update apply",
       "update check",
       "version",
@@ -102,6 +109,24 @@ describe("agent capability discovery", () => {
     );
     expect(commandById.get("metadata strip")).toMatchObject({
       aliases: ["exif"],
+    });
+    expect(commandById.get("plan metadata strip")).toMatchObject({
+      aliases: ["plan exif"],
+      confirmation: { requiredWhen: "never" },
+      effects: ["reads-environment", "reads-files", "writes-plan-artifact"],
+      outputSchema: "#/$defs/planCreationData",
+    });
+    expect(commandById.get("plan apply")).toMatchObject({
+      confirmation: { requiredWhen: "always-requires-yes" },
+      effects: ["writes-files"],
+      outputSchema: "#/$defs/planApplyData",
+      flags: expect.arrayContaining([
+        expect.objectContaining({
+          default: "auto",
+          name: "progress",
+          options: ["auto", "off"],
+        }),
+      ]),
     });
     expect(commandById.get("deps install")).toMatchObject({
       confirmation: {
@@ -131,14 +156,17 @@ describe("agent capability discovery", () => {
   });
 
   test("validates a v2 command result and the capabilities document", async () => {
-    const [envelopeSchema, capabilitiesSchema, envelope] = await Promise.all([
-      readSchema("command-envelope-v2.schema.json"),
-      readSchema("capabilities-v1.schema.json"),
-      runJson(["capabilities", "--json"]),
-    ]);
+    const [envelopeSchema, capabilitiesSchema, planSchema, envelope] =
+      await Promise.all([
+        readSchema("command-envelope-v2.schema.json"),
+        readSchema("capabilities-v1.schema.json"),
+        readSchema("optimization-plan-v1.schema.json"),
+        runJson(["capabilities", "--json"]),
+      ]);
     const ajv = new Ajv2020({ logger: false, strict: false });
 
     ajv.addSchema(capabilitiesSchema);
+    ajv.addSchema(planSchema);
     expect(ajv.compile(envelopeSchema)(envelope)).toBe(true);
     expect(ajv.compile(capabilitiesSchema)(envelope.data)).toBe(true);
   });

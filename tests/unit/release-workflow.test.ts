@@ -198,14 +198,28 @@ describe("tag release workflow", () => {
     expect(run).not.toMatch(/test:(?:full|max)|--max\b/);
   });
 
-  test("installs the PNG tools needed by the CLI dry-run contract before CLI tests", async () => {
+  test("installs pinned PNG tools needed by the CLI contract before CLI tests", async () => {
     const validate = requiredJobs(await readWorkflow()).validate;
     const run = scripts(validate);
 
     expect(run).toContain("sudo apt-get update");
-    expect(run).toContain("sudo apt-get install --yes pngcrush optipng");
+    expect(run).toContain(
+      "sudo apt-get install --yes build-essential libpng-dev pngcrush"
+    );
+    expect(run).toContain('OPTIPNG_VERSION="7.9.1"');
+    expect(run).toContain(
+      'OPTIPNG_SHA256="c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29"'
+    );
+    expect(run).toContain("downloads.sourceforge.net/project/optipng");
+    expect(run).toContain("sha256sum --check");
+    expect(run).toContain('./configure --prefix="$PREFIX"');
+    expect(run).toContain("make -j2");
+    expect(run).toContain("make install");
+    expect(run).toContain('"$PREFIX/bin/optipng" -v | grep -F');
+    expect(run).toContain('echo "$PREFIX/bin" >> "$GITHUB_PATH"');
     expect(run).toContain("cargo install oxipng --version 10.1.0 --locked");
     expect(run).toContain('echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"');
+    expect(run).not.toContain("sudo apt-get install --yes pngcrush optipng");
     expect(
       run.indexOf("cargo install oxipng --version 10.1.0 --locked")
     ).toBeLessThan(run.indexOf("bun run test:cli"));

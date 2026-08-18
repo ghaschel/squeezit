@@ -83,7 +83,22 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install --yes pngcrush optipng
+          sudo apt-get install --yes build-essential libpng-dev pngcrush
+          OPTIPNG_VERSION="7.9.1"
+          OPTIPNG_SHA256="c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29"
+          ARCHIVE="$RUNNER_TEMP/optipng.tar.gz"
+          PREFIX="$RUNNER_TEMP/optipng"
+          curl --fail --location --retry 3 --output "$ARCHIVE" \
+            "https://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-$OPTIPNG_VERSION/optipng-$OPTIPNG_VERSION.tar.gz"
+          echo "$OPTIPNG_SHA256  $ARCHIVE" | sha256sum --check
+          tar -xzf "$ARCHIVE" --directory "$RUNNER_TEMP"
+          pushd "$RUNNER_TEMP/optipng-$OPTIPNG_VERSION"
+          ./configure --prefix="$PREFIX"
+          make -j2
+          make install
+          popd
+          "$PREFIX/bin/optipng" -v | grep -F "OptiPNG version $OPTIPNG_VERSION"
+          echo "$PREFIX/bin" >> "$GITHUB_PATH"
           cargo install oxipng --version 10.1.0 --locked
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 

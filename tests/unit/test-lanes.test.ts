@@ -10,10 +10,10 @@ describe("test lane scripts", () => {
     const packageJson = await readPackageJson();
 
     expect(packageJson.scripts.test).toBe(
-      "bun run test:fast && bun run test:cli && bun run test:integration"
+      "bun run test:fast && bun run test:cli && bun run test:agent && bun run test:integration"
     );
     expect(packageJson.scripts["test:all"]).toBe(
-      "bun test && bun run test:slow"
+      "bun run test && bun run test:slow"
     );
     expect(packageJson.scripts["test:slow"]).toBe(
       "vitest run tests/integration/api-max.test.ts --maxWorkers 1 --maxConcurrency 1"
@@ -38,8 +38,9 @@ describe("test lane scripts", () => {
     const packageJson = await readPackageJson();
 
     expect(packageJson.scripts["verify:agent"]).toBe(
-      "bun run typecheck && bun run test:fast && bun run test:cli && bun run check:exports && npm pack --dry-run"
+      "bun run typecheck && bun run test:fast && bun run test:cli && bun run test:agent && bun run check:exports && npm pack --dry-run"
     );
+    expect(packageJson.scripts["test:agent"]).toBe("vitest run tests/agent");
   });
 
   test("registers every real max-profile format test in the dedicated slow suite", async () => {

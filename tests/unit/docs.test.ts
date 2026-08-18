@@ -51,6 +51,8 @@ describe("documentation coverage", () => {
     expect(readme).toContain("optimization-plan-v1.schema.json");
     expect(readme).toContain("run-receipt-v1.schema.json");
     expect(readme).toContain("sqz receipt resume");
+    expect(readme).toContain("bun run agent:preflight --json");
+    expect(readme).toContain("docs/agent-harness.md");
     expect(readme).toContain("## Migrating to 2.0");
   });
 
@@ -73,8 +75,10 @@ describe("documentation coverage", () => {
 
     expect(readme).toContain("bun run verify:agent");
     expect(readme).toContain("bun run test:slow");
+    expect(readme).toContain("bun run test         #");
     expect(agentGuide).toContain("bun run verify:agent");
     expect(agentGuide).toContain("bun run test:slow");
+    expect(agentGuide).toContain("bun run agent:preflight --json");
     expect(releaseGuide).toContain("bun run verify:agent");
   });
 

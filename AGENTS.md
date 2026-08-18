@@ -13,13 +13,34 @@ Use the checked-in skill that matches the requested work before changing code:
 - `.agents/skills/squeezit-release/SKILL.md` for versioning, release tags,
   npm publishing, GitHub archives/releases, or Homebrew tap work.
 
+## Agent preflight
+
+Before changing code, run:
+
+```bash
+bun run agent:preflight --json
+```
+
+The harness is read-only. Read `AGENTS.md` and every skill listed in
+`data.status.skills.recommended` before editing. Its `verification.commands`
+field gives the required test lane for the current diff and optional `--path`
+hints.
+
+Before a Squeezit image operation, run `sqz capabilities --json` and
+`sqz doctor --json`. Preview with `--dry-run` or create a reviewable `plan`
+artifact. Do not add `--yes` to a state-changing command without explicit
+approval after review.
+
 ## Test lanes
 
 Start routine agent verification with `bun run verify:agent`. It runs
 typechecking, fast unit tests, compiled CLI contract tests, export checks, and
 package inspection without real image compression.
 
-- `bun test` runs the non-slow default: fast, CLI, and integration lanes.
+- `bun run test` runs the non-slow default: fast, CLI, agent-evaluation, and
+  integration lanes.
+- `bun run test:agent` runs deterministic agent-workflow evaluation without
+  native optimizer execution.
 - `bun run test:slow` runs serial real `--profile max` compression checks.
 - Run `test:slow` only when explicitly requested or when changing max-profile
   compression behavior. `bun run test:all` is the maintainer-only full suite.

@@ -1,6 +1,6 @@
 {
   "name": "squeezit",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "Lossless image optimizer CLI, JS/TS API, and bundler plugins for PNG, JPEG, GIF, WebP, SVG, AVIF, HEIC, JXL, ICO, BMP, and more.",
   "license": "MIT",
   "homepage": "https://github.com/ghaschel/squeezit#readme",

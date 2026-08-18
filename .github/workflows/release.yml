@@ -75,6 +75,9 @@ jobs:
       - name: Typecheck
         run: bun run typecheck
 
+      - name: Test fast lane
+        run: bun run test:fast
+
       - name: Install CLI test image tools
         shell: bash
         run: |

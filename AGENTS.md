@@ -13,6 +13,17 @@ Use the checked-in skill that matches the requested work before changing code:
 - `.agents/skills/squeezit-release/SKILL.md` for versioning, release tags,
   npm publishing, GitHub archives/releases, or Homebrew tap work.
 
+## Test lanes
+
+Start routine agent verification with `bun run verify:agent`. It runs
+typechecking, fast unit tests, compiled CLI contract tests, export checks, and
+package inspection without real image compression.
+
+- `bun test` runs the non-slow default: fast, CLI, and integration lanes.
+- `bun run test:slow` runs serial real `--profile max` compression checks.
+- Run `test:slow` only when explicitly requested or when changing max-profile
+  compression behavior. `bun run test:all` is the maintainer-only full suite.
+
 ## Commit convention
 
 This repository enforces its commit convention with Commitlint and the rules

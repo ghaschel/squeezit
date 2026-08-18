@@ -34,6 +34,10 @@ describe("agent capability discovery", () => {
             localPath: "schemas/optimization-plan-v1.schema.json",
             url: expect.stringContaining("unpkg.com/squeezit@"),
           },
+          runReceipt: {
+            localPath: "schemas/run-receipt-v1.schema.json",
+            url: expect.stringContaining("unpkg.com/squeezit@"),
+          },
         },
       },
       ok: true,
@@ -110,6 +114,7 @@ describe("agent capability discovery", () => {
       "plan apply",
       "plan compress",
       "plan metadata strip",
+      "receipt resume",
       "update apply",
       "update check",
       "version",
@@ -149,6 +154,40 @@ describe("agent capability discovery", () => {
           options: ["auto", "off"],
         }),
       ]),
+    });
+    expect(commandById.get("compress")).toMatchObject({
+      receipt: {
+        resume: "retry-incomplete-or-failed-image-inputs",
+        schema: "schemas/run-receipt-v1.schema.json",
+        supported: true,
+      },
+      flags: expect.arrayContaining([
+        expect.objectContaining({ name: "receipt", type: "option" }),
+      ]),
+    });
+    const receiptCommands = [
+      "compress",
+      "metadata strip",
+      "plan compress",
+      "plan metadata strip",
+      "plan apply",
+      "deps doctor",
+      "deps install",
+      "doctor",
+      "update check",
+      "update apply",
+    ];
+    expect(receiptCommands.map((id) => commandById.get(id)?.receipt)).toEqual(
+      receiptCommands.map(() => expect.objectContaining({ supported: true }))
+    );
+    expect(commandById.get("receipt resume")).toMatchObject({
+      confirmation: { requiredWhen: "always-requires-yes" },
+      effects: ["reads-receipt", "writes-files", "writes-receipt"],
+      outputSchema: "#/$defs/receiptResumeData",
+      receipt: {
+        resume: "creates-a-new-linked-receipt-from-a-source-receipt",
+        supported: true,
+      },
     });
     expect(commandById.get("deps install")).toMatchObject({
       confirmation: {

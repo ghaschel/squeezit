@@ -1,10 +1,11 @@
 import { Args, Flags } from "@oclif/core";
 
 import { resolveCompressOptions } from "../../../../utils";
-import { SqueezitCommand } from "../../../base-command";
+import { SqueezitOperationCommand } from "../../../operation-command";
 import { createPlanArtifact, runtimeSnapshot } from "../../../plan-command";
+import { receiptOptions } from "../../compress";
 
-export default class PlanMetadataStrip extends SqueezitCommand {
+export default class PlanMetadataStrip extends SqueezitOperationCommand {
   static override aliases = ["plan:exif"];
 
   static override args = {
@@ -61,21 +62,31 @@ export default class PlanMetadataStrip extends SqueezitCommand {
       },
       process.cwd()
     );
+    await this.beginReceipt(
+      flags.receipt,
+      "plan metadata strip",
+      receiptOptions(options)
+    );
     const data = await createPlanArtifact({
       operation: "metadata strip",
       options,
       events: this.eventReporter(),
+      lifecycle: this.receiptFingerprintLifecycle(),
       output: flags.output,
+      onInputsResolved: (inputs) => this.receiptPrepareInputs(inputs),
+      onToolsValidated: (tools) => this.receiptSetToolsBefore(tools),
       runtime: runtimeSnapshot({ squeezitVersion: this.config.version }),
     });
+    await this.receiptAddOutput(data.output.path);
+    const receiptData = await this.completeReceipt(data, { ok: true });
 
     if (this.machineOutputEnabled())
-      return this.emit("plan metadata strip", data);
+      return this.emit("plan metadata strip", receiptData);
 
     this.log(
       `Created metadata plan for ${data.plan.inputs.length} input${data.plan.inputs.length === 1 ? "" : "s"}: ${data.output.path}`
     );
     this.log(`Plan digest: ${data.plan.planDigest}`);
-    return data;
+    return receiptData;
   }
 }

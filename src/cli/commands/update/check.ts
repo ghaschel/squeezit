@@ -11,9 +11,9 @@ import {
   writeInstallerConfig,
 } from "../../../utils";
 import { runCommand } from "../../../utils/exec";
-import { SqueezitCommand } from "../../base-command";
+import { SqueezitOperationCommand } from "../../operation-command";
 
-export default class UpdateCheck extends SqueezitCommand {
+export default class UpdateCheck extends SqueezitOperationCommand {
   static override description =
     "Check for a Squeezit update without changing installation state.";
 
@@ -30,6 +30,7 @@ export default class UpdateCheck extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { flags } = await this.parse(UpdateCheck);
+    await this.beginReceipt(flags.receipt, "update check", { pm: flags.pm });
     this.phaseStarted("update-check");
     const result = await defaultUpdateService().check(runtimeRequest(flags.pm));
     this.phaseCompleted(
@@ -46,13 +47,14 @@ export default class UpdateCheck extends SqueezitCommand {
           ],
         }
       : result;
+    const issue = !result.ok ? updateUnavailableIssue(result) : undefined;
+    const receiptData = await this.completeReceipt(data, {
+      ...(issue ? { error: issue } : {}),
+      exitCode: process.exitCode,
+      ok,
+    });
     if (this.jsonEnabled()) {
-      return this.emitStatus(
-        "update check",
-        ok,
-        data,
-        !result.ok ? updateUnavailableIssue(result) : undefined
-      );
+      return this.emitStatus("update check", ok, receiptData, issue);
     }
     if (!ok) this.error(result.message);
     if (result.status === "up-to-date")
@@ -65,7 +67,7 @@ export default class UpdateCheck extends SqueezitCommand {
       this.logToStderr(
         "Update check completed without changing installer state."
       );
-    return data;
+    return receiptData;
   }
 }
 

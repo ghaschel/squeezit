@@ -1,11 +1,11 @@
 import { Flags } from "@oclif/core";
 
 import { confirmSelfUpdate } from "../../../utils/prompts";
-import { SqueezitCommand } from "../../base-command";
+import { SqueezitOperationCommand } from "../../operation-command";
 import { requiresExplicitConfirmation, SqueezitError } from "../../output";
 import { defaultUpdateService, runtimeRequest } from "./check";
 
-export default class UpdateApply extends SqueezitCommand {
+export default class UpdateApply extends SqueezitOperationCommand {
   static override description = "Apply the latest Squeezit update.";
 
   static override flags = {
@@ -25,6 +25,7 @@ export default class UpdateApply extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { flags } = await this.parse(UpdateApply);
+    await this.beginReceipt(flags.receipt, "update apply", { pm: flags.pm });
     this.phaseStarted("confirmation", { operation: "update apply" });
     if (
       !flags.yes &&
@@ -70,22 +71,23 @@ export default class UpdateApply extends SqueezitCommand {
     const data = flags.verbose
       ? { ...result, diagnostics: ["Update apply completed."] }
       : result;
+    const issue = result.ok
+      ? result.status === "cancelled"
+        ? {
+            code: "OPERATION_CANCELLED" as const,
+            message: "Self-update cancelled.",
+            remediation:
+              "Re-run update apply and confirm the operation when prompted.",
+          }
+        : undefined
+      : updateUnavailableIssue(result);
+    const receiptData = await this.completeReceipt(data, {
+      ...(issue ? { error: issue } : {}),
+      exitCode: process.exitCode,
+      ok,
+    });
     if (this.jsonEnabled()) {
-      return this.emitStatus(
-        "update apply",
-        ok,
-        data,
-        result.ok
-          ? result.status === "cancelled"
-            ? {
-                code: "OPERATION_CANCELLED",
-                message: "Self-update cancelled.",
-                remediation:
-                  "Re-run update apply and confirm the operation when prompted.",
-              }
-            : undefined
-          : updateUnavailableIssue(result)
-      );
+      return this.emitStatus("update apply", ok, receiptData, issue);
     }
     if (!result.ok) this.error(result.message);
     this.log(
@@ -96,7 +98,7 @@ export default class UpdateApply extends SqueezitCommand {
           : "Squeezit is already up to date."
     );
     if (flags.verbose) this.logToStderr("Update apply completed.");
-    return data;
+    return receiptData;
   }
 }
 

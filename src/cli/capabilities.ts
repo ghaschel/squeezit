@@ -29,9 +29,15 @@ export interface CommandCapability {
   json: boolean;
   origin: "external" | "squeezit";
   outputSchema: string | null;
+  receipt: {
+    resume: string | null;
+    schema: string | null;
+    supported: boolean;
+  };
 }
 
 const EVENT_SCHEMA_PATH = "schemas/command-events-v1.schema.json";
+const RECEIPT_SCHEMA_PATH = "schemas/run-receipt-v1.schema.json";
 const TERMINAL_EVENT_LIFECYCLE = [
   "command.started",
   "command.completed",
@@ -48,6 +54,7 @@ const PHASE_COMMANDS = new Set([
   "plan apply",
   "plan compress",
   "plan metadata strip",
+  "receipt resume",
   "update apply",
   "update check",
 ]);
@@ -57,12 +64,14 @@ const INPUT_COMMANDS = new Set([
   "plan apply",
   "plan compress",
   "plan metadata strip",
+  "receipt resume",
 ]);
 
 interface CommandSemantics {
   confirmation: { requiredWhen: string };
   effects: string[];
   outputSchema: string;
+  receipt?: { resume: string | null; supported: boolean };
 }
 
 const NEVER_CONFIRM = { requiredWhen: "never" };
@@ -84,11 +93,16 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
     },
     effects: ["writes-files"],
     outputSchema: "#/$defs/optimizationData",
+    receipt: {
+      resume: "retry-incomplete-or-failed-image-inputs",
+      supported: true,
+    },
   },
   "deps doctor": {
     confirmation: NEVER_CONFIRM,
     effects: ["reads-environment"],
     outputSchema: "#/$defs/dependenciesDoctorData",
+    receipt: { resume: null, supported: true },
   },
   "deps install": {
     confirmation: {
@@ -97,11 +111,13 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
     },
     effects: ["installs-dependencies"],
     outputSchema: "#/$defs/dependenciesInstallData",
+    receipt: { resume: null, supported: true },
   },
   doctor: {
     confirmation: NEVER_CONFIRM,
     effects: ["reads-environment"],
     outputSchema: "#/$defs/doctorData",
+    receipt: { resume: null, supported: true },
   },
   help: {
     confirmation: NEVER_CONFIRM,
@@ -114,21 +130,40 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
     },
     effects: ["writes-files"],
     outputSchema: "#/$defs/optimizationData",
+    receipt: {
+      resume: "retry-incomplete-or-failed-image-inputs",
+      supported: true,
+    },
   },
   "plan apply": {
     confirmation: { requiredWhen: "always-requires-yes" },
     effects: ["writes-files"],
     outputSchema: "#/$defs/planApplyData",
+    receipt: {
+      resume: "retry-incomplete-or-failed-image-inputs",
+      supported: true,
+    },
   },
   "plan compress": {
     confirmation: NEVER_CONFIRM,
     effects: ["reads-environment", "reads-files", "writes-plan-artifact"],
     outputSchema: "#/$defs/planCreationData",
+    receipt: { resume: null, supported: true },
   },
   "plan metadata strip": {
     confirmation: NEVER_CONFIRM,
     effects: ["reads-environment", "reads-files", "writes-plan-artifact"],
     outputSchema: "#/$defs/planCreationData",
+    receipt: { resume: null, supported: true },
+  },
+  "receipt resume": {
+    confirmation: { requiredWhen: "always-requires-yes" },
+    effects: ["reads-receipt", "writes-files", "writes-receipt"],
+    outputSchema: "#/$defs/receiptResumeData",
+    receipt: {
+      resume: "creates-a-new-linked-receipt-from-a-source-receipt",
+      supported: true,
+    },
   },
   "update apply": {
     confirmation: {
@@ -137,11 +172,13 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
     },
     effects: ["updates-installation"],
     outputSchema: "#/$defs/updateApplyData",
+    receipt: { resume: null, supported: true },
   },
   "update check": {
     confirmation: NEVER_CONFIRM,
     effects: ["reads-network", "reads-installation"],
     outputSchema: "#/$defs/updateCheckData",
+    receipt: { resume: null, supported: true },
   },
   version: {
     confirmation: NEVER_CONFIRM,
@@ -210,6 +247,13 @@ function toCommandCapability(
     json: firstParty,
     origin: firstParty ? "squeezit" : "external",
     outputSchema: semantics?.outputSchema ?? null,
+    receipt: firstParty
+      ? {
+          resume: semantics?.receipt?.resume ?? null,
+          schema: semantics?.receipt?.supported ? RECEIPT_SCHEMA_PATH : null,
+          supported: Boolean(semantics?.receipt?.supported),
+        }
+      : { resume: null, schema: null, supported: false },
   };
 }
 

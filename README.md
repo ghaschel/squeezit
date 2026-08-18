@@ -359,19 +359,20 @@ sqz <command> [arguments] [flags]
 
 ### Commands
 
-| Command                                                      | Purpose                                                            |
-| ------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `sqz compress [patterns...]`                                 | Optimize images. `--profile standard \| max` selects the strategy. |
-| `sqz metadata strip [patterns...]`                           | Remove metadata without recompression. `sqz exif` is its alias.    |
-| `sqz plan compress [patterns...] --output <plan.json>`       | Create a reviewable compression plan without writing images.       |
-| `sqz plan metadata strip [patterns...] --output <plan.json>` | Create a metadata-removal plan. `sqz plan exif` is its alias.      |
-| `sqz plan apply <plan.json> --yes`                           | Revalidate and apply exactly one reviewed plan.                    |
-| `sqz deps doctor [patterns...]`                              | Check all tools, or only the tools required by selected inputs.    |
-| `sqz deps install [patterns...]`                             | Install missing tools for all formats or selected inputs.          |
-| `sqz doctor`                                                 | Check Node, platform, update source, and the complete toolchain.   |
-| `sqz update check` / `sqz update apply`                      | Check or apply a global update.                                    |
-| `sqz capabilities --json`                                    | Discover commands, flags, side effects, and JSON schemas.          |
-| `sqz commands`, `sqz help [command]`, `sqz version`          | Discover the installed CLI.                                        |
+| Command                                                       | Purpose                                                            |
+| ------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `sqz compress [patterns...]`                                  | Optimize images. `--profile standard \| max` selects the strategy. |
+| `sqz metadata strip [patterns...]`                            | Remove metadata without recompression. `sqz exif` is its alias.    |
+| `sqz plan compress [patterns...] --output <plan.json>`        | Create a reviewable compression plan without writing images.       |
+| `sqz plan metadata strip [patterns...] --output <plan.json>`  | Create a metadata-removal plan. `sqz plan exif` is its alias.      |
+| `sqz plan apply <plan.json> --yes`                            | Revalidate and apply exactly one reviewed plan.                    |
+| `sqz receipt resume <receipt.json> --output <new.json> --yes` | Retry only safe, unfinished image work in a new linked receipt.    |
+| `sqz deps doctor [patterns...]`                               | Check all tools, or only the tools required by selected inputs.    |
+| `sqz deps install [patterns...]`                              | Install missing tools for all formats or selected inputs.          |
+| `sqz doctor`                                                  | Check Node, platform, update source, and the complete toolchain.   |
+| `sqz update check` / `sqz update apply`                       | Check or apply a global update.                                    |
+| `sqz capabilities --json`                                     | Discover commands, flags, side effects, and JSON schemas.          |
+| `sqz commands`, `sqz help [command]`, `sqz version`           | Discover the installed CLI.                                        |
 
 `sqz` is the canonical binary; `squeezit` remains a full alias. `sqz` with no command shows help.
 
@@ -390,6 +391,7 @@ sqz <command> [arguments] [flags]
 | `-i, --in-place`            | Create temporary artifacts beside source files.                                                                                                                                          |
 | `-y, --yes`                 | Confirm non-dry-run image changes without an interactive prompt. Required in JSON, JSON Lines, or non-interactive mode.                                                                  |
 | `-v, --verbose`             | Print diagnostics to stderr, or include them in JSON output.                                                                                                                             |
+| `--receipt <path>`          | Atomically checkpoint an auditable receipt for an operational command.                                                                                                                   |
 
 Patterns can be explicit paths, directories, shell patterns, or glob expressions. A `compress` command with no patterns scans supported image extensions in the current directory; scanning is non-recursive unless `--recursive` is supplied.
 
@@ -426,6 +428,35 @@ before any optimizer starts. It checks each input again immediately before
 creating a working copy and before replacement, so a source changed during the
 batch is reported instead of being overwritten. The apply run uses the normal
 TTY progress and non-TTY streaming behavior.
+
+### Run receipts and safe resume
+
+Add `--receipt <path>` to an operational command when its options, runtime,
+native-tool diagnostics, input hashes, per-input results, outputs, and elapsed
+time must remain auditable after the process exits. Squeezit creates the path
+atomically, continuously replaces it with a complete checkpoint, and refuses
+to overwrite an existing artifact. The final human report prints the receipt
+path; final JSON and JSON Lines terminal data include its ID, digest, status,
+and absolute path.
+
+```bash
+sqz compress "assets/**/*.{png,jpg}" --dry-run \
+  --receipt .squeezit/receipts/assets-preview.json
+```
+
+Interrupted or failed `compress`, `metadata strip`, and `plan apply` jobs can
+be retried without touching their source receipt:
+
+```bash
+sqz receipt resume .squeezit/receipts/assets.json \
+  --output .squeezit/receipts/assets-retry.json --yes
+```
+
+Resume never accepts optimization overrides. It retries only inputs still
+`pending`, `running`, or `failed`; it verifies the active Squeezit
+version/platform, required optimizer provider/version, and every retry input's
+original SHA-256/size before any optimizer starts. A failed input is eligible
+only when the receipt proves the failure did not alter it.
 
 ### Examples
 
@@ -649,10 +680,12 @@ mutually exclusive with `--json`.
 Start an automated integration with `sqz capabilities --json`: it reports every command, alias, argument, flag/default/enum, side effect, confirmation policy, JSON Lines lifecycle, and output-schema reference. `sqz doctor --json` also detects stale or shadowed Squeezit binaries on `PATH`; these installation warnings remain visible without making runtime/tool readiness unhealthy. The complete contract, error-code reference, and schema locations are in the [agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md). The upstream `sqz autocomplete` command is the only intentional exception to this JSON contract.
 
 The same capability response reports the version-pinned local and unpkg
-locations of `schemas/optimization-plan-v1.schema.json` and
-`schemas/command-events-v1.schema.json`. Agents can create a plan, review its
+locations of `schemas/optimization-plan-v1.schema.json`,
+`schemas/command-events-v1.schema.json`, and
+`schemas/run-receipt-v1.schema.json`. Agents can create a plan, review its
 digest/input/tool snapshot, and invoke `sqz plan apply <plan.json> --yes` only
-when the reviewed plan remains valid.
+when the reviewed plan remains valid. They can also persist the execution
+record with `--receipt` and use `sqz receipt resume` for safe retry-only work.
 
 ### Shell completion
 

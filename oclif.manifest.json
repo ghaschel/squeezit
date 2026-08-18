@@ -112,6 +112,13 @@
           ],
           "type": "option"
         },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "recursive": {
           "char": "r",
           "description": "Recurse into directories.",
@@ -243,6 +250,13 @@
           ],
           "type": "option"
         },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "recursive": {
           "char": "r",
           "description": "Recurse into directories.",
@@ -321,6 +335,13 @@
           ],
           "type": "option"
         },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "recursive": {
           "char": "r",
           "description": "Recurse into directories.",
@@ -397,6 +418,13 @@
           "options": [
             "jsonl"
           ],
+          "type": "option"
+        },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
           "type": "option"
         },
         "verbose": {
@@ -496,6 +524,13 @@
           "options": [
             "jsonl"
           ],
+          "type": "option"
+        },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
           "type": "option"
         },
         "recursive": {
@@ -604,6 +639,13 @@
           ],
           "type": "option"
         },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "yes": {
           "char": "y",
           "description": "Confirm application of the reviewed plan.",
@@ -674,6 +716,13 @@
           "options": [
             "jsonl"
           ],
+          "type": "option"
+        },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
           "type": "option"
         },
         "output": {
@@ -792,6 +841,13 @@
           ],
           "type": "option"
         },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
         "output": {
           "description": "Path for the new plan artifact.",
           "name": "output",
@@ -853,6 +909,85 @@
         "strip.js"
       ]
     },
+    "receipt:resume": {
+      "aliases": [],
+      "args": {
+        "receipt": {
+          "description": "Path to an incomplete or failed Squeezit run receipt.",
+          "name": "receipt",
+          "required": true
+        }
+      },
+      "description": "Resume eligible image work from a receipt into a new linked receipt.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "events": {
+          "description": "Stream structured command events as JSON Lines.",
+          "name": "events",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "jsonl"
+          ],
+          "type": "option"
+        },
+        "output": {
+          "description": "Path for the new linked run receipt.",
+          "name": "output",
+          "required": true,
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "progress": {
+          "description": "Progress display mode.",
+          "name": "progress",
+          "default": "auto",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "auto",
+            "off"
+          ],
+          "type": "option"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Print diagnostic details to stderr.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm retrying the receipt's pending or failed inputs.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "receipt:resume",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "receipt",
+        "resume.js"
+      ]
+    },
     "update:apply": {
       "aliases": [],
       "args": {},
@@ -873,6 +1008,13 @@
           "options": [
             "jsonl"
           ],
+          "type": "option"
+        },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
           "type": "option"
         },
         "pm": {
@@ -938,6 +1080,13 @@
           "options": [
             "jsonl"
           ],
+          "type": "option"
+        },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
           "type": "option"
         },
         "pm": {

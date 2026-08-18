@@ -7,8 +7,11 @@ import type {
   OptimizationResult,
   ResolvedInput,
 } from "../../types";
+import type { OptimizationLifecycle } from "../../utils";
 import {
+  collectRequiredDependencies,
   confirmImageOptimization,
+  diagnoseDependencies,
   ensureDependencies,
   findUnsupportedExplicitInputs,
   formatOptimizationResult,
@@ -21,11 +24,11 @@ import {
   runInteractiveOptimizations,
   shouldUseInteractiveProgress,
 } from "../../utils";
-import { SqueezitCommand } from "../base-command";
 import type { CommandProgressReporter } from "../events";
+import { SqueezitOperationCommand } from "../operation-command";
 import { requiresExplicitConfirmation, SqueezitError } from "../output";
 
-export default class Compress extends SqueezitCommand {
+export default class Compress extends SqueezitOperationCommand {
   static override args = {
     patterns: Args.string({
       description: "Files, directories, or glob patterns to optimize.",
@@ -103,6 +106,7 @@ export default class Compress extends SqueezitCommand {
       },
       process.cwd()
     );
+    await this.beginReceipt(flags.receipt, "compress", receiptOptions(options));
     const report = await optimizeCommand(
       options,
       "compress",
@@ -112,15 +116,33 @@ export default class Compress extends SqueezitCommand {
         confirm: (inputCount) =>
           confirmImageOptimization("compress", inputCount),
       },
-      this.eventReporter()
+      this.eventReporter(),
+      {
+        lifecycle: this.receiptLifecycle(),
+        onInputsResolved: (inputs) => this.receiptPrepareInputs(inputs),
+        onToolsValidated: (tools) => this.receiptSetToolsBefore(tools),
+      }
     );
+    const data = await this.completeReceipt(report, {
+      exitCode: report.summary.failed === 0 ? 0 : 1,
+      ok: report.summary.failed === 0,
+    });
 
     if (this.jsonEnabled()) {
-      return this.emitStatus("compress", report.summary.failed === 0, report);
+      return this.emitStatus("compress", report.summary.failed === 0, data);
     }
 
-    return report;
+    return data;
   }
+}
+
+export interface OptimizationCommandHooks {
+  inputIndexes?: number[];
+  lifecycle?: OptimizationLifecycle;
+  onInputsResolved?: (inputs: ResolvedInput[]) => Promise<void>;
+  onToolsValidated?: (
+    tools: Awaited<ReturnType<typeof diagnoseDependencies>>
+  ) => Promise<void>;
 }
 
 export async function optimizeCommand(
@@ -131,7 +153,8 @@ export async function optimizeCommand(
     assumeYes?: boolean;
     confirm: (inputCount: number) => Promise<boolean>;
   },
-  events?: CommandProgressReporter
+  events?: CommandProgressReporter,
+  hooks?: OptimizationCommandHooks
 ): Promise<OptimizationCommandReport> {
   const discoverySpinner = machineOutput
     ? null
@@ -153,6 +176,7 @@ export async function optimizeCommand(
   }
 
   events?.phaseCompleted("input-discovery", { inputs: inputs.length });
+  await hooks?.onInputsResolved?.(inputs);
 
   if (inputs.length === 0) {
     discoverySpinner?.warn("No matching image files found.");
@@ -169,7 +193,8 @@ export async function optimizeCommand(
     machineOutput,
     confirmation,
     undefined,
-    events
+    events,
+    hooks
   );
 }
 
@@ -190,7 +215,8 @@ export async function optimizeResolvedInputs(
     confirm: (inputCount: number) => Promise<boolean>;
   },
   inputGuard?: OptimizationInputGuard,
-  events?: CommandProgressReporter
+  events?: CommandProgressReporter,
+  hooks?: OptimizationCommandHooks
 ): Promise<{
   diagnostics?: string[];
   inputs: number;
@@ -250,6 +276,9 @@ export async function optimizeResolvedInputs(
   await ensureDependencies({ ...options, installDeps: false }, inputs, {
     silent: machineOutput,
   });
+  await hooks?.onToolsValidated?.(
+    await diagnoseDependencies(collectRequiredDependencies(inputs, options))
+  );
   events?.phaseCompleted("dependency-validation");
 
   if (!machineOutput) {
@@ -270,9 +299,17 @@ export async function optimizeResolvedInputs(
         inputs,
         options,
         inputGuard,
-        lifecycleReporter(events)
+        lifecycleReporter(events, hooks?.lifecycle, hooks?.inputIndexes)
       )
-    : await runStreaming(inputs, options, machineOutput, inputGuard, events);
+    : await runStreaming(
+        inputs,
+        options,
+        machineOutput,
+        inputGuard,
+        events,
+        hooks?.lifecycle,
+        hooks?.inputIndexes
+      );
   events?.phaseCompleted("optimization", { processed: summary.processed });
 
   if (!machineOutput) {
@@ -298,7 +335,9 @@ async function runStreaming(
   options: CompressCommandOptions,
   machineOutput: boolean,
   inputGuard?: OptimizationInputGuard,
-  events?: CommandProgressReporter
+  events?: CommandProgressReporter,
+  lifecycle?: OptimizationLifecycle,
+  inputIndexes?: number[]
 ): Promise<{
   results: OptimizationResult[];
   summary: Awaited<ReturnType<typeof optimizeImages>>;
@@ -314,27 +353,52 @@ async function runStreaming(
       }
     },
     inputGuard,
-    lifecycleReporter(events)
+    lifecycleReporter(events, lifecycle, inputIndexes)
   );
 
   return { results, summary };
 }
 
-function lifecycleReporter(events?: CommandProgressReporter) {
-  return events
+function lifecycleReporter(
+  events?: CommandProgressReporter,
+  lifecycle?: OptimizationLifecycle,
+  inputIndexes?: number[]
+): OptimizationLifecycle | undefined {
+  return events || lifecycle
     ? {
-        onInputCompleted: (
+        onInputCompleted: async (
           input: ResolvedInput,
           index: number,
           result: OptimizationResult
-        ) =>
-          events.inputCompleted(index, input.absolutePath, {
+        ) => {
+          const reportedIndex = inputIndexes?.[index] ?? index;
+          events?.inputCompleted(reportedIndex, input.absolutePath, {
             result,
-          }),
-        onInputStarted: (input: ResolvedInput, index: number) =>
-          events.inputStarted(index, input.absolutePath),
+          });
+          await lifecycle?.onInputCompleted?.(input, reportedIndex, result);
+        },
+        onInputStarted: async (input: ResolvedInput, index: number) => {
+          const reportedIndex = inputIndexes?.[index] ?? index;
+          events?.inputStarted(reportedIndex, input.absolutePath);
+          await lifecycle?.onInputStarted?.(input, reportedIndex);
+        },
       }
     : undefined;
+}
+
+export function receiptOptions(
+  options: CompressCommandOptions
+): Record<string, unknown> {
+  return {
+    concurrency: options.concurrency,
+    dryRun: options.dryRun,
+    exifOnly: options.exifOnly,
+    inPlace: options.inPlace,
+    keepTime: options.keepTime,
+    max: options.max,
+    stripMeta: options.stripMeta,
+    threshold: options.threshold,
+  };
 }
 
 function emptySummary(): Awaited<ReturnType<typeof optimizeImages>> {

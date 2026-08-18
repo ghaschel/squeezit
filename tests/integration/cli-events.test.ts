@@ -391,6 +391,14 @@ describe("JSON Lines CLI event contract", () => {
         join(workspace, "metadata.json"),
       ],
       ["plan", "apply", "missing-plan.json", "--yes"],
+      [
+        "receipt",
+        "resume",
+        "missing-receipt.json",
+        "--output",
+        join(workspace, "resumed.json"),
+        "--yes",
+      ],
       ["deps", "install"],
       ["update", "apply"],
       ["update", "check", "--pm", "unsupported"],
@@ -446,7 +454,7 @@ describe("JSON Lines CLI event contract", () => {
       });
       expect(result.exitCode === 0, command.join(" ")).toBe(terminal?.ok);
     }
-  });
+  }, 15_000);
 });
 
 async function createEventValidator() {

@@ -13,12 +13,19 @@
     "schemas": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["capabilities", "envelope", "events", "optimizationPlan"],
+      "required": [
+        "capabilities",
+        "envelope",
+        "events",
+        "optimizationPlan",
+        "runReceipt"
+      ],
       "properties": {
         "capabilities": { "$ref": "#/$defs/schemaLocation" },
         "envelope": { "$ref": "#/$defs/schemaLocation" },
         "events": { "$ref": "#/$defs/schemaLocation" },
-        "optimizationPlan": { "$ref": "#/$defs/schemaLocation" }
+        "optimizationPlan": { "$ref": "#/$defs/schemaLocation" },
+        "runReceipt": { "$ref": "#/$defs/schemaLocation" }
       }
     }
   },
@@ -48,7 +55,8 @@
         "id",
         "json",
         "origin",
-        "outputSchema"
+        "outputSchema",
+        "receipt"
       ],
       "properties": {
         "aliases": { "type": "array", "items": { "type": "string" } },
@@ -69,7 +77,8 @@
         "id": { "type": "string" },
         "json": { "type": "boolean" },
         "origin": { "enum": ["external", "squeezit"] },
-        "outputSchema": { "type": ["string", "null"] }
+        "outputSchema": { "type": ["string", "null"] },
+        "receipt": { "$ref": "#/$defs/receipt" }
       }
     },
     "flag": {
@@ -102,6 +111,16 @@
         "format": { "type": ["string", "null"] },
         "lifecycle": { "type": "array", "items": { "type": "string" } },
         "schema": { "type": ["string", "null"] }
+      }
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resume", "schema", "supported"],
+      "properties": {
+        "resume": { "type": ["string", "null"] },
+        "schema": { "type": ["string", "null"] },
+        "supported": { "type": "boolean" }
       }
     },
     "schemaLocation": {

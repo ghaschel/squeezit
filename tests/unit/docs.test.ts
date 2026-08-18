@@ -49,6 +49,8 @@ describe("documentation coverage", () => {
     expect(readme).toContain("docs/agent-contract.md");
     expect(readme).toContain("command-events-v1.schema.json");
     expect(readme).toContain("optimization-plan-v1.schema.json");
+    expect(readme).toContain("run-receipt-v1.schema.json");
+    expect(readme).toContain("sqz receipt resume");
     expect(readme).toContain("## Migrating to 2.0");
   });
 

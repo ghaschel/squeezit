@@ -1,10 +1,11 @@
 import { Args, Flags } from "@oclif/core";
 
 import { resolveCompressOptions } from "../../../utils";
-import { SqueezitCommand } from "../../base-command";
+import { SqueezitOperationCommand } from "../../operation-command";
 import { createPlanArtifact, runtimeSnapshot } from "../../plan-command";
+import { receiptOptions } from "../compress";
 
-export default class PlanCompress extends SqueezitCommand {
+export default class PlanCompress extends SqueezitOperationCommand {
   static override args = {
     patterns: Args.string({
       description:
@@ -73,20 +74,31 @@ export default class PlanCompress extends SqueezitCommand {
       },
       process.cwd()
     );
+    await this.beginReceipt(
+      flags.receipt,
+      "plan compress",
+      receiptOptions(options)
+    );
     const data = await createPlanArtifact({
       operation: "compress",
       options,
       events: this.eventReporter(),
+      lifecycle: this.receiptFingerprintLifecycle(),
       output: flags.output,
+      onInputsResolved: (inputs) => this.receiptPrepareInputs(inputs),
+      onToolsValidated: (tools) => this.receiptSetToolsBefore(tools),
       runtime: runtimeSnapshot({ squeezitVersion: this.config.version }),
     });
+    await this.receiptAddOutput(data.output.path);
+    const receiptData = await this.completeReceipt(data, { ok: true });
 
-    if (this.machineOutputEnabled()) return this.emit("plan compress", data);
+    if (this.machineOutputEnabled())
+      return this.emit("plan compress", receiptData);
 
     this.log(
       `Created compression plan for ${data.plan.inputs.length} input${data.plan.inputs.length === 1 ? "" : "s"}: ${data.output.path}`
     );
     this.log(`Plan digest: ${data.plan.planDigest}`);
-    return data;
+    return receiptData;
   }
 }

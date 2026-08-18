@@ -4,6 +4,7 @@ import {
   collectDependencyInstallTargets,
   collectRequiredDependencies,
   detectPlatform,
+  diagnoseDependencies,
   findMissingDependencies,
   formatDependencyInstallCommand,
   installDependencies,
@@ -11,10 +12,10 @@ import {
   resolveInputs,
 } from "../../../utils";
 import { confirmDependencyInstall } from "../../../utils/prompts";
-import { SqueezitCommand } from "../../base-command";
+import { SqueezitOperationCommand } from "../../operation-command";
 import { requiresExplicitConfirmation, SqueezitError } from "../../output";
 
-export default class DependenciesInstall extends SqueezitCommand {
+export default class DependenciesInstall extends SqueezitOperationCommand {
   static override args = {
     patterns: Args.string({
       description: "Install only tools required by these image inputs.",
@@ -61,6 +62,11 @@ export default class DependenciesInstall extends SqueezitCommand {
       },
       process.cwd()
     );
+    await this.beginReceipt(flags.receipt, "deps install", {
+      profile: flags.profile,
+      recursive: Boolean(flags.recursive),
+      stripMeta: Boolean(flags["strip-meta"]),
+    });
     const platform = await detectPlatform();
     if (!platform) {
       throw new SqueezitError({
@@ -79,8 +85,10 @@ export default class DependenciesInstall extends SqueezitCommand {
       options,
       (args.patterns?.length ?? 0) === 0
     );
+    await this.receiptPrepareInputs(inputs);
     this.phaseStarted("dependency-validation");
     const missing = await findMissingDependencies(dependencies);
+    await this.receiptSetToolsBefore(await diagnoseDependencies(dependencies));
     const targets = collectDependencyInstallTargets(missing, platform);
     const packages = Array.from(
       new Set(targets.map((target) => target.package))
@@ -111,7 +119,11 @@ export default class DependenciesInstall extends SqueezitCommand {
           "All requested optimizer tools are already installed."
         );
       }
-      return this.jsonEnabled() ? this.emit("deps install", data) : data;
+      await this.receiptObserveInputs(inputs);
+      const receiptData = await this.completeReceipt(data, { ok: true });
+      return this.jsonEnabled()
+        ? this.emit("deps install", receiptData)
+        : receiptData;
     }
 
     if (
@@ -152,6 +164,8 @@ export default class DependenciesInstall extends SqueezitCommand {
     }
     this.phaseStarted("dependency-installation", { packages });
     await installDependencies(platform, targets);
+    await this.receiptSetToolsAfter(await diagnoseDependencies(dependencies));
+    await this.receiptObserveInputs(inputs);
     this.phaseCompleted("dependency-installation", { packages });
     const data = {
       inputs: inputs.length,
@@ -163,6 +177,9 @@ export default class DependenciesInstall extends SqueezitCommand {
         ? { diagnostics: [`Installed ${packages.length} package(s).`] }
         : {}),
     };
-    return this.jsonEnabled() ? this.emit("deps install", data) : data;
+    const receiptData = await this.completeReceipt(data, { ok: true });
+    return this.jsonEnabled()
+      ? this.emit("deps install", receiptData)
+      : receiptData;
   }
 }

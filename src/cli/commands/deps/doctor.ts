@@ -6,9 +6,9 @@ import {
   resolveCompressOptions,
   resolveInputs,
 } from "../../../utils";
-import { SqueezitCommand } from "../../base-command";
+import { SqueezitOperationCommand } from "../../operation-command";
 
-export default class DependenciesDoctor extends SqueezitCommand {
+export default class DependenciesDoctor extends SqueezitOperationCommand {
   static override args = {
     patterns: Args.string({
       description: "Limit checks to the tools required by these image inputs.",
@@ -51,6 +51,11 @@ export default class DependenciesDoctor extends SqueezitCommand {
       },
       process.cwd()
     );
+    await this.beginReceipt(flags.receipt, "deps doctor", {
+      profile: flags.profile,
+      recursive: Boolean(flags.recursive),
+      stripMeta: Boolean(flags["strip-meta"]),
+    });
     this.phaseStarted("input-discovery");
     const inputs = await resolveInputs(options);
     this.phaseCompleted("input-discovery", { inputs: inputs.length });
@@ -59,8 +64,11 @@ export default class DependenciesDoctor extends SqueezitCommand {
       options,
       (args.patterns?.length ?? 0) === 0
     );
+    await this.receiptPrepareInputs(inputs);
     this.phaseStarted("dependency-validation");
     const diagnostics = await diagnoseDependencies(dependencies);
+    await this.receiptSetToolsBefore(diagnostics);
+    await this.receiptObserveInputs(inputs);
     this.phaseCompleted("dependency-validation", {
       tools: diagnostics.length,
     });
@@ -77,8 +85,12 @@ export default class DependenciesDoctor extends SqueezitCommand {
     };
 
     process.exitCode = ok ? 0 : 1;
+    const receiptData = await this.completeReceipt(data, {
+      exitCode: process.exitCode,
+      ok,
+    });
     if (this.jsonEnabled()) {
-      return this.emitStatus("deps doctor", ok, data);
+      return this.emitStatus("deps doctor", ok, receiptData);
     }
 
     for (const tool of diagnostics) {
@@ -93,7 +105,7 @@ export default class DependenciesDoctor extends SqueezitCommand {
     if (flags.verbose) {
       this.logToStderr(`Checked ${diagnostics.length} optimizer tool(s).`);
     }
-    return data;
+    return receiptData;
   }
 }
 

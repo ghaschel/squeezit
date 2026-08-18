@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ghaschel/squeezit/schemas/run-receipt-v1.schema.json",
+  "title": "Squeezit run receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command",
+    "createdAt",
+    "inputs",
+    "kind",
+    "meta",
+    "operation",
+    "options",
+    "outputs",
+    "receiptDigest",
+    "receiptId",
+    "schemaVersion",
+    "startedAt",
+    "status",
+    "tools"
+  ],
+  "properties": {
+    "command": { "type": "string", "minLength": 1 },
+    "completedAt": { "type": "string", "format": "date-time" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "elapsedMs": { "type": "number", "minimum": 0 },
+    "inputs": { "type": "array", "items": { "$ref": "#/$defs/input" } },
+    "kind": { "const": "squeezit-run-receipt" },
+    "meta": { "$ref": "#/$defs/meta" },
+    "operation": { "type": "string", "minLength": 1 },
+    "options": { "type": "object" },
+    "outputs": { "type": "array", "items": { "$ref": "#/$defs/output" } },
+    "receiptDigest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "receiptId": { "type": "string", "format": "uuid" },
+    "resumedFrom": { "$ref": "#/$defs/sourceReceipt" },
+    "schemaVersion": { "const": 1 },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["completed", "failed", "running"] },
+    "terminal": { "$ref": "#/$defs/terminal" },
+    "tools": { "$ref": "#/$defs/tools" }
+  },
+  "$defs": {
+    "dependencyDiagnostic": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "binary",
+        "minimumVersion",
+        "present",
+        "provider",
+        "remediation",
+        "status"
+      ],
+      "properties": {
+        "binary": { "type": "string" },
+        "minimumVersion": { "type": "string" },
+        "normalizedVersion": { "type": "string" },
+        "present": { "type": "boolean" },
+        "provider": { "enum": ["apt", "brew", "manual", "system", "unknown"] },
+        "rawVersion": { "type": "string" },
+        "remediation": { "type": "string" },
+        "status": { "enum": ["healthy", "missing", "outdated", "unverifiable"] }
+      }
+    },
+    "fingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "digest", "size"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "size": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before", "displayPath", "index", "path", "state"],
+      "properties": {
+        "after": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["fingerprint", "path"],
+          "properties": {
+            "fingerprint": { "$ref": "#/$defs/fingerprint" },
+            "path": { "type": "string", "minLength": 1 }
+          }
+        },
+        "before": { "$ref": "#/$defs/fingerprint" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "displayPath": { "type": "string" },
+        "index": { "type": "integer", "minimum": 0 },
+        "path": { "type": "string", "minLength": 1 },
+        "result": { "type": "object" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "state": {
+          "enum": [
+            "dry-run",
+            "failed",
+            "observed",
+            "optimized",
+            "pending",
+            "running",
+            "skipped"
+          ]
+        }
+      }
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "remediation"],
+      "properties": {
+        "code": { "type": "string" },
+        "details": { "type": "object" },
+        "message": { "type": "string" },
+        "remediation": { "type": "string" }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cwd",
+        "executablePath",
+        "invocationPath",
+        "nodeVersion",
+        "packageRoot",
+        "platform",
+        "squeezitVersion"
+      ],
+      "properties": {
+        "cwd": { "type": "string" },
+        "executablePath": { "type": "string" },
+        "invocationPath": { "type": "string" },
+        "nodeVersion": { "type": "string" },
+        "packageRoot": { "type": "string" },
+        "platform": { "type": "string" },
+        "squeezitVersion": { "type": "string" }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint", "path"],
+      "properties": {
+        "fingerprint": { "$ref": "#/$defs/fingerprint" },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "sourceReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "receiptDigest", "receiptId"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "receiptDigest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "receiptId": { "type": "string", "format": "uuid" }
+      }
+    },
+    "terminal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data", "exitCode", "ok"],
+      "properties": {
+        "data": { "type": "object" },
+        "error": { "$ref": "#/$defs/issue" },
+        "exitCode": { "type": "integer", "minimum": 0 },
+        "ok": { "type": "boolean" }
+      }
+    },
+    "tools": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before"],
+      "properties": {
+        "after": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dependencyDiagnostic" }
+        },
+        "before": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/dependencyDiagnostic" }
+        }
+      }
+    }
+  }
+}

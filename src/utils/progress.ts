@@ -55,10 +55,10 @@ export async function runInteractiveOptimizations(
     inputs.map((input, index) => ({
       title: input.displayPath,
       task: async (_context, task) => {
-        lifecycle?.onInputStarted?.(input, index);
+        await lifecycle?.onInputStarted?.(input, index);
         const result = await optimizeImage(input, options, inputGuard);
         resultSlots[index] = result;
-        lifecycle?.onInputCompleted?.(input, index, result);
+        await lifecycle?.onInputCompleted?.(input, index, result);
 
         if (result.status === "skipped") {
           task.skip(result.message ?? "skipped");

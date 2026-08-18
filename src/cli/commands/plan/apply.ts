@@ -1,11 +1,13 @@
+import { resolve } from "node:path";
+
 import { Args, Flags } from "@oclif/core";
 
-import { SqueezitCommand } from "../../base-command";
+import { SqueezitOperationCommand } from "../../operation-command";
 import { SqueezitError } from "../../output";
 import { preparePlanApply, runtimeSnapshot } from "../../plan-command";
-import { optimizeResolvedInputs } from "../compress";
+import { optimizeResolvedInputs, receiptOptions } from "../compress";
 
-export default class PlanApply extends SqueezitCommand {
+export default class PlanApply extends SqueezitOperationCommand {
   static override args = {
     plan: Args.string({
       description: "Path to the reviewed Squeezit optimization plan.",
@@ -34,6 +36,10 @@ export default class PlanApply extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { args, flags } = await this.parse(PlanApply);
+    const planPath = resolve(args.plan);
+    await this.beginReceipt(flags.receipt, "plan apply", {
+      plan: planPath,
+    });
     this.phaseStarted("confirmation", { operation: "plan apply" });
     if (!flags.yes) {
       throw new SqueezitError({
@@ -49,12 +55,18 @@ export default class PlanApply extends SqueezitCommand {
     this.phaseStarted("plan-validation");
     const prepared = await preparePlanApply({
       events: this.eventReporter(),
-      path: args.plan,
+      path: planPath,
       progress: flags.progress,
       runtime: runtimeSnapshot({ squeezitVersion: this.config.version }),
       verbose: flags.verbose,
     });
     this.phaseCompleted("plan-validation", { inputs: prepared.inputs.length });
+    await this.receiptSetOptions({
+      ...receiptOptions(prepared.options),
+      plan: planPath,
+      planDigest: prepared.plan.planDigest,
+    });
+    await this.receiptPrepareInputs(prepared.inputs);
     if (!this.machineOutputEnabled()) {
       this.log(
         `Applying plan ${prepared.plan.planDigest} to ${prepared.inputs.length} input${prepared.inputs.length === 1 ? "" : "s"}.`
@@ -68,9 +80,19 @@ export default class PlanApply extends SqueezitCommand {
       this.machineOutputEnabled(),
       { assumeYes: true, confirm: async () => true },
       prepared.inputGuard,
-      this.eventReporter()
+      this.eventReporter(),
+      {
+        lifecycle: this.receiptLifecycle(),
+        onToolsValidated: (tools) => this.receiptSetToolsBefore(tools),
+      }
     );
-    const data = { plan: prepared.plan, report };
+    const data = await this.completeReceipt(
+      { plan: prepared.plan, report },
+      {
+        exitCode: report.summary.failed === 0 ? 0 : 1,
+        ok: report.summary.failed === 0,
+      }
+    );
 
     if (this.machineOutputEnabled()) {
       return this.emitStatus("plan apply", report.summary.failed === 0, data);

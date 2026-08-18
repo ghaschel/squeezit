@@ -78,8 +78,11 @@ export interface PlanInputLifecycle {
     input: ResolvedInput,
     index: number,
     fingerprint: PlanFingerprint
-  ) => void;
-  onInputStarted?: (input: ResolvedInput, index: number) => void;
+  ) => unknown | Promise<unknown>;
+  onInputStarted?: (
+    input: ResolvedInput,
+    index: number
+  ) => unknown | Promise<unknown>;
 }
 
 export async function createOptimizationPlan(params: {
@@ -95,9 +98,9 @@ export async function createOptimizationPlan(params: {
     createdAt: params.createdAt ?? new Date().toISOString(),
     inputs: await Promise.all(
       params.inputs.map(async (input, index) => {
-        params.lifecycle?.onInputStarted?.(input, index);
+        await params.lifecycle?.onInputStarted?.(input, index);
         const fingerprint = await fingerprintFile(input.absolutePath);
-        params.lifecycle?.onInputCompleted?.(input, index, fingerprint);
+        await params.lifecycle?.onInputCompleted?.(input, index, fingerprint);
         return {
           displayPath: input.displayPath,
           fingerprint,

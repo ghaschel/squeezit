@@ -138,7 +138,7 @@ export abstract class SqueezitCommand extends Command {
     await super.catch(error as never);
   }
 
-  private commandMeta(): CommandMeta {
+  protected commandMeta(): CommandMeta {
     const invocationPath = resolve(process.argv[1] ?? process.execPath);
 
     return {

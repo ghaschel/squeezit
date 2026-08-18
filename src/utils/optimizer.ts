@@ -116,8 +116,11 @@ export interface OptimizationLifecycle {
     input: ResolvedInput,
     index: number,
     result: OptimizationResult
-  ) => void;
-  onInputStarted?: (input: ResolvedInput, index: number) => void;
+  ) => unknown | Promise<unknown>;
+  onInputStarted?: (
+    input: ResolvedInput,
+    index: number
+  ) => unknown | Promise<unknown>;
 }
 
 export async function optimizeImages(
@@ -134,11 +137,11 @@ export async function optimizeImages(
     options.concurrency,
     inputs,
     async (input, index) => {
-      lifecycle?.onInputStarted?.(input, index);
+      await lifecycle?.onInputStarted?.(input, index);
       const result = await optimizeImage(input, options, inputGuard);
       results.push(result);
       onResult?.(result);
-      lifecycle?.onInputCompleted?.(input, index, result);
+      await lifecycle?.onInputCompleted?.(input, index, result);
     }
   );
 

@@ -6,10 +6,10 @@ import {
   diagnoseDependencies,
   readInstallerConfig,
 } from "../../utils";
-import { SqueezitCommand } from "../base-command";
 import { inspectSqueezitInstallations } from "../installations";
+import { SqueezitOperationCommand } from "../operation-command";
 
-export default class Doctor extends SqueezitCommand {
+export default class Doctor extends SqueezitOperationCommand {
   static override description =
     "Check runtime, platform, update source, and optimizer readiness.";
 
@@ -22,6 +22,7 @@ export default class Doctor extends SqueezitCommand {
 
   async run(): Promise<unknown> {
     const { flags } = await this.parse(Doctor);
+    await this.beginReceipt(flags.receipt, "doctor", {});
     this.phaseStarted("environment-inspection");
     const [platform, tools, installer, installation] = await Promise.all([
       detectPlatform(),
@@ -41,6 +42,7 @@ export default class Doctor extends SqueezitCommand {
     const runtimeHealthy = compareNodeVersion(nodeVersion, "22.13.0") >= 0;
     const toolsHealthy = tools.every((tool) => tool.status === "healthy");
     const ok = Boolean(platform) && runtimeHealthy && toolsHealthy;
+    await this.receiptSetToolsBefore(tools);
     const data = {
       runtime: {
         node: nodeVersion,
@@ -70,8 +72,12 @@ export default class Doctor extends SqueezitCommand {
     };
 
     process.exitCode = ok ? 0 : 1;
+    const receiptData = await this.completeReceipt(data, {
+      exitCode: process.exitCode,
+      ok,
+    });
     if (this.jsonEnabled()) {
-      return this.emitStatus("doctor", ok, data);
+      return this.emitStatus("doctor", ok, receiptData);
     }
 
     this.log(
@@ -89,7 +95,7 @@ export default class Doctor extends SqueezitCommand {
         `Checked ${tools.length} tool(s) and runtime readiness.`
       );
     }
-    return data;
+    return receiptData;
   }
 }
 

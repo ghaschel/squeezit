@@ -2,10 +2,10 @@ import { Args, Flags } from "@oclif/core";
 
 import { resolveCompressOptions } from "../../../utils";
 import { confirmImageOptimization } from "../../../utils/prompts";
-import { SqueezitCommand } from "../../base-command";
-import { optimizeCommand } from "../compress";
+import { SqueezitOperationCommand } from "../../operation-command";
+import { optimizeCommand, receiptOptions } from "../compress";
 
-export default class MetadataStrip extends SqueezitCommand {
+export default class MetadataStrip extends SqueezitOperationCommand {
   static override aliases = ["exif"];
 
   static override args = {
@@ -72,6 +72,11 @@ export default class MetadataStrip extends SqueezitCommand {
       },
       process.cwd()
     );
+    await this.beginReceipt(
+      flags.receipt,
+      "metadata strip",
+      receiptOptions(options)
+    );
     const report = await optimizeCommand(
       options,
       "metadata strip",
@@ -81,17 +86,26 @@ export default class MetadataStrip extends SqueezitCommand {
         confirm: (inputCount) =>
           confirmImageOptimization("metadata strip", inputCount),
       },
-      this.eventReporter()
+      this.eventReporter(),
+      {
+        lifecycle: this.receiptLifecycle(),
+        onInputsResolved: (inputs) => this.receiptPrepareInputs(inputs),
+        onToolsValidated: (tools) => this.receiptSetToolsBefore(tools),
+      }
     );
+    const data = await this.completeReceipt(report, {
+      exitCode: report.summary.failed === 0 ? 0 : 1,
+      ok: report.summary.failed === 0,
+    });
 
     if (this.jsonEnabled()) {
       return this.emitStatus(
         "metadata strip",
         report.summary.failed === 0,
-        report
+        data
       );
     }
 
-    return report;
+    return data;
   }
 }

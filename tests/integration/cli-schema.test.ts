@@ -82,6 +82,43 @@ describe("published JSON Schemas", () => {
       true
     );
   });
+
+  test("validates a raw run receipt and its receipt-enabled envelope", async () => {
+    const workspace = await createWorkspace();
+    const image = await copyFixtureToWorkspace(
+      representativeFixtures.png,
+      workspace
+    );
+    const receiptPath = resolve(workspace, "receipts", "compress.json");
+    const [envelopeValidator, receiptValidator] = await Promise.all([
+      createEnvelopeValidator(),
+      createReceiptValidator(),
+    ]);
+
+    const result = await runJson(
+      [
+        "compress",
+        image,
+        "--dry-run",
+        "--progress",
+        "off",
+        "--receipt",
+        receiptPath,
+        "--json",
+      ],
+      { cwd: workspace }
+    );
+    const receipt = JSON.parse(await readFile(receiptPath, "utf8"));
+
+    expect(
+      envelopeValidator(result.envelope),
+      JSON.stringify(envelopeValidator.errors)
+    ).toBe(true);
+    expect(
+      receiptValidator(receipt),
+      JSON.stringify(receiptValidator.errors)
+    ).toBe(true);
+  });
 });
 
 async function createEnvelopeValidator() {
@@ -99,6 +136,11 @@ async function createEnvelopeValidator() {
 async function createPlanValidator() {
   const planSchema = await readSchema("optimization-plan-v1.schema.json");
   return new Ajv2020({ logger: false, strict: false }).compile(planSchema);
+}
+
+async function createReceiptValidator() {
+  const receiptSchema = await readSchema("run-receipt-v1.schema.json");
+  return new Ajv2020({ logger: false, strict: false }).compile(receiptSchema);
 }
 
 async function createWorkspace(): Promise<string> {

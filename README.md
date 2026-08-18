@@ -349,6 +349,7 @@ The fixture-value helper and JS/TS API report `filePath` and `outputPath` relati
 
 - [API reference](https://github.com/ghaschel/squeezit/blob/main/docs/API.md)
 - [Agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md)
+- [Agent development harness](https://github.com/ghaschel/squeezit/blob/main/docs/agent-harness.md)
 - [Release and maintainer guide](https://github.com/ghaschel/squeezit/blob/main/docs/releasing.md)
 
 ### Usage
@@ -742,22 +743,29 @@ node ./bin/run.js --help
 Use the test lanes that match the change:
 
 ```bash
+bun run agent:preflight --json # Read-only readiness and test-lane guidance.
 bun run verify:agent # Default for coding agents: no real image compression.
-bun test             # Fast + CLI + non-slow integration coverage.
+bun run test         # Fast + CLI + agent evaluation + non-slow integration coverage.
 bun run test:slow    # Real max-profile compression; run only when requested.
 bun run test:all     # Every lane, including slow max-profile compression.
 ```
 
-| Command                    | Use it for                                                                                |
-| -------------------------- | ----------------------------------------------------------------------------------------- |
-| `bun run test:fast`        | Fast unit feedback without compiled CLI checks or real image compression.                 |
-| `bun run test:cli`         | Compiled CLI, Oclif manifest, JSON/event/plan/receipt contracts.                          |
-| `bun run test:integration` | Standard/exif API and bundler integration coverage.                                       |
-| `bun run test:slow`        | Real `--profile max` fixture compression, serially.                                       |
-| `bun run verify:agent`     | The agent default: typecheck, fast tests, CLI contracts, exports, and package inspection. |
+| Command                    | Use it for                                                                                      |
+| -------------------------- | ----------------------------------------------------------------------------------------------- |
+| `bun run test:fast`        | Fast unit feedback without compiled CLI checks or real image compression.                       |
+| `bun run test:cli`         | Compiled CLI, Oclif manifest, JSON/event/plan/receipt contracts.                                |
+| `bun run test:agent`       | Deterministic coding-agent workflow and harness contracts.                                      |
+| `bun run test:integration` | Standard/exif API and bundler integration coverage.                                             |
+| `bun run test:slow`        | Real `--profile max` fixture compression, serially.                                             |
+| `bun run verify:agent`     | The agent default: typecheck, fast tests, CLI/agent contracts, exports, and package inspection. |
 
-`bun test` deliberately excludes the slow lane. Run `test:slow` only when a
+`bun run test` deliberately excludes the slow lane. Run `test:slow` only when a
 change affects max compression or when explicitly requested.
+
+Coding agents should begin with `bun run agent:preflight --json`, read the
+reported skills, and use its verification recommendation. The harness is
+repository-only and read-only; the detailed workflow and JSON contract are in
+[`docs/agent-harness.md`](docs/agent-harness.md).
 
 ## License
 

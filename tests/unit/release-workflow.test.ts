@@ -198,13 +198,13 @@ describe("tag release workflow", () => {
     expect(run).not.toMatch(/test:(?:full|max)|--max\b/);
   });
 
-  test("installs pinned PNG tools needed by the CLI contract before CLI tests", async () => {
+  test("installs pinned PNG and metadata tools needed by the CLI contract before CLI tests", async () => {
     const validate = requiredJobs(await readWorkflow()).validate;
     const run = scripts(validate);
 
     expect(run).toContain("sudo apt-get update");
     expect(run).toContain(
-      "sudo apt-get install --yes build-essential libpng-dev pngcrush"
+      "sudo apt-get install --yes build-essential libpng-dev perl pngcrush"
     );
     expect(run).toContain('OPTIPNG_VERSION="7.9.1"');
     expect(run).toContain(
@@ -217,6 +217,19 @@ describe("tag release workflow", () => {
     expect(run).toContain("make install");
     expect(run).toContain('"$PREFIX/bin/optipng" -v | grep -F');
     expect(run).toContain('echo "$PREFIX/bin" >> "$GITHUB_PATH"');
+    expect(run).toContain('EXIFTOOL_VERSION="13.50"');
+    expect(run).toContain(
+      'EXIFTOOL_SHA256="27e2d66eb21568cc0d59520f89afcaaa50735e1ad9fa4b36d0a4ccf916c70d31"'
+    );
+    expect(run).toContain("cpan.metacpan.org/authors/id/E/EX/EXIFTOOL");
+    expect(run).toContain(
+      'cp -R "$EXIFTOOL_SOURCE/lib" "$EXIFTOOL_PREFIX/bin/lib"'
+    );
+    expect(run).toContain(
+      'cp "$EXIFTOOL_SOURCE/exiftool" "$EXIFTOOL_PREFIX/bin/exiftool"'
+    );
+    expect(run).toContain('"$EXIFTOOL_PREFIX/bin/exiftool" -ver | grep -Fx');
+    expect(run).toContain('echo "$EXIFTOOL_PREFIX/bin" >> "$GITHUB_PATH"');
     expect(run).toContain("cargo install oxipng --version 10.1.0 --locked");
     expect(run).toContain('echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"');
     expect(run).not.toContain("sudo apt-get install --yes pngcrush optipng");

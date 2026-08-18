@@ -83,7 +83,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install --yes build-essential libpng-dev pngcrush
+          sudo apt-get install --yes build-essential libpng-dev perl pngcrush
           OPTIPNG_VERSION="7.9.1"
           OPTIPNG_SHA256="c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29"
           ARCHIVE="$RUNNER_TEMP/optipng.tar.gz"
@@ -99,6 +99,20 @@ jobs:
           popd
           "$PREFIX/bin/optipng" -v | grep -F "OptiPNG version $OPTIPNG_VERSION"
           echo "$PREFIX/bin" >> "$GITHUB_PATH"
+          EXIFTOOL_VERSION="13.50"
+          EXIFTOOL_SHA256="27e2d66eb21568cc0d59520f89afcaaa50735e1ad9fa4b36d0a4ccf916c70d31"
+          EXIFTOOL_ARCHIVE="$RUNNER_TEMP/exiftool.tar.gz"
+          EXIFTOOL_SOURCE="$RUNNER_TEMP/Image-ExifTool-$EXIFTOOL_VERSION"
+          EXIFTOOL_PREFIX="$RUNNER_TEMP/exiftool"
+          curl --fail --location --retry 3 --output "$EXIFTOOL_ARCHIVE" \
+            "https://cpan.metacpan.org/authors/id/E/EX/EXIFTOOL/Image-ExifTool-$EXIFTOOL_VERSION.tar.gz"
+          echo "$EXIFTOOL_SHA256  $EXIFTOOL_ARCHIVE" | sha256sum --check
+          tar -xzf "$EXIFTOOL_ARCHIVE" --directory "$RUNNER_TEMP"
+          mkdir -p "$EXIFTOOL_PREFIX/bin"
+          cp -R "$EXIFTOOL_SOURCE/lib" "$EXIFTOOL_PREFIX/bin/lib"
+          cp "$EXIFTOOL_SOURCE/exiftool" "$EXIFTOOL_PREFIX/bin/exiftool"
+          "$EXIFTOOL_PREFIX/bin/exiftool" -ver | grep -Fx "$EXIFTOOL_VERSION"
+          echo "$EXIFTOOL_PREFIX/bin" >> "$GITHUB_PATH"
           cargo install oxipng --version 10.1.0 --locked
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 

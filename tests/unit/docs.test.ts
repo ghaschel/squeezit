@@ -64,6 +64,20 @@ describe("documentation coverage", () => {
     expect(readme).not.toContain("shasum -a 256 -c SHA256SUMS");
   });
 
+  test("documents the safe test lanes for agents and maintainers", async () => {
+    const [readme, agentGuide, releaseGuide] = await Promise.all([
+      readFile(join(process.cwd(), "README.md"), "utf8"),
+      readFile(join(process.cwd(), "AGENTS.md"), "utf8"),
+      readFile(join(process.cwd(), "docs", "releasing.md"), "utf8"),
+    ]);
+
+    expect(readme).toContain("bun run verify:agent");
+    expect(readme).toContain("bun run test:slow");
+    expect(agentGuide).toContain("bun run verify:agent");
+    expect(agentGuide).toContain("bun run test:slow");
+    expect(releaseGuide).toContain("bun run verify:agent");
+  });
+
   test("contains dedicated API documentation", async () => {
     const apiDocs = await readFile(
       join(process.cwd(), "docs", "API.md"),

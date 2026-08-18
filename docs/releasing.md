@@ -40,9 +40,10 @@ The release lifecycle rebuilds the Oclif CLI and regenerates
 are created. The committed manifest therefore always carries the same version
 as `package.json`.
 
-`release:push` runs locked dependency installation, typechecking, unit tests,
-and package-export checks before `git push --follow-tags`. It intentionally does
-not run a maximum-compression suite.
+`release:push` runs locked dependency installation followed by
+`bun run verify:agent`: typechecking, the fast lane, compiled CLI contracts,
+package-export checks, and package inspection. It intentionally does not run a
+maximum-compression suite.
 
 The first live tag is an integration check for the full external path: npm OIDC
 publication, Oclif archive packaging, GitHub release creation, and the macOS

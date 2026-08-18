@@ -739,12 +739,25 @@ Run the compiled CLI locally:
 node ./bin/run.js --help
 ```
 
-Validate the project:
+Use the test lanes that match the change:
 
 ```bash
-bun run typecheck
-bun test
+bun run verify:agent # Default for coding agents: no real image compression.
+bun test             # Fast + CLI + non-slow integration coverage.
+bun run test:slow    # Real max-profile compression; run only when requested.
+bun run test:all     # Every lane, including slow max-profile compression.
 ```
+
+| Command                    | Use it for                                                                                |
+| -------------------------- | ----------------------------------------------------------------------------------------- |
+| `bun run test:fast`        | Fast unit feedback without compiled CLI checks or real image compression.                 |
+| `bun run test:cli`         | Compiled CLI, Oclif manifest, JSON/event/plan/receipt contracts.                          |
+| `bun run test:integration` | Standard/exif API and bundler integration coverage.                                       |
+| `bun run test:slow`        | Real `--profile max` fixture compression, serially.                                       |
+| `bun run verify:agent`     | The agent default: typecheck, fast tests, CLI contracts, exports, and package inspection. |
+
+`bun test` deliberately excludes the slow lane. Run `test:slow` only when a
+change affects max compression or when explicitly requested.
 
 ## License
 

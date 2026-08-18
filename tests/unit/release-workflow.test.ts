@@ -191,6 +191,7 @@ describe("tag release workflow", () => {
     expect(run).toContain('grep -q "HTTP 404"');
     expect(run).toContain("bun ci");
     expect(run).toContain("bun run typecheck");
+    expect(run).toContain("bun run test:fast");
     expect(run).toContain("bun run test:cli");
     expect(run).toContain("bun run check:exports");
     expect(run).toContain("HUSKY=0 npm pack --dry-run");

@@ -42,11 +42,28 @@ export async function copyApiFixtureToWorkspace(
   );
 }
 
+type ApiFormatTestOptions = {
+  timeout?: number;
+};
+
 export function defineApiFormatTests(
   format: string,
-  options: {
-    timeout?: number;
-  } = {}
+  options: ApiFormatTestOptions = {}
+): void {
+  defineApiModeTests(format, ["default", "exif"], options);
+}
+
+export function defineApiMaxFormatTests(
+  format: string,
+  options: ApiFormatTestOptions = {}
+): void {
+  defineApiModeTests(format, ["max"], options);
+}
+
+function defineApiModeTests(
+  format: string,
+  modes: ApiOptimizationMode[],
+  options: ApiFormatTestOptions
 ): void {
   const fixture = getApiFixture(format);
   const defineModeTest = (
@@ -82,11 +99,21 @@ export function defineApiFormatTests(
     test(`${format}: ${mode} mode in place`, fn);
   };
 
-  defineModeTest("default", (inputPath) =>
-    optimizeFile(inputPath, { mode: "default" })
-  );
-  defineModeTest("exif", (inputPath) => stripMetadata(inputPath));
-  defineModeTest("max", (inputPath) =>
-    optimizeFile(inputPath, { mode: "max" })
-  );
+  for (const mode of modes) {
+    if (mode === "default") {
+      defineModeTest(mode, (inputPath) =>
+        optimizeFile(inputPath, { mode: "default" })
+      );
+      continue;
+    }
+
+    if (mode === "exif") {
+      defineModeTest(mode, (inputPath) => stripMetadata(inputPath));
+      continue;
+    }
+
+    defineModeTest(mode, (inputPath) =>
+      optimizeFile(inputPath, { mode: "max" })
+    );
+  }
 }

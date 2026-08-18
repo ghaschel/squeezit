@@ -1,3 +1,5 @@
+import { resolve } from "node:path";
+
 import { describe, expect, test } from "vitest";
 
 import { toReportedPath } from "../../src/api";
@@ -507,7 +509,7 @@ describe("jxl optimization", () => {
   test("jxl metadata writes allow bmff wrapping", async () => {
     const source = await import("node:fs/promises");
     const code = await source.readFile(
-      "/Users/guilhermehaschel/Documents/Workspace/Personal/compress/src/utils/optimizer.ts",
+      resolve(import.meta.dirname, "../../src/utils/optimizer.ts"),
       "utf8"
     );
 

@@ -1,39 +1,68 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-
 import type { OutputAsset, OutputBundle, OutputChunk } from "rollup";
-import { describe, expect, test } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import { createBufferAsset, optimizeAsset } from "../../src/core";
+const hoisted = vi.hoisted(() => ({ optimizeAsset: vi.fn() }));
+
+vi.mock("../../src/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../../src/core")>();
+  return { ...actual, optimizeAsset: hoisted.optimizeAsset };
+});
+
 import {
   createRollupCoreOptions,
   renameRollupBundleAsset,
   resolveRenamedRollupAssetFileName,
   rewriteRollupBundleReferences,
+  squeezitRollup,
 } from "../../src/integrations/rollup";
 
 describe("rollup helpers", () => {
-  test("optimizes buffer-backed assets through the shared core bridge", async () => {
-    const source = await readFile(
-      join(process.cwd(), "tests/fixtures/formats/png/sample.png")
-    );
-
-    const optimized = await optimizeAsset(
-      createBufferAsset("sample.png", source),
-      createRollupCoreOptions()
-    );
-
-    expect(optimized.result.status).toBe("optimized");
-    expect(optimized.contents.length).toBeLessThan(source.length);
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  test("skips unsupported buffer-backed assets cleanly", async () => {
-    const optimized = await optimizeAsset(
-      createBufferAsset("sample.txt", Buffer.from("hello")),
+  test("passes generated image assets through the buffer core bridge", async () => {
+    const source = Buffer.from("unoptimized image bytes");
+    const contents = Buffer.from("smaller image");
+    hoisted.optimizeAsset.mockResolvedValue({
+      contents,
+      fileName: "sample.png",
+      result: {
+        filePath: "/tmp/sample.png",
+        label: "[PNG]",
+        optimizedSize: contents.length,
+        originalSize: source.length,
+        savedBytes: source.length - contents.length,
+        status: "optimized",
+      },
+    });
+    const asset = createOutputAsset("assets/sample.png", source);
+    const bundle: OutputBundle = { "assets/sample.png": asset };
+    const plugin = squeezitRollup({ checkDependencies: false });
+
+    await runGenerateBundle(plugin, bundle);
+
+    expect(hoisted.optimizeAsset).toHaveBeenCalledWith(
+      expect.objectContaining({
+        contents: source,
+        fileName: "sample.png",
+        kind: "buffer",
+      }),
       createRollupCoreOptions()
     );
+    expect(asset.source).toEqual(contents);
+  });
 
-    expect(optimized.result.status).toBe("skipped");
+  test("leaves unsupported generated assets untouched", async () => {
+    const source = Buffer.from("hello");
+    const asset = createOutputAsset("assets/sample.txt", source);
+    const bundle: OutputBundle = { "assets/sample.txt": asset };
+    const plugin = squeezitRollup({ checkDependencies: false });
+
+    await runGenerateBundle(plugin, bundle);
+
+    expect(hoisted.optimizeAsset).not.toHaveBeenCalled();
+    expect(asset.source).toEqual(source);
   });
 
   test("derives a new hashed rollup asset file name from optimized bytes", () => {
@@ -117,3 +146,28 @@ describe("rollup helpers", () => {
     expect(chunk.referencedFiles).toContain("assets/poster-22222222.webp");
   });
 });
+
+function createOutputAsset(fileName: string, source: Buffer): OutputAsset {
+  return {
+    fileName,
+    name: "sample.png",
+    names: ["sample.png"],
+    needsCodeReference: false,
+    originalFileName: null,
+    originalFileNames: [],
+    source,
+    type: "asset",
+  };
+}
+
+async function runGenerateBundle(
+  plugin: ReturnType<typeof squeezitRollup>,
+  bundle: OutputBundle
+): Promise<void> {
+  const hook = plugin.generateBundle;
+  if (typeof hook !== "function") {
+    throw new Error("Expected the Rollup plugin to provide generateBundle.");
+  }
+
+  await hook.call({} as never, {} as never, bundle, false);
+}

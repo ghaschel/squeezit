@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
 import { remark } from "remark";
 import remarkParse from "remark-parse";
 import remarkStringify from "remark-stringify";
@@ -199,9 +199,10 @@ console.log(
 
 // --- Amend the release commit to include split changelog files ---
 try {
-  execSync(`git add ${changelogsDir} ${changelogPath}`);
-  execSync(`git commit --amend --no-edit --no-verify`);
+  execFileSync("git", ["add", changelogsDir, changelogPath]);
+  execFileSync("git", ["commit", "--amend", "--no-edit"], { stdio: "inherit" });
   console.log(`✅ Amended release commit to include split changelog files.`);
 } catch (err) {
   console.error("⚠️  Failed to amend commit:", err.message);
+  process.exit(1);
 }

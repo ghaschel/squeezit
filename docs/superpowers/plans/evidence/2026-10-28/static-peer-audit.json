@@ -1,0 +1,20 @@
+{
+  "method": "Static nearest-parent resolution from bun.lock, confirm with Bun solver during fresh install",
+  "conflicts": [
+    {
+      "loc": "@conventional-changelog/git-client",
+      "name": "@conventional-changelog/git-client@2.6.0",
+      "peer": "conventional-commits-filter",
+      "range": "^5.0.0",
+      "resolved": "conventional-commits-filter@3.0.0"
+    },
+    {
+      "loc": "@swc/core",
+      "name": "@swc/core@1.15.24",
+      "peer": "@swc/helpers",
+      "range": ">=0.5.17",
+      "resolved": "@swc/helpers@0.5.15"
+    }
+  ],
+  "missingRequired": []
+}

@@ -1,0 +1,53 @@
+[
+  {
+    "name": "ejs",
+    "range": "^6",
+    "source": "https://registry.npmjs.org/ejs",
+    "status": 200,
+    "version": "6.0.1",
+    "latest": "7.0.2",
+    "engines": {
+      "node": ">=0.12.18"
+    }
+  },
+  {
+    "name": "wsl-utils",
+    "range": "^0.4.0",
+    "source": "https://registry.npmjs.org/wsl-utils",
+    "status": 200,
+    "version": "0.4.0",
+    "latest": "1.0.1",
+    "engines": {
+      "node": ">=20"
+    },
+    "dependencies": {
+      "is-wsl": "^3.1.0",
+      "powershell-utils": "^0.1.0"
+    }
+  },
+  {
+    "name": "pretty-ms",
+    "range": "^9.3.1",
+    "source": "https://registry.npmjs.org/pretty-ms",
+    "status": 200,
+    "version": "9.3.1",
+    "latest": "10.0.0",
+    "engines": {
+      "node": ">=18"
+    },
+    "dependencies": {
+      "parse-ms": "^4.0.0"
+    }
+  },
+  {
+    "name": "which-command",
+    "range": "^0.1.0",
+    "source": "https://registry.npmjs.org/which-command",
+    "status": 200,
+    "version": "0.1.0",
+    "latest": "0.1.0",
+    "engines": {
+      "node": ">=22"
+    }
+  }
+]

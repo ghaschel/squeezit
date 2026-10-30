@@ -1,0 +1,14 @@
+
+ RUN  v5.0.5 /project
+
+ ✓ tests/integration/api-pdf-signatures.test.ts (15 tests) 999ms
+ ✓ tests/integration/api-pdf.test.ts (16 tests) 1020ms
+   ✓ preserves XMP, JPEG bytes, form values, links, bookmarks, attachments and rendered pixels 307ms
+ ✓ tests/integration/api-pdf-preservation.test.ts (5 tests) 270ms
+ ✓ tests/unit/pdf.test.ts (19 tests) 3ms
+ ✓ tests/integration/pdf-process.test.ts (17 tests) 860ms
+
+ Test Files  5 passed (5)
+      Tests  72 passed (72)
+   Start at  17:23:22
+   Duration  2.05s (tests 94%, import 5%, transform 1%)

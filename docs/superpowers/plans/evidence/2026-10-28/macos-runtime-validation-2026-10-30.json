@@ -1,0 +1,104 @@
+[
+  {
+    "node": "22.13.0",
+    "arguments": [
+      "--input-type=module",
+      "-e",
+      "await import(\"./dist/index.js\")"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "22.13.0",
+    "arguments": [
+      "-e",
+      "require(\"./dist/index.cjs\")"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "22.13.0",
+    "arguments": [
+      "bin/run.js",
+      "--version"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "22.13.0",
+    "arguments": [
+      "bin/run.js",
+      "capabilities",
+      "--json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "24.22.2",
+    "arguments": [
+      "--input-type=module",
+      "-e",
+      "await import(\"./dist/index.js\")"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "24.22.2",
+    "arguments": [
+      "-e",
+      "require(\"./dist/index.cjs\")"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "24.22.2",
+    "arguments": [
+      "bin/run.js",
+      "--version"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "24.22.2",
+    "arguments": [
+      "bin/run.js",
+      "capabilities",
+      "--json"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "26.13.0",
+    "arguments": [
+      "--input-type=module",
+      "-e",
+      "await import(\"./dist/index.js\")"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "26.13.0",
+    "arguments": [
+      "-e",
+      "require(\"./dist/index.cjs\")"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "26.13.0",
+    "arguments": [
+      "bin/run.js",
+      "--version"
+    ],
+    "exitCode": 0
+  },
+  {
+    "node": "26.13.0",
+    "arguments": [
+      "bin/run.js",
+      "capabilities",
+      "--json"
+    ],
+    "exitCode": 0
+  }
+]

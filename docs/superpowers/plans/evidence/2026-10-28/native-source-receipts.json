@@ -1,0 +1,51 @@
+[
+  {
+    "name": "optipng",
+    "version": "7.9.1",
+    "url": "https://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-7.9.1/optipng-7.9.1.tar.gz",
+    "sha256": "c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29",
+    "source": "https://formulae.brew.sh/api/formula/optipng.json"
+  },
+  {
+    "name": "exiftool",
+    "version": "13.55",
+    "url": "https://downloads.sourceforge.net/project/exiftool/Image-ExifTool-13.55.tar.gz",
+    "sha256": "5f4c81d34ad406538c2871ad72dbfceb5d9b412b2f16cbbeb4d712d270846667",
+    "source": "https://formulae.brew.sh/api/formula/exiftool.json"
+  },
+  {
+    "name": "oxipng",
+    "version": "10.2.1",
+    "url": "https://github.com/oxipng/oxipng/archive/refs/tags/v10.2.1.tar.gz",
+    "sha256": "460ccfcdcc9c3877b9f7fae1dfd4f2a3f93d3b2a2af3e3b62ca32b163f923cca",
+    "source": "https://formulae.brew.sh/api/formula/oxipng.json"
+  },
+  {
+    "name": "qpdf",
+    "version": "12.4.2",
+    "url": "https://github.com/qpdf/qpdf/releases/download/v12.4.2/qpdf-12.4.2.tar.gz",
+    "sha256": "8a58af5b6141319287c1883bec8bd1bd545b7567b7fc5e6ce5d25a1c85f36397",
+    "source": "https://formulae.brew.sh/api/formula/qpdf.json"
+  },
+  {
+    "name": "libheif",
+    "version": "1.23.7",
+    "url": "https://github.com/strukturag/libheif/releases/download/v1.23.7/libheif-1.23.7.tar.gz",
+    "sha256": "f7483e818503ea6224c8863e4a56ac02c7089021a98472c811c12aa19faf2475",
+    "source": "https://formulae.brew.sh/api/formula/libheif.json"
+  },
+  {
+    "name": "jpeg-xl",
+    "version": "0.12.0",
+    "url": "https://github.com/libjxl/libjxl/archive/refs/tags/v0.12.0.tar.gz",
+    "sha256": "03e9be69a30be4011f559da75328b6d7cea8ad921fabfbd551ce10bf45cdc992",
+    "source": "https://formulae.brew.sh/api/formula/jpeg-xl.json"
+  },
+  {
+    "name": "dnglab",
+    "version": "0.8.0",
+    "url": "https://github.com/dnglab/dnglab/archive/refs/tags/v0.8.0.tar.gz",
+    "sha256": "432b8ac8f553289e06c0d78b37ae6f9546e80b736ef879f2ee66b66345590c4d",
+    "source": "https://formulae.brew.sh/api/formula/dnglab.json"
+  }
+]

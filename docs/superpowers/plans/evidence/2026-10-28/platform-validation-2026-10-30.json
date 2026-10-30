@@ -1,0 +1,287 @@
+{
+  "verifiedAt": "2026-10-30T17:27:59.166647+00:00",
+  "dockerServer": "29.8.2",
+  "baseImage": "debian@sha256:a29215f6a35e51e22adffa17f89e9d2ef06214e64a2bad10d765c46aea49f11f",
+  "distribution": "Debian13.7 trixie",
+  "arm64": {
+    "execution": "native ARM64 Linux guest on ARM64 macOS host",
+    "imageId": "sha256:ac0e7449705550ec6307d25540dba7aae8f7d80af0991d9f688932e98692036c arm64",
+    "containerExitCode": 0,
+    "frozenInstall": "Bun1.4.4 bun ci;1151 installed packages;normal lifecycle scripts",
+    "build": "bun run build on Node24.22.2 inside isolated Linux container",
+    "poppler": "25.03.0-5+deb13u4",
+    "openssl": "3.5.7-1~deb13u3",
+    "fontsDejavuCore": "2.37-8",
+    "suites": [
+      "tests/unit/pdf.test.ts",
+      "tests/integration/pdf-process.test.ts",
+      "tests/integration/api-pdf.test.ts",
+      "tests/integration/api-pdf-signatures.test.ts",
+      "tests/integration/api-pdf-preservation.test.ts"
+    ],
+    "matrix": [
+      {
+        "node": "22.13.0",
+        "qpdf": "11.3.0",
+        "testFilesPassed": 5,
+        "testsPassed": 72,
+        "testDurationSeconds": 2.4,
+        "builtEsmImport": "PASS",
+        "builtCjsRequire": "PASS",
+        "compiledCliVersionAndCapabilitiesJson": "PASS",
+        "log": "platform-linux-2026-10-30/node-22.13.0-qpdf-11.3.0.txt"
+      },
+      {
+        "node": "22.13.0",
+        "qpdf": "12.4.2",
+        "testFilesPassed": 5,
+        "testsPassed": 72,
+        "testDurationSeconds": 2.01,
+        "builtEsmImport": "PASS",
+        "builtCjsRequire": "PASS",
+        "compiledCliVersionAndCapabilitiesJson": "PASS",
+        "log": "platform-linux-2026-10-30/node-22.13.0-qpdf-12.4.2.txt"
+      },
+      {
+        "node": "24.22.2",
+        "qpdf": "11.3.0",
+        "testFilesPassed": 5,
+        "testsPassed": 72,
+        "testDurationSeconds": 2.37,
+        "builtEsmImport": "PASS",
+        "builtCjsRequire": "PASS",
+        "compiledCliVersionAndCapabilitiesJson": "PASS",
+        "log": "platform-linux-2026-10-30/node-24.22.2-qpdf-11.3.0.txt"
+      },
+      {
+        "node": "24.22.2",
+        "qpdf": "12.4.2",
+        "testFilesPassed": 5,
+        "testsPassed": 72,
+        "testDurationSeconds": 2.05,
+        "builtEsmImport": "PASS",
+        "builtCjsRequire": "PASS",
+        "compiledCliVersionAndCapabilitiesJson": "PASS",
+        "log": "platform-linux-2026-10-30/node-24.22.2-qpdf-12.4.2.txt"
+      }
+    ]
+  },
+  "amd64": {
+    "execution": "Linuxx64 emulation through OrbStack on ARM64 host; not physical x86 hardware",
+    "imageId": "sha256:bda399db17976f691a25592efa1a104613896cbc6d17bfff05757eb4a28b4417 amd64",
+    "containerExitCode": 0,
+    "frozenInstall": "Bun1.4.4 bun ci --production;214 installed packages;normal lifecycle scripts",
+    "dist": "Final dist and Oclif manifest built in native Linux ARM64 container, copied without host node_modules",
+    "nodes": [
+      {
+        "version": "22.13.0",
+        "platform": "linux",
+        "arch": "x64",
+        "builtEsmImport": "PASS",
+        "builtCjsRequire": "PASS",
+        "compiledCliVersionAndCapabilitiesJson": "PASS"
+      },
+      {
+        "version": "24.22.2",
+        "platform": "linux",
+        "arch": "x64",
+        "builtEsmImport": "PASS",
+        "builtCjsRequire": "PASS",
+        "compiledCliVersionAndCapabilitiesJson": "PASS"
+      }
+    ],
+    "log": "platform-linux-2026-10-30/amd64-smoke.txt"
+  },
+  "downloadReceipts": [
+    {
+      "tool": "node",
+      "version": "22.13.0",
+      "url": "https://nodejs.org/dist/v22.13.0/node-v22.13.0-linux-arm64.tar.xz",
+      "sha256": "5de54a12983d0de6ba23597d4d0194e64933e26b0f04a469db3be9c3e18b6b2b"
+    },
+    {
+      "tool": "node",
+      "version": "24.22.2",
+      "url": "https://nodejs.org/dist/v24.22.2/node-v24.22.2-linux-arm64.tar.xz",
+      "sha256": "eb187837a2230d4047161ac0be008584e16b46f726e9c9490ee35dc6b17d9ba8"
+    },
+    {
+      "tool": "bun",
+      "version": "1.4.4",
+      "url": "https://registry.npmjs.org/@oven/bun-linux-aarch64/-/bun-linux-aarch64-1.4.4.tgz",
+      "integrity": "sha512-ZTVtpf9zmHSBVPX1sBwe5agGb/rN34yPGg/Hby8e2Ax2uCUA2URZKlZH7qLntK7qaFJCMXh9v0GWNYN2zINz1w=="
+    },
+    {
+      "tool": "qpdf",
+      "version": "12.4.2",
+      "url": "https://github.com/qpdf/qpdf/releases/download/v12.4.2/qpdf-12.4.2.tar.gz",
+      "sha256": "8a58af5b6141319287c1883bec8bd1bd545b7567b7fc5e6ce5d25a1c85f36397"
+    },
+    {
+      "tool": "qpdf",
+      "version": "11.3.0",
+      "url": "https://github.com/qpdf/qpdf/releases/download/v11.3.0/qpdf-11.3.0.tar.gz",
+      "sha256": "547cee67de77b5c4ef4917e57d2db9c848cfe3aa950361f68d36367a3a03936e"
+    },
+    {
+      "tool": "node",
+      "version": "22.13.0",
+      "architecture": "x64",
+      "url": "https://nodejs.org/dist/v22.13.0/node-v22.13.0-linux-x64.tar.xz",
+      "sha256": "3ff0d57063c33313d73d0bdcebc4c778ad6be948234584694a042c6fe57164f6"
+    },
+    {
+      "tool": "node",
+      "version": "24.22.2",
+      "architecture": "x64",
+      "url": "https://nodejs.org/dist/v24.22.2/node-v24.22.2-linux-x64.tar.xz",
+      "sha256": "48cc0e21e048790e54c0cf5749c2725005313d652651c40b7a21feb9697aaf75"
+    },
+    {
+      "tool": "bun",
+      "version": "1.4.4",
+      "architecture": "x64",
+      "url": "https://registry.npmjs.org/@oven/bun-linux-x64/-/bun-linux-x64-1.4.4.tgz",
+      "integrity": "sha512-CHbbkmHVM28T1GFq+6GL4Ao4ujwwYwj1CxFFwEFzLanPfNsId9AhbIP0Q4reWuWBkGimUkoQygrK7Rgjtj3vog=="
+    }
+  ],
+  "testedSourceSha256": {
+    "src/core/pdf.ts": "9e508dcdcc8308c4eb57f375d01b543aeb7656565da7b52614173105fbf0ab87",
+    "src/core/dependencies.ts": "9cc5a619f5182fd9fd2667c1ab93b6b6fe348ea7fbce8cc5f8d0b09c54283ae0",
+    "src/utils/optimizer.ts": "83839969b70e7473a35c3a661c7c52ce5e18a6c86a468eb05809eff44a755b99",
+    "tests/unit/pdf.test.ts": "ec0a1df7b015bbde17d49d588914415d697509d6792da9bc906c9b4796e4398f",
+    "tests/integration/pdf-process.test.ts": "909593f99d96ef266116b311b6efed3d3f4444411534705ff97b0c7b3964b93f",
+    "tests/integration/api-pdf.test.ts": "50b14207607b012b08d308dd56556723d9f4cf75040a63c3e14ded660be5edd9",
+    "tests/integration/api-pdf-signatures.test.ts": "10dce1201b6ca32deb1af19b94da83e2fa867013ad8f0c933a7b3105df598916",
+    "tests/integration/api-pdf-preservation.test.ts": "2ed5fb1c11792670c9b59dab35103447ffa257610aedcf545e667ac53100861c",
+    "tests/helpers/pdf.ts": "2ddf0fb72ad6ec92d985ea486bbfc51604a1dc65f13534529b27e6eec58caa10"
+  },
+  "intelMacOS": {
+    "actualLocalExecution": "NOT RUN; physical Intel macOS host unavailable",
+    "ciAdded": {
+      "runner": "macos-26-intel",
+      "node": "24.22.2",
+      "qpdf": "12.4.2",
+      "qpdfInstall": "checksum-verified upstream source in private runner prefix; no dependency on QPDF Intel bottle",
+      "status": "configured, not executed in this session",
+      "opensslSelection": "Homebrew openssl@3 bin explicitly added to GITHUB_PATH for authentic-signature tests"
+    },
+    "runnerSource": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+    "bottleAssessment": [
+      {
+        "formula": "qpdf",
+        "version": "12.4.2",
+        "bottlePlatforms": [
+          "arm64_golden_gate",
+          "arm64_tahoe",
+          "arm64_sequoia",
+          "arm64_linux",
+          "x86_64_linux"
+        ],
+        "sourceUrl": "https://github.com/qpdf/qpdf/releases/download/v12.4.2/qpdf-12.4.2.tar.gz",
+        "sourceSha256": "8a58af5b6141319287c1883bec8bd1bd545b7567b7fc5e6ce5d25a1c85f36397",
+        "receiptSource": "https://formulae.brew.sh/api/formula/qpdf.json"
+      },
+      {
+        "formula": "libheif",
+        "version": "1.23.7",
+        "bottlePlatforms": [
+          "arm64_golden_gate",
+          "arm64_tahoe",
+          "arm64_sequoia",
+          "arm64_linux",
+          "x86_64_linux"
+        ],
+        "sourceUrl": "https://github.com/strukturag/libheif/releases/download/v1.23.7/libheif-1.23.7.tar.gz",
+        "sourceSha256": "f7483e818503ea6224c8863e4a56ac02c7089021a98472c811c12aa19faf2475",
+        "receiptSource": "https://formulae.brew.sh/api/formula/libheif.json"
+      },
+      {
+        "formula": "jpeg-xl",
+        "version": "0.12.0",
+        "bottlePlatforms": [
+          "arm64_golden_gate",
+          "arm64_tahoe",
+          "arm64_sequoia",
+          "arm64_linux",
+          "x86_64_linux"
+        ],
+        "sourceUrl": "https://github.com/libjxl/libjxl/archive/refs/tags/v0.12.0.tar.gz",
+        "sourceSha256": "03e9be69a30be4011f559da75328b6d7cea8ad921fabfbd551ce10bf45cdc992",
+        "receiptSource": "https://formulae.brew.sh/api/formula/jpeg-xl.json"
+      },
+      {
+        "formula": "imagemagick",
+        "version": "7.1.2-34",
+        "bottlePlatforms": [
+          "arm64_golden_gate",
+          "arm64_tahoe",
+          "arm64_sequoia",
+          "arm64_linux",
+          "x86_64_linux"
+        ],
+        "sourceUrl": "https://github.com/ImageMagick/ImageMagick/releases/download/7.1.2-34/ImageMagick-7.1.2-34.7z",
+        "sourceSha256": "a376053195cbab4618855e1a7d90f85f41b95ec2240a91e9c0fe5815d231960d",
+        "receiptSource": "https://formulae.brew.sh/api/formula/imagemagick.json"
+      },
+      {
+        "formula": "mozjpeg",
+        "version": "4.1.5",
+        "bottlePlatforms": [
+          "arm64_golden_gate",
+          "arm64_tahoe",
+          "arm64_sequoia",
+          "arm64_sonoma",
+          "arm64_ventura",
+          "arm64_monterey",
+          "sonoma",
+          "ventura",
+          "monterey",
+          "arm64_linux",
+          "x86_64_linux"
+        ],
+        "sourceUrl": "https://github.com/mozilla/mozjpeg/archive/refs/tags/v4.1.5.tar.gz",
+        "sourceSha256": "9fcbb7171f6ac383f5b391175d6fb3acde5e64c4c4727274eade84ed0998fcc1",
+        "receiptSource": "https://formulae.brew.sh/api/formula/mozjpeg.json"
+      },
+      {
+        "formula": "libavif",
+        "version": "1.4.2",
+        "bottlePlatforms": [
+          "arm64_golden_gate",
+          "arm64_tahoe",
+          "arm64_sequoia",
+          "arm64_sonoma",
+          "sonoma",
+          "arm64_linux",
+          "x86_64_linux"
+        ],
+        "sourceUrl": "https://github.com/AOMediaCodec/libavif/archive/refs/tags/v1.4.2.tar.gz",
+        "sourceSha256": "2b645287340ba5a631d268b551dc2d72bd73ac33335962dd36dcdb6d8366921d",
+        "receiptSource": "https://formulae.brew.sh/api/formula/libavif.json"
+      }
+    ]
+  },
+  "ciHostFloors": "All10 exact retained host versions from adapter-host-boundary evidence, shared Linux hostFloors lane; no redundant local host run",
+  "limits": [
+    "Actual Ubuntu runner execution remains pending CI; local Linux tests use Debian13",
+    "Full PDF matrix is native LinuxARM64; emulated Linuxx64 proof covers built production imports/CLI, not an x64 QPDF build",
+    "Physical Intel macOS and other native image optimizer source-build readiness remain unverified",
+    "Only task-owned images/containers/context/cache IDs may be cleaned; no global prune"
+  ],
+  "cleanup": {
+    "status": "complete",
+    "taskContainersRemoved": 2,
+    "taskImageTagsRemoved": 2,
+    "taskBuildCacheRecordsRemoved": 28,
+    "cacheSelection": "Anchored exact-ID filters; only records created by task Dockerfiles; no global prune",
+    "cacheSpaceReclaimedReported": "1.736GB +3.397GB",
+    "unrelatedBaseImagesPreserved": true,
+    "remainingSelectedCacheRecords": 0,
+    "largeTemporaryBuildContextsRemoved": [
+      "/tmp/squeezit-linux-validation",
+      "/tmp/squeezit-linux-amd64-smoke"
+    ],
+    "durableReceiptsAndLogsOnly": true
+  }
+}

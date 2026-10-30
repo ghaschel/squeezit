@@ -1,0 +1,6 @@
+{"platform":"linux","arch":"x64","version":"v22.13.0"}
+squeezit/2.4.3 linux-x64 node-v22.13.0
+PASS Linux x64 Node22.13.0 ESM/CJS/CLI JSON smoke
+{"platform":"linux","arch":"x64","version":"v24.22.2"}
+squeezit/2.4.3 linux-x64 node-v24.22.2
+PASS Linux x64 Node24.22.2 ESM/CJS/CLI JSON smoke

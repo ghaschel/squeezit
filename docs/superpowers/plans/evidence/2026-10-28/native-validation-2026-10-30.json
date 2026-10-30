@@ -1,0 +1,430 @@
+{
+  "verifiedAt": "2026-10-30",
+  "platform": "macOS arm64 26.6.2",
+  "tools": [
+    {
+      "binary": "file",
+      "present": true,
+      "provider": "system",
+      "status": "healthy",
+      "minimumVersion": "5.41",
+      "rawVersion": "5.41",
+      "normalizedVersion": "5.41",
+      "remediation": ""
+    },
+    {
+      "binary": "qpdf",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "11.3.0",
+      "rawVersion": "12.4.2",
+      "normalizedVersion": "12.4.2",
+      "remediation": ""
+    },
+    {
+      "binary": "jpegtran",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "4.1.5",
+      "rawVersion": "4.1.5",
+      "normalizedVersion": "4.1.5",
+      "remediation": ""
+    },
+    {
+      "binary": "jpegoptim",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.5.6",
+      "rawVersion": "1.5.6",
+      "normalizedVersion": "1.5.6",
+      "remediation": ""
+    },
+    {
+      "binary": "pngcrush",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.8.13",
+      "rawVersion": "1.8.13",
+      "normalizedVersion": "1.8.13",
+      "remediation": ""
+    },
+    {
+      "binary": "optipng",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "7.9.1",
+      "rawVersion": "7.9.1",
+      "normalizedVersion": "7.9.1",
+      "remediation": ""
+    },
+    {
+      "binary": "zopflipng",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.0.3",
+      "rawVersion": "1.0.3_1",
+      "normalizedVersion": "1.0.3",
+      "remediation": ""
+    },
+    {
+      "binary": "oxipng",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "10.1.0",
+      "rawVersion": "10.2.1",
+      "normalizedVersion": "10.2.1",
+      "remediation": ""
+    },
+    {
+      "binary": "gifsicle",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.96",
+      "rawVersion": "1.98",
+      "normalizedVersion": "1.98",
+      "remediation": ""
+    },
+    {
+      "binary": "svgo",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "4.0.1",
+      "rawVersion": "4.1.0",
+      "normalizedVersion": "4.1.0",
+      "remediation": ""
+    },
+    {
+      "binary": "cwebp",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.6.0",
+      "rawVersion": "1.6.0",
+      "normalizedVersion": "1.6.0",
+      "remediation": ""
+    },
+    {
+      "binary": "dwebp",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.6.0",
+      "rawVersion": "1.6.0",
+      "normalizedVersion": "1.6.0",
+      "remediation": ""
+    },
+    {
+      "binary": "webpinfo",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.6.0",
+      "rawVersion": "1.6.0",
+      "normalizedVersion": "1.6.0",
+      "remediation": ""
+    },
+    {
+      "binary": "webpmux",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.6.0",
+      "rawVersion": "1.6.0",
+      "normalizedVersion": "1.6.0",
+      "remediation": ""
+    },
+    {
+      "binary": "gif2webp",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.6.0",
+      "rawVersion": "1.6.0",
+      "normalizedVersion": "1.6.0",
+      "remediation": ""
+    },
+    {
+      "binary": "heif-enc",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.20.2",
+      "rawVersion": "1.23.7",
+      "normalizedVersion": "1.23.7",
+      "remediation": ""
+    },
+    {
+      "binary": "avifdec",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.4.0",
+      "rawVersion": "1.4.2",
+      "normalizedVersion": "1.4.2",
+      "remediation": ""
+    },
+    {
+      "binary": "avifenc",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "1.4.0",
+      "rawVersion": "1.4.2",
+      "normalizedVersion": "1.4.2",
+      "remediation": ""
+    },
+    {
+      "binary": "tiffcp",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "4.7.1",
+      "rawVersion": "4.7.2",
+      "normalizedVersion": "4.7.2",
+      "remediation": ""
+    },
+    {
+      "binary": "magick",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "7.1.2-9",
+      "rawVersion": "7.1.2-34",
+      "normalizedVersion": "7.1.2-34",
+      "remediation": ""
+    },
+    {
+      "binary": "exiftool",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "13.50",
+      "rawVersion": "13.55",
+      "normalizedVersion": "13.55",
+      "remediation": ""
+    },
+    {
+      "binary": "dnglab",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "0.7.2",
+      "rawVersion": "0.8.0",
+      "normalizedVersion": "0.8.0",
+      "remediation": ""
+    },
+    {
+      "binary": "cjxl",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "0.11.2",
+      "rawVersion": "0.12.0",
+      "normalizedVersion": "0.12.0",
+      "remediation": ""
+    },
+    {
+      "binary": "icotool",
+      "present": true,
+      "provider": "brew",
+      "status": "healthy",
+      "minimumVersion": "0.32.3",
+      "rawVersion": "0.32.3",
+      "normalizedVersion": "0.32.3",
+      "remediation": ""
+    }
+  ],
+  "defaultFixtures": [
+    {
+      "format": "jpg",
+      "result": {
+        "label": "[JPEG]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 555181,
+        "optimizedSize": 543913,
+        "savedBytes": 11268,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "before": "96a800b98f40edd63fbee3bc00af7617022f050d7053912c3390c87360cd7557",
+        "after": "96a800b98f40edd63fbee3bc00af7617022f050d7053912c3390c87360cd7557",
+        "equal": true,
+        "method": "ImageMagick7.1.2-34 RGBA16 including all icon frames"
+      }
+    },
+    {
+      "format": "jpeg",
+      "result": {
+        "label": "[JPEG]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 768552,
+        "optimizedSize": 703270,
+        "savedBytes": 65282,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "before": "8cde13f7b755ef6801727e8a51ee7d7d1a511ae083dadeffb52683944dba190a",
+        "after": "8cde13f7b755ef6801727e8a51ee7d7d1a511ae083dadeffb52683944dba190a",
+        "equal": true,
+        "method": "ImageMagick7.1.2-34 RGBA16 including all icon frames"
+      }
+    },
+    {
+      "format": "png",
+      "result": {
+        "label": "[PNG]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 1006708,
+        "optimizedSize": 948529,
+        "savedBytes": 58179,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "before": "d450eb033c6cf0e051c129fc09c87135a89b1294df1f4f9d4e3d3aff816cb4cf",
+        "after": "d450eb033c6cf0e051c129fc09c87135a89b1294df1f4f9d4e3d3aff816cb4cf",
+        "equal": true,
+        "method": "ImageMagick7.1.2-34 RGBA16 including all icon frames"
+      }
+    },
+    {
+      "format": "heif",
+      "result": {
+        "label": "[HEIF]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 2147816,
+        "optimizedSize": 941665,
+        "savedBytes": 1206151,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "before": "d450eb033c6cf0e051c129fc09c87135a89b1294df1f4f9d4e3d3aff816cb4cf",
+        "after": "d450eb033c6cf0e051c129fc09c87135a89b1294df1f4f9d4e3d3aff816cb4cf",
+        "equal": true,
+        "method": "ImageMagick7.1.2-34 RGBA16 including all icon frames"
+      }
+    },
+    {
+      "format": "heic",
+      "result": {
+        "label": "[HEIF]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 2147816,
+        "optimizedSize": 941665,
+        "savedBytes": 1206151,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "before": "d450eb033c6cf0e051c129fc09c87135a89b1294df1f4f9d4e3d3aff816cb4cf",
+        "after": "d450eb033c6cf0e051c129fc09c87135a89b1294df1f4f9d4e3d3aff816cb4cf",
+        "equal": true,
+        "method": "ImageMagick7.1.2-34 RGBA16 including all icon frames"
+      }
+    },
+    {
+      "format": "jxl",
+      "result": {
+        "label": "[JXL]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 2155326,
+        "optimizedSize": 742416,
+        "savedBytes": 1412910,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "method": "Brew djxl 0.12.0 PPM",
+        "before": "a418bed3b9ebce2f35dc20edc07ae95b3ca397f3217813cca036917280c3651e",
+        "after": "a418bed3b9ebce2f35dc20edc07ae95b3ca397f3217813cca036917280c3651e",
+        "equal": true
+      }
+    },
+    {
+      "format": "ico",
+      "result": {
+        "label": "[ICO]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 180638,
+        "optimizedSize": 76463,
+        "savedBytes": 104175,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "before": "a2140d4394825a2637e11741d3cea9861ac79343982cc9b2d87cab2dbf9521ae",
+        "after": "a2140d4394825a2637e11741d3cea9861ac79343982cc9b2d87cab2dbf9521ae",
+        "equal": true,
+        "method": "ImageMagick7.1.2-34 RGBA16 including all icon frames"
+      }
+    },
+    {
+      "format": "cur",
+      "result": {
+        "label": "[CUR]",
+        "mode": "default",
+        "status": "optimized",
+        "originalSize": 4286,
+        "optimizedSize": 304,
+        "savedBytes": 3982,
+        "changed": true,
+        "wroteOutput": true
+      },
+      "comparison": {
+        "before": "136444d34fb43157f51289b6315583eda729f71abf11b75de8967b4266810ddb",
+        "after": "136444d34fb43157f51289b6315583eda729f71abf11b75de8967b4266810ddb",
+        "equal": true,
+        "method": "ImageMagick7.1.2-34 RGBA16 including all icon frames"
+      }
+    }
+  ],
+  "qpdfFloorValidation": {
+    "version": "11.3.0",
+    "sourceUrl": "https://github.com/qpdf/qpdf/releases/download/v11.3.0/qpdf-11.3.0.tar.gz",
+    "sha256": "547cee67de77b5c4ef4917e57d2db9c848cfe3aa950361f68d36367a3a03936e",
+    "testFiles": 3,
+    "testsPassed": 44,
+    "includes": [
+      "classification",
+      "bounded processes",
+      "candidate failures",
+      "concurrent source mutation",
+      "API protection and metadata",
+      "DCT bytes and semantic objects",
+      "independent rendered-page pixels"
+    ]
+  },
+  "avifDecoderMetadataRoundtrip": {
+    "decoder": "avifdec1.4.2 --depth16",
+    "encoder": "avifenc1.4.2 --lossless -s6",
+    "inputExifArtist": "Squeezit native validation",
+    "inputXmpTitle": "Preserved AVIF XMP",
+    "inputIccDescription": "sRGB IEC61966-2.1",
+    "pngPreservesAllThree": true,
+    "avifPreservesAllThree": false,
+    "y4mPixelSha256Before": "255601d283f87cad67991a95dfabb2619462b85ae039bb60e017163ea437c691",
+    "y4mPixelSha256After": "255601d283f87cad67991a95dfabb2619462b85ae039bb60e017163ea437c691",
+    "encoderDropsExifUnlessExplicitlyPassed": true,
+    "explicitExifPayloadPreservesAllThree": true,
+    "pngExifPayloadPrefix": "Exif\\0\\0 accepted by avifenc1.4.2 with --exif"
+  }
+}

@@ -1,0 +1,1126 @@
+[
+  {
+    "name": "abseil",
+    "current_formula": "20260817.0",
+    "installed": "20260817.0",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/abseil.json"
+  },
+  {
+    "name": "ada-url",
+    "current_formula": "4.0.0_1",
+    "installed": "4.0.0",
+    "dependencies": [
+      "fmt",
+      "simdutf"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/ada-url.json"
+  },
+  {
+    "name": "aom",
+    "current_formula": "3.15.2",
+    "installed": "3.15.0",
+    "dependencies": [
+      "libvmaf"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/aom.json"
+  },
+  {
+    "name": "brotli",
+    "current_formula": "1.2.1",
+    "installed": "1.2.0 1.2.1",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/brotli.json"
+  },
+  {
+    "name": "c-ares",
+    "current_formula": "1.34.9",
+    "installed": "1.34.8",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/c-ares.json"
+  },
+  {
+    "name": "ca-certificates",
+    "current_formula": "2026-10-20",
+    "installed": "2026-09-25 2026-08-13 2026-05-14",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "all"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/ca-certificates.json"
+  },
+  {
+    "name": "dav1d",
+    "current_formula": "1.5.4",
+    "installed": "1.5.4",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/dav1d.json"
+  },
+  {
+    "name": "dnglab",
+    "current_formula": "0.8.0",
+    "installed": "0.8.0",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/dnglab.json"
+  },
+  {
+    "name": "exiftool",
+    "current_formula": "13.55_1",
+    "installed": "13.55_1",
+    "dependencies": [
+      "brotli",
+      "xz"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/exiftool.json"
+  },
+  {
+    "name": "fmt",
+    "current_formula": "12.2.0",
+    "installed": "12.2.0",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/fmt.json"
+  },
+  {
+    "name": "freetype",
+    "current_formula": "2.15.0",
+    "installed": "2.14.3 2.15.0",
+    "dependencies": [
+      "brotli",
+      "libpng"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/freetype.json"
+  },
+  {
+    "name": "giflib",
+    "current_formula": "6.1.3",
+    "installed": "6.1.3",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/giflib.json"
+  },
+  {
+    "name": "gifsicle",
+    "current_formula": "1.98",
+    "installed": "1.96",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/gifsicle.json"
+  },
+  {
+    "name": "hdrhistogram_c",
+    "current_formula": "0.12.1",
+    "installed": "0.11.10",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/hdrhistogram_c.json"
+  },
+  {
+    "name": "highway",
+    "current_formula": "1.4.0",
+    "installed": null,
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/highway.json"
+  },
+  {
+    "name": "icoutils",
+    "current_formula": "0.32.3",
+    "installed": "0.32.3",
+    "dependencies": [
+      "libpng"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "arm64_ventura",
+      "arm64_monterey",
+      "arm64_big_sur",
+      "sonoma",
+      "ventura",
+      "monterey",
+      "big_sur",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/icoutils.json"
+  },
+  {
+    "name": "icu4c@79",
+    "current_formula": "79.1",
+    "installed": "79.1",
+    "dependencies": [],
+    "keg_only": true,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/icu4c@79.json"
+  },
+  {
+    "name": "imagemagick",
+    "current_formula": "7.1.2-34",
+    "installed": "7.1.2-31",
+    "dependencies": [
+      "freetype",
+      "jpeg-turbo",
+      "libheif",
+      "libpng",
+      "libtiff",
+      "libtool",
+      "little-cms2",
+      "webp",
+      "xz"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/imagemagick.json"
+  },
+  {
+    "name": "imath",
+    "current_formula": "3.2.3",
+    "installed": null,
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/imath.json"
+  },
+  {
+    "name": "jpeg-turbo",
+    "current_formula": "3.2.1",
+    "installed": "3.2.0",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/jpeg-turbo.json"
+  },
+  {
+    "name": "jpeg-xl",
+    "current_formula": "0.12.0_1",
+    "installed": null,
+    "dependencies": [
+      "brotli",
+      "giflib",
+      "highway",
+      "imath",
+      "jpeg-turbo",
+      "libpng",
+      "little-cms2",
+      "openexr"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/jpeg-xl.json"
+  },
+  {
+    "name": "jpegoptim",
+    "current_formula": "1.5.6",
+    "installed": "1.5.6",
+    "dependencies": [
+      "jpeg-turbo"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/jpegoptim.json"
+  },
+  {
+    "name": "libavif",
+    "current_formula": "1.4.2",
+    "installed": "1.4.2",
+    "dependencies": [
+      "aom",
+      "dav1d",
+      "jpeg-turbo",
+      "libpng"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libavif.json"
+  },
+  {
+    "name": "libde265",
+    "current_formula": "1.1.3",
+    "installed": "1.1.2",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libde265.json"
+  },
+  {
+    "name": "libdeflate",
+    "current_formula": "1.26",
+    "installed": null,
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libdeflate.json"
+  },
+  {
+    "name": "libffi",
+    "current_formula": "3.8.0",
+    "installed": "3.8.0",
+    "dependencies": [],
+    "keg_only": true,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libffi.json"
+  },
+  {
+    "name": "libheif",
+    "current_formula": "1.23.7",
+    "installed": "1.23.4",
+    "dependencies": [
+      "aom",
+      "jpeg-turbo",
+      "libde265",
+      "libpng",
+      "libtiff",
+      "webp",
+      "x265"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libheif.json"
+  },
+  {
+    "name": "libmagic",
+    "current_formula": "5.48",
+    "installed": null,
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libmagic.json"
+  },
+  {
+    "name": "libnghttp2",
+    "current_formula": "1.70.0",
+    "installed": "1.70.0",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libnghttp2.json"
+  },
+  {
+    "name": "libpng",
+    "current_formula": "1.6.59",
+    "installed": "1.6.58 1.6.59",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libpng.json"
+  },
+  {
+    "name": "libtiff",
+    "current_formula": "4.7.2",
+    "installed": "4.7.2",
+    "dependencies": [
+      "jpeg-turbo",
+      "webp",
+      "xz",
+      "zstd"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libtiff.json"
+  },
+  {
+    "name": "libtool",
+    "current_formula": "2.6.2",
+    "installed": "2.6.2",
+    "dependencies": [
+      "m4"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "tahoe",
+      "sequoia",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libtool.json"
+  },
+  {
+    "name": "libuv",
+    "current_formula": "1.53.0",
+    "installed": "1.52.1",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libuv.json"
+  },
+  {
+    "name": "libvmaf",
+    "current_formula": "3.2.1",
+    "installed": "3.2.1 3.2.0",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/libvmaf.json"
+  },
+  {
+    "name": "little-cms2",
+    "current_formula": "2.19.1",
+    "installed": "2.19.1",
+    "dependencies": [
+      "jpeg-turbo",
+      "libtiff"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/little-cms2.json"
+  },
+  {
+    "name": "llhttp",
+    "current_formula": "9.4.3",
+    "installed": "9.4.3",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/llhttp.json"
+  },
+  {
+    "name": "lz4",
+    "current_formula": "1.10.0",
+    "installed": "1.10.0",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/lz4.json"
+  },
+  {
+    "name": "m4",
+    "current_formula": "1.4.21",
+    "installed": "1.4.21",
+    "dependencies": [],
+    "keg_only": true,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "tahoe",
+      "sequoia",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/m4.json"
+  },
+  {
+    "name": "merve",
+    "current_formula": "1.2.2_4",
+    "installed": "1.2.2_2",
+    "dependencies": [
+      "simdutf"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/merve.json"
+  },
+  {
+    "name": "mozjpeg",
+    "current_formula": "4.1.5",
+    "installed": null,
+    "dependencies": [
+      "libpng"
+    ],
+    "keg_only": true,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "arm64_ventura",
+      "arm64_monterey",
+      "sonoma",
+      "ventura",
+      "monterey",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/mozjpeg.json"
+  },
+  {
+    "name": "nbytes",
+    "current_formula": "0.1.4",
+    "installed": "0.1.4",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/nbytes.json"
+  },
+  {
+    "name": "node",
+    "current_formula": "26.12.1_1",
+    "installed": "26.8.2",
+    "dependencies": [
+      "abseil",
+      "ada-url",
+      "brotli",
+      "c-ares",
+      "hdrhistogram_c",
+      "icu4c@79",
+      "libffi",
+      "libnghttp2",
+      "libuv",
+      "llhttp",
+      "merve",
+      "nbytes",
+      "openssl@4",
+      "simdjson",
+      "simdutf",
+      "sqlite",
+      "uvwasi",
+      "zstd",
+      "highway"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/node.json"
+  },
+  {
+    "name": "openexr",
+    "current_formula": "3.5.2",
+    "installed": null,
+    "dependencies": [
+      "imath",
+      "libdeflate",
+      "openjph",
+      "zstd"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/openexr.json"
+  },
+  {
+    "name": "openjph",
+    "current_formula": "0.32.0",
+    "installed": null,
+    "dependencies": [
+      "libtiff"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/openjph.json"
+  },
+  {
+    "name": "openssl@4",
+    "current_formula": "4.1.0",
+    "installed": "4.0.3",
+    "dependencies": [
+      "ca-certificates"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/openssl@4.json"
+  },
+  {
+    "name": "optipng",
+    "current_formula": "7.9.1",
+    "installed": "7.9.1",
+    "dependencies": [
+      "libpng"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/optipng.json"
+  },
+  {
+    "name": "oxipng",
+    "current_formula": "10.2.1",
+    "installed": "10.2.1",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/oxipng.json"
+  },
+  {
+    "name": "pngcrush",
+    "current_formula": "1.8.13",
+    "installed": "1.8.13",
+    "dependencies": [
+      "libpng"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/pngcrush.json"
+  },
+  {
+    "name": "qpdf",
+    "current_formula": "12.4.2_1",
+    "installed": "12.4.2_1",
+    "dependencies": [
+      "jpeg-turbo",
+      "openssl@4"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/qpdf.json"
+  },
+  {
+    "name": "readline",
+    "current_formula": "8.3.6",
+    "installed": "8.3.3",
+    "dependencies": [],
+    "keg_only": true,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/readline.json"
+  },
+  {
+    "name": "simdjson",
+    "current_formula": "5.0.6",
+    "installed": "4.6.11",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/simdjson.json"
+  },
+  {
+    "name": "simdutf",
+    "current_formula": "9.3.3",
+    "installed": "9.1.1",
+    "dependencies": [
+      "icu4c@79"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/simdutf.json"
+  },
+  {
+    "name": "sqlite",
+    "current_formula": "3.54.1",
+    "installed": "3.53.4",
+    "dependencies": [
+      "readline"
+    ],
+    "keg_only": true,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/sqlite.json"
+  },
+  {
+    "name": "svgo",
+    "current_formula": "4.1.0",
+    "installed": "4.1.0",
+    "dependencies": [
+      "node"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "all"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/svgo.json"
+  },
+  {
+    "name": "uvwasi",
+    "current_formula": "0.0.23",
+    "installed": "0.0.23",
+    "dependencies": [
+      "libuv"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/uvwasi.json"
+  },
+  {
+    "name": "webp",
+    "current_formula": "1.6.0",
+    "installed": "1.6.0",
+    "dependencies": [
+      "giflib",
+      "jpeg-turbo",
+      "libpng"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/webp.json"
+  },
+  {
+    "name": "x265",
+    "current_formula": "4.3",
+    "installed": "4.3",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/x265.json"
+  },
+  {
+    "name": "xz",
+    "current_formula": "5.8.4",
+    "installed": "5.8.4 5.8.3",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/xz.json"
+  },
+  {
+    "name": "zopfli",
+    "current_formula": "1.0.3_1",
+    "installed": "1.0.3_1",
+    "dependencies": [],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/zopfli.json"
+  },
+  {
+    "name": "zstd",
+    "current_formula": "1.5.7_1",
+    "installed": "1.5.7_1",
+    "dependencies": [
+      "lz4",
+      "xz"
+    ],
+    "keg_only": false,
+    "bottles": [
+      "arm64_golden_gate",
+      "arm64_tahoe",
+      "arm64_sequoia",
+      "arm64_sonoma",
+      "tahoe",
+      "sequoia",
+      "sonoma",
+      "arm64_linux",
+      "x86_64_linux"
+    ],
+    "error": null,
+    "url": "https://formulae.brew.sh/api/formula/zstd.json"
+  }
+]

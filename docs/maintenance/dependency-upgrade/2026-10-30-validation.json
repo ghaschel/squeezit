@@ -1,0 +1,89 @@
+{
+  "platform": "darwin-arm64",
+  "developmentNode": "26.13.0",
+  "bun": "1.4.4",
+  "lockSha256": "09cb965e728b8c427c7857bae2ef04cf64f1fe450c321c596df5b60a431e3308",
+  "checks": [
+    {
+      "command": "bun run verify:agent",
+      "result": "passed",
+      "lanes": {
+        "fast": 234,
+        "cli": 84,
+        "agent": 10
+      },
+      "note": "Package lifecycle repeated with required repository access after sandbox Husky warning."
+    },
+    {
+      "command": "bun run test:integration",
+      "result": "passed",
+      "files": 43,
+      "tests": 234
+    },
+    {
+      "command": "node tests/helpers/adapter-host-compatibility.cjs <host-floor-modules> babel,esbuild,astro,gulp,grunt,rollup,vite,webpack,parcel,next",
+      "result": "passed",
+      "hosts": 10,
+      "node": "24.22.2"
+    },
+    {
+      "command": "ESM/CJS imports and compiled CLI smoke",
+      "result": "passed",
+      "runtimeVersions": ["22.13.0", "22.23.4", "24.22.2", "26.13.0"],
+      "publicExports": 11,
+      "checks": 16
+    },
+    {
+      "command": "bun run check:types",
+      "result": "passed"
+    },
+    {
+      "command": "eslint src tests scripts",
+      "result": "passed"
+    },
+    {
+      "command": "prettier --check <changed files>",
+      "result": "passed"
+    },
+    {
+      "command": "npm pack --dry-run",
+      "result": "passed",
+      "files": 124
+    },
+    {
+      "command": "bun ci --ignore-scripts in fresh temporary directory",
+      "result": "passed",
+      "lockUnchanged": true
+    },
+    {
+      "command": "bun audit --json",
+      "result": "passed",
+      "matches": {}
+    },
+    {
+      "command": "node bin/run.js deps upgrade --json",
+      "result": "passed",
+      "ready": true,
+      "attempted": false,
+      "commands": []
+    },
+    {
+      "command": "bun run test:slow",
+      "result": "stopped at explicit user request; excluded from acceptance",
+      "exitCode": 130
+    }
+  ],
+  "notExecuted": [
+    "Linux CI execution",
+    "Intel macOS CI execution",
+    "Fresh QPDF 11.3.0 lane execution"
+  ],
+  "review": {
+    "criticalFindings": 0,
+    "importantFindings": 2,
+    "fixedImportantFindings": 2,
+    "regressionTestsPassed": true
+  },
+  "externalPackageInstallations": false,
+  "releaseStatus": "authorized after local validation; delivery tracked by Git history and release workflow"
+}

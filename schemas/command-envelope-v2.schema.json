@@ -17,6 +17,26 @@
     {
       "if": {
         "properties": {
+          "command": {
+            "const": "deps upgrade"
+          },
+          "ok": {
+            "const": true
+          }
+        },
+        "required": ["command", "ok"]
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "$ref": "#/$defs/dependenciesUpgradeData"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
           "command": { "const": "capabilities" },
           "ok": { "const": true }
         },
@@ -230,6 +250,64 @@
       },
       "additionalProperties": false
     },
+    "dependenciesUpgradeData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scope",
+        "inputs",
+        "dryRun",
+        "ready",
+        "attempted",
+        "commands",
+        "blocked",
+        "toolsBefore",
+        "toolsAfter",
+        "executed"
+      ],
+      "properties": {
+        "scope": {
+          "enum": ["full", "selected-inputs"]
+        },
+        "inputs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dryRun": {
+          "type": "boolean"
+        },
+        "ready": {
+          "type": "boolean"
+        },
+        "attempted": {
+          "type": "boolean"
+        },
+        "commands": {
+          "type": "array"
+        },
+        "blocked": {
+          "type": "array"
+        },
+        "toolsBefore": {
+          "type": "array"
+        },
+        "toolsAfter": {
+          "type": "array"
+        },
+        "executed": {
+          "type": "array"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "receipt": {
+          "$ref": "#/$defs/receiptSummary"
+        }
+      }
+    },
     "doctorData": {
       "type": "object",
       "required": ["runtime", "platform", "update", "installation", "tools"],
@@ -262,6 +340,7 @@
           "enum": [
             "CONFIRMATION_REQUIRED",
             "DEPENDENCY_MISSING",
+            "DEPENDENCY_UPGRADE_FAILED",
             "INTERNAL_ERROR",
             "OPERATION_CANCELLED",
             "PLAN_INPUT_CHANGED",

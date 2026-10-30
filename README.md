@@ -354,6 +354,7 @@ The fixture-value helper and JS/TS API report `filePath` and `outputPath` relati
 
 - [Documentation index](docs/README.md)
 - [PDF optimization and troubleshooting](docs/pdf.md)
+- [Optimizer dependency upgrades](docs/dependencies.md)
 - [API reference](https://github.com/ghaschel/squeezit/blob/main/docs/API.md)
 - [Agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md)
 - [Agent development harness](https://github.com/ghaschel/squeezit/blob/main/docs/agent-harness.md)
@@ -377,6 +378,7 @@ sqz <command> [arguments] [flags]
 | `sqz receipt resume <receipt.json> --output <new.json> --yes` | Retry only safe, unfinished work in a new linked receipt.                        |
 | `sqz deps doctor [patterns...]`                               | Check all tools, or only the tools required by selected inputs.                  |
 | `sqz deps install [patterns...]`                              | Install missing tools for all formats or selected inputs.                        |
+| `sqz deps upgrade [patterns...]`                              | Install or upgrade tools to the tested targets; preview with `--dry-run`.        |
 | `sqz doctor`                                                  | Check Node, platform, update source, and the complete toolchain.                 |
 | `sqz update check` / `sqz update apply`                       | Check or apply a global update.                                                  |
 | `sqz capabilities --json`                                     | Discover commands, flags, side effects, and JSON schemas.                        |
@@ -635,9 +637,18 @@ Install missing tools explicitly:
 ```bash
 sqz deps install
 sqz deps install "images/**/*.{png,jpg}"
+sqz deps upgrade --dry-run
+sqz deps upgrade
 ```
 
-`deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON, JSON Lines, or non-interactive environments; piping an affirmative response is intentionally unsupported.
+`deps install`, `deps upgrade`, and `update apply` prompt before changes in an interactive terminal. They require `--yes` for mutations in JSON, JSON Lines, or non-interactive environments; piping an affirmative response is intentionally unsupported. Upgrade previews do not require confirmation.
+
+`deps upgrade` enforces the tested upstream targets bundled with Squeezit,
+retains newer versions, and verifies the executables again after running scoped
+package commands. Compatibility minimums remain unchanged: a tool can pass
+`deps doctor` and still be below its upgrade target. See the
+[dependency guide](docs/dependencies.md) for all targets, manual-provider limits,
+Homebrew revision suffixes, and automation results.
 
 On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.2.1, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo 1.88 or newer first. Debian/Ubuntu does not provide a supported MozJPEG package: install MozJPEG yourself and point `SQUEEZIT_MOZJPEGTRAN` at its `jpegtran` executable. Squeezit intentionally does not substitute `jpeg-turbo` for MozJPEG.
 
@@ -757,7 +768,7 @@ Supported operating systems for tool installation are:
 ## Development
 
 This project publishes a Node-targeted CLI and uses Bun 1.4.4 for local
-development. Use Node 24.22.2 from `.node-version` for development and release
+development. Use Node 26.13.0 from `.node-version` for development and release
 builds; published consumer support remains Node >=22.13.0.
 
 Install dependencies:

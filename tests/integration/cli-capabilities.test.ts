@@ -108,6 +108,7 @@ describe("agent capability discovery", () => {
       "compress",
       "deps doctor",
       "deps install",
+      "deps upgrade",
       "doctor",
       "help",
       "metadata strip",
@@ -173,6 +174,7 @@ describe("agent capability discovery", () => {
       "plan apply",
       "deps doctor",
       "deps install",
+      "deps upgrade",
       "doctor",
       "update check",
       "update apply",
@@ -195,6 +197,13 @@ describe("agent capability discovery", () => {
           "installs-dependencies-in-json-events-or-non-interactive-mode",
       },
       effects: ["installs-dependencies"],
+    });
+    expect(commandById.get("deps upgrade")).toMatchObject({
+      outputSchema: "#/$defs/dependenciesUpgradeData",
+      effects: ["installs-dependencies", "upgrades-dependencies"],
+      flags: expect.arrayContaining([
+        expect.objectContaining({ name: "dry-run", type: "boolean" }),
+      ]),
     });
     expect(commandById.get("update apply")).toMatchObject({
       confirmation: {

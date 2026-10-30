@@ -49,6 +49,7 @@ const PHASE_COMMANDS = new Set([
   "compress",
   "deps doctor",
   "deps install",
+  "deps upgrade",
   "doctor",
   "metadata strip",
   "plan apply",
@@ -111,6 +112,15 @@ const COMMAND_SEMANTICS: Record<string, CommandSemantics> = {
     },
     effects: ["installs-dependencies"],
     outputSchema: "#/$defs/dependenciesInstallData",
+    receipt: { resume: null, supported: true },
+  },
+  "deps upgrade": {
+    confirmation: {
+      requiredWhen:
+        "changes-dependencies-unless-dry-run-in-json-events-or-non-interactive-mode",
+    },
+    effects: ["installs-dependencies", "upgrades-dependencies"],
+    outputSchema: "#/$defs/dependenciesUpgradeData",
     receipt: { resume: null, supported: true },
   },
   doctor: {

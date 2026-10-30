@@ -71,6 +71,7 @@ describe("agent-facing JSON CLI contract", () => {
           "plan apply",
           "deps doctor",
           "deps install",
+          "deps upgrade",
           "doctor",
           "update check",
           "update apply",

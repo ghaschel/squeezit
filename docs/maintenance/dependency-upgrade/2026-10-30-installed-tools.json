@@ -1,0 +1,176 @@
+{
+  "recordedAt": "2026-10-30T20:35:09.645Z",
+  "platform": "darwin-arm64",
+  "tools": [
+    {
+      "binary": "file",
+      "installed": "5.41",
+      "minimumVersion": "5.41",
+      "targetVersion": "5.41",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "qpdf",
+      "installed": "12.4.2",
+      "minimumVersion": "11.3.0",
+      "targetVersion": "12.4.2",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "jpegtran",
+      "installed": "4.1.5",
+      "minimumVersion": "4.1.5",
+      "targetVersion": "4.1.5",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "jpegoptim",
+      "installed": "1.5.6",
+      "minimumVersion": "1.5.6",
+      "targetVersion": "1.5.6",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "pngcrush",
+      "installed": "1.8.13",
+      "minimumVersion": "1.8.13",
+      "targetVersion": "1.8.13",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "optipng",
+      "installed": "7.9.1",
+      "minimumVersion": "7.9.1",
+      "targetVersion": "7.9.1",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "zopflipng",
+      "installed": "1.0.3",
+      "minimumVersion": "1.0.3",
+      "targetVersion": "1.0.3",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "oxipng",
+      "installed": "10.2.1",
+      "minimumVersion": "10.1.0",
+      "targetVersion": "10.2.1",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "gifsicle",
+      "installed": "1.98",
+      "minimumVersion": "1.96",
+      "targetVersion": "1.98",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "svgo",
+      "installed": "4.1.0",
+      "minimumVersion": "4.0.1",
+      "targetVersion": "4.1.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "cwebp",
+      "installed": "1.6.0",
+      "minimumVersion": "1.6.0",
+      "targetVersion": "1.6.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "dwebp",
+      "installed": "1.6.0",
+      "minimumVersion": "1.6.0",
+      "targetVersion": "1.6.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "webpinfo",
+      "installed": "1.6.0",
+      "minimumVersion": "1.6.0",
+      "targetVersion": "1.6.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "webpmux",
+      "installed": "1.6.0",
+      "minimumVersion": "1.6.0",
+      "targetVersion": "1.6.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "gif2webp",
+      "installed": "1.6.0",
+      "minimumVersion": "1.6.0",
+      "targetVersion": "1.6.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "heif-enc",
+      "installed": "1.23.7",
+      "minimumVersion": "1.20.2",
+      "targetVersion": "1.23.7",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "avifdec",
+      "installed": "1.4.2",
+      "minimumVersion": "1.4.0",
+      "targetVersion": "1.4.2",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "avifenc",
+      "installed": "1.4.2",
+      "minimumVersion": "1.4.0",
+      "targetVersion": "1.4.2",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "tiffcp",
+      "installed": "4.7.2",
+      "minimumVersion": "4.7.1",
+      "targetVersion": "4.7.2",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "magick",
+      "installed": "7.1.2-34",
+      "minimumVersion": "7.1.2-9",
+      "targetVersion": "7.1.2-34",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "exiftool",
+      "installed": "13.55",
+      "minimumVersion": "13.50",
+      "targetVersion": "13.55",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "dnglab",
+      "installed": "0.8.0",
+      "minimumVersion": "0.7.2",
+      "targetVersion": "0.8.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "cjxl",
+      "installed": "0.12.0",
+      "minimumVersion": "0.11.2",
+      "targetVersion": "0.12.0",
+      "targetStatus": "current"
+    },
+    {
+      "binary": "icotool",
+      "installed": "0.32.3",
+      "minimumVersion": "0.32.3",
+      "targetVersion": "0.32.3",
+      "targetStatus": "current"
+    }
+  ],
+  "ready": true,
+  "commands": []
+}

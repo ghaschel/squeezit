@@ -10,6 +10,7 @@ installation and common commands.
 | -------------------------------------------- | ----------------------------------------------------------------------------- |
 | [API reference](API.md)                      | File and batch APIs, result types, options, and plugin configuration          |
 | [PDF optimization](pdf.md)                   | Lossless compression, protected-document skips, metadata, and troubleshooting |
+| [Optimizer dependencies](dependencies.md)    | Compatibility checks, tested targets, upgrades, and provider limits           |
 | [CLI automation contract](agent-contract.md) | JSON, events, reviewable plans, receipts, and safe resume                     |
 
 ## Contributor guides
@@ -24,6 +25,8 @@ installation and common commands.
 
 These records live in the repository and are excluded from the npm package:
 
+- [Optimizer upgrade implementation](https://github.com/ghaschel/squeezit/blob/main/docs/plans/optimizer-dependency-upgrade.md): target-based command and compatible maintenance refresh.
+- [Optimizer maintenance evidence](https://github.com/ghaschel/squeezit/blob/main/docs/maintenance/dependency-upgrade/README.md): fresh audit, applied updates, holds, and verification.
 - [Provider roadmap](https://github.com/ghaschel/squeezit/blob/main/docs/plans/provider-roadmap-v1.md): proposed native, portable, and WASM providers; not an implemented API.
 - [PDF implementation record](https://github.com/ghaschel/squeezit/blob/main/docs/plans/pdf-support-and-dependency-refresh.md): completed scope and remaining platform validation.
 - [PDF design](https://github.com/ghaschel/squeezit/blob/main/docs/plans/pdf-support-design.md): inspection, preservation, and publication decisions.

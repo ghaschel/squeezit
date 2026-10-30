@@ -101,6 +101,7 @@
           "enum": [
             "CONFIRMATION_REQUIRED",
             "DEPENDENCY_MISSING",
+            "DEPENDENCY_UPGRADE_FAILED",
             "INTERNAL_ERROR",
             "OPERATION_CANCELLED",
             "PLAN_INPUT_CHANGED",

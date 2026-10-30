@@ -1,6 +1,7 @@
 # API
 
-`squeezit` now exposes a programmatic JS/TS API for file-based workflows.
+`squeezit` exposes a JS/TS API for image and PDF workflows. See the
+[documentation index](README.md) and [PDF guide](pdf.md) for related behavior.
 
 ## Installation
 
@@ -61,7 +62,8 @@ const result = await optimizeFiles(["images", "*.png"], {
 
 ### `stripMetadata(input, options?)`
 
-Runs EXIF/IPTC/XMP stripping only.
+Runs image EXIF/IPTC/XMP stripping only. PDF inputs return a
+`pdf-metadata-unsupported` skip without invoking a metadata writer.
 
 ```ts
 const result = await stripMetadata("photos/hero.jpg", {
@@ -109,7 +111,7 @@ type OptimizeFilesOptions = OptimizeFileOptions & {
 ## Write Behavior
 
 - No `outputDir`: the API works in place
-- With `outputDir`: the source file is preserved and the output is written under that directory
+- With `outputDir`: the source file is preserved and accepted output is written under that directory; protected or inconclusive PDFs leave any destination untouched
 - `dryRun: true`: no output file is written
 
 For multi-file operations, `outputDir` preserves each resolved file’s relative path when possible.
@@ -192,7 +194,7 @@ export function images() {
 
 Use `encoding: false` with Gulp 5 so binary buffers are not decoded as UTF-8. Supplied contents take precedence over `file.path`.
 
-The Gulp plugin runs as a Vinyl transform, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It supports buffered Vinyl files, stream-backed Vinyl files by buffering them internally before optimization, and path-backed null Vinyl files when `file.path` is available. Null Vinyl files without a usable path pass through unchanged.
+The Gulp plugin runs as a Vinyl transform, uses the default compression strategy, and strips image metadata while preserving PDF metadata. It supports buffered Vinyl files, stream-backed Vinyl files by buffering them internally before optimization, and path-backed null Vinyl files when `file.path` is available. Null Vinyl files without a usable path pass through unchanged.
 
 ### Grunt
 
@@ -217,7 +219,7 @@ module.exports = function (grunt) {
 };
 ```
 
-The Grunt integration registers a real multi-task, uses the default compression strategy, enables metadata stripping for images and preserves PDF metadata, and respects Grunt `files` mappings for in-place or destination-output workflows.
+The Grunt integration registers a real multi-task, uses the default compression strategy, strips image metadata while preserving PDF metadata, and respects Grunt `files` mappings for in-place or destination-output workflows.
 
 ### esbuild
 
@@ -238,7 +240,7 @@ await build({
 });
 ```
 
-The esbuild integration runs after a successful disk-backed build, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It requires `write !== false` and either `outdir` or `outfile`, and exposes helper functions for tests and custom tooling.
+The esbuild integration runs after a successful disk-backed build, uses the default compression strategy, and strips image metadata while preserving PDF metadata. It requires `write !== false` and either `outdir` or `outfile`, and exposes helper functions for tests and custom tooling.
 
 ### Babel
 
@@ -263,7 +265,7 @@ export default defineConfig({
 });
 ```
 
-The Vite plugin runs only for production builds, optimizes emitted files from the output directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata.
+The Vite plugin runs only for production builds, optimizes emitted files from the output directory, uses the default compression strategy, and strips image metadata while preserving PDF metadata.
 
 ### Webpack
 
@@ -275,7 +277,7 @@ module.exports = {
 };
 ```
 
-The Webpack plugin runs after assets are emitted to `output.path`, optimizes the written image and PDF files from that directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata.
+The Webpack plugin runs after assets are emitted to `output.path`, optimizes the written image and PDF files from that directory, uses the default compression strategy, and strips image metadata while preserving PDF metadata.
 
 ### Rollup
 
@@ -292,7 +294,7 @@ export default {
 };
 ```
 
-The Rollup integration targets emitted image and PDF assets, not JavaScript chunks. It uses the default compression strategy, enables metadata stripping for images and preserves PDF metadata, optimizes Rollup asset outputs in memory when possible, and uses a written-output pass for emitted image files not already handled safely in memory.
+The Rollup integration targets emitted image and PDF assets, not JavaScript chunks. It uses the default compression strategy, strips image metadata while preserving PDF metadata, optimizes Rollup asset outputs in memory when possible, and uses a written-output pass for emitted image and PDF files not already handled safely in memory.
 
 ### Parcel
 
@@ -329,7 +331,7 @@ The Rollup integration targets emitted image and PDF assets, not JavaScript chun
 }
 ```
 
-The Parcel integration is a real Parcel optimizer plugin rather than a JS factory wrapper. It runs in Parcel's optimizer pipeline, targets emitted image and PDF assets, uses the default compression strategy, enables metadata stripping for images and preserves PDF metadata, and reads its tiny config surface from `package.json` under `squeezit.parcel`.
+The Parcel integration is a real Parcel optimizer plugin rather than a JS factory wrapper. It runs in Parcel's optimizer pipeline, targets emitted image and PDF assets, uses the default compression strategy, strips image metadata while preserving PDF metadata, and reads its tiny config surface from `package.json` under `squeezit.parcel`.
 
 ### Astro
 
@@ -343,7 +345,7 @@ export default defineConfig({
 });
 ```
 
-The Astro wrapper is a thin integration over the Vite plugin rather than a separate optimizer engine. It delegates to the shared Vite output optimizer once at `astro:build:done`, only affects `astro build`, supports static Astro output in v1, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. SSR and hybrid Astro output are currently unsupported.
+The Astro wrapper is a thin integration over the Vite plugin rather than a separate optimizer engine. It delegates to the shared Vite output optimizer once at `astro:build:done`, only affects `astro build`, supports static Astro output in v1, uses the default compression strategy, and strips image metadata while preserving PDF metadata. SSR and hybrid Astro output are currently unsupported.
 
 ### Next.js
 
@@ -359,11 +361,13 @@ const nextConfig = withSqueezit({
 export default nextConfig;
 ```
 
-The Next.js wrapper delegates to the Webpack integration internally. It augments the existing `webpack(config, context)` hook in `next.config.js` or `next.config.ts`, preserves any existing user webpack customization, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata.
+The Next.js wrapper delegates to the Webpack integration internally. It augments the existing `webpack(config, context)` hook in `next.config.js` or `next.config.ts`, preserves any existing user webpack customization, uses the default compression strategy, and strips image metadata while preserving PDF metadata.
 
-Turbopack is not supported by this wrapper yet. Documentation can mention it as coming soon, but the implementation is webpack-only for now.
+Turbopack is not supported. Use the wrapper with a Webpack-based Next.js build.
 
 ## PDF preservation and skip results
+
+See [PDF optimization](pdf.md) for setup, preservation details, and troubleshooting.
 
 `optimizeFile("document.pdf")` and `optimizeFiles(["**/*.pdf"])` use the shared
 QPDF pipeline. `mode: "max"` compares Flate levels 6 and 9; the default uses 6.
@@ -379,7 +383,7 @@ incompatible QPDF and changed source files produce `failed` results; disabling
 `checkDependencies` does not disable PDF inspection or the QPDF version gate.
 
 Inspection uses the exact temporary snapshot being compressed. The source hash
-is checked before publication; this detects concurrent changes but is not an
+is checked before publication and before returning an inspected skip; this detects concurrent changes but is not an
 atomic lock against another writer. Ambiguous inspection, encrypted documents,
 signatures and blank signature fields, XFA, and previous cross-reference
 revisions are skipped. Earlier-revision skips include some unsigned linearized

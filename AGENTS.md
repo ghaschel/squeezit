@@ -75,3 +75,19 @@ baseline.
 The checked-in Commitlint skill at
 `.claude/skills/committing-with-commitlint/SKILL.md` provides the full commit
 workflow. Use it whenever a task includes creating a commit.
+
+## Documentation conventions
+
+- Keep current user and contributor guides in top-level `docs/*.md` files and
+  link them from `docs/README.md` and the relevant README section.
+- Keep designs, implementation records, and roadmaps under `docs/plans/` with
+  topic-based filenames and an explicit proposed, implemented, or historical
+  status. Use these repository locations when a planning tool suggests defaults.
+- Keep dependency audits, compatibility reports, and dated raw receipts under
+  `docs/maintenance/<topic>/`. Separate historical measurements from current
+  guidance, and preserve exact source/version evidence.
+- Use portable relative links inside the repository. Published guides should
+  link to repository-only records through GitHub URLs and label them clearly.
+- Only top-level documentation guides ship in the npm package. Update and run
+  the package-content assertion when reorganizing documentation directories.
+- Update current documentation without rewriting historical release notes.

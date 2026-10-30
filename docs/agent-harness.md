@@ -11,7 +11,7 @@ bun run agent:preflight --json
 ```
 
 `agent:preflight` returns one JSON document on stdout and never installs
-packages, fetches Git, builds artifacts, changes images, or invokes a
+packages, fetches Git, builds artifacts, changes image or PDF files, or invokes a
 state-changing Squeezit command. It accepts optional repository-relative path
 hints when an agent knows likely targets before the first edit:
 
@@ -59,13 +59,13 @@ permission to discard or overwrite files.
 
 1. Run `bun run agent:preflight --json` before changing code.
 2. Read `AGENTS.md` and every skill in `data.status.skills.recommended`.
-3. For image work, discover `sqz capabilities --json` and check `sqz doctor --json`.
+3. For image or PDF work, discover `sqz capabilities --json` and check `sqz doctor --json`.
 4. Use `--dry-run` or create and review a `sqz plan` artifact before any apply.
 5. Add `--yes` only after explicit approval, then run every command in `verification.commands`.
 
 The verification recommendation always starts with `bun run verify:agent`. It
 adds focused integration tests for changed adapters, `test:integration` for
-core/image changes, `test:agent` for harness changes, and the serial
+core/format changes, `test:agent` for harness changes, and the serial
 `test:slow` lane only when the diff explicitly changes max-profile behavior.
 
 ## Deterministic evaluation
@@ -77,7 +77,7 @@ bun run test:agent
 ```
 
 The suite consumes recorded command traces and capability metadata. It verifies
-that an agent discovers capabilities, runs doctor before image work, preserves
+that an agent discovers capabilities, runs doctor before image or PDF work, preserves
 sources during dry runs, creates a plan before applying it, respects `--yes`,
 and stops unsafe follow-up after typed failures. It is deterministic: it does
 not call an LLM, access the network, or execute real optimizer compression.
@@ -85,3 +85,14 @@ not call an LLM, access the network, or execute real optimizer compression.
 It validates observable workflow behavior, not an LLM's hidden reasoning. A
 model-in-the-loop evaluator can later feed its command trace into the same
 rules without changing this development contract.
+
+## Documentation changes
+
+Follow the documentation conventions in [AGENTS.md](https://github.com/ghaschel/squeezit/blob/main/AGENTS.md). Update the
+[documentation index](README.md), affected user guides, and relative links when
+moving records. Plans and maintenance evidence live only in the repository;
+public guides are the top-level Markdown files in `docs/`.
+
+Run `bun run verify:agent`, documentation/package-content tests, and explicit
+format checks for documentation or package-file changes. Do not run native
+compression or the slow lane solely to reorganize Markdown.

@@ -1,7 +1,7 @@
 # Releasing Squeezit
 
 This guide is for maintainers of `ghaschel/squeezit`. Releases are published by
-the GitHub Actions workflow at [`.github/workflows/release.yml`](../.github/workflows/release.yml),
+the GitHub Actions workflow at [`.github/workflows/release.yml`](https://github.com/ghaschel/squeezit/blob/main/.github/workflows/release.yml),
 which runs when a `v*` tag is pushed. Do not publish a release locally.
 
 ## Prerequisites
@@ -111,3 +111,18 @@ not the embedded archive runtime. Node 24 Actions need runner >=2.327.1
 (>=2.329.0 for authenticated Docker Git); hosted release runners supply this.
 Checkout credentials live under RUNNER_TEMP. Setup-node package-manager caching
 is disabled explicitly in privileged release jobs; npm publishing uses OIDC.
+
+## Documentation and compatibility records
+
+The npm package includes the top-level Markdown guides in `docs/`. Plans under
+`docs/plans/` and audit/validation records under `docs/maintenance/` remain
+repository-only. The package-content test checks this boundary. Update the
+[documentation index](README.md), [API reference](API.md), and [PDF guide](pdf.md)
+when changing their public behavior; preserve historical release notes.
+
+The separate compatibility workflow builds with the development runtime, then
+checks supported consumer Node and QPDF versions, including checksum-verified
+QPDF source builds. It also exercises the retained host floors and includes an
+Intel macOS lane. A configured workflow is not evidence of a completed run.
+Review the [dependency and platform records](https://github.com/ghaschel/squeezit/blob/main/docs/maintenance/dependency-refresh/README.md)
+and resolve any relevant outstanding gate before claiming that platform passed.

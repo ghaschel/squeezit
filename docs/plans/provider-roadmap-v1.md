@@ -1,5 +1,9 @@
 # Provider Roadmap v1
 
+Status: proposed roadmap. The provider selection APIs below are not yet
+implemented. Current image and PDF support uses the native toolchain described
+in the [README](../../README.md) and [PDF guide](../pdf.md).
+
 ## Purpose
 
 Refactor `squeezit` so optimization can run through multiple backend lanes instead of depending primarily on Homebrew-installed native tools.
@@ -27,9 +31,10 @@ This roadmap is intentionally split into small, testable phases so each piece ca
 
 ## Current Dependency Catalog
 
-From [src/core/dependencies.ts](/Users/guilhermehaschel/Documents/Workspace/Personal/compress/src/core/dependencies.ts):
+From [src/core/dependencies.ts](../../src/core/dependencies.ts):
 
 - `file`
+- `qpdf`
 - `jpegtran`
 - `jpegoptim`
 - `pngcrush`
@@ -41,15 +46,22 @@ From [src/core/dependencies.ts](/Users/guilhermehaschel/Documents/Workspace/Pers
 - `cwebp`
 - `dwebp`
 - `webpinfo`
+- `webpmux`
 - `gif2webp`
 - `heif-enc`
 - `avifenc`
+- `avifdec`
 - `tiffcp`
 - `magick`
 - `exiftool`
 - `dnglab`
 - `cjxl`
 - `icotool`
+
+PDF optimization currently requires QPDF and its structured protection checks.
+Any future provider must preserve the same encrypted/signed/inconclusive skip
+policy and snapshot publication guarantees before it can claim PDF parity.
+The candidate lists below do not establish portable or WASM PDF support.
 
 ## Known WASM And Portable Candidates
 

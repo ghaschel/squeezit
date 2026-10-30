@@ -197,8 +197,7 @@
   "files": [
     "assets",
     "bin",
-    "docs",
-    "!docs/superpowers/**",
+    "docs/*.md",
     "dist",
     "oclif.manifest.json",
     "postinstall.mjs",

@@ -12,13 +12,14 @@
   <a href="https://github.com/ghaschel/squeezit/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/squeezit.svg?color=334155&label=license" alt="license"></a>
 </p>
 
-`squeezit` is a CLI for aggressively compressing images without casually degrading them. It is designed for codebases, asset folders, and content repositories where you want smaller files, predictable behavior, and a command you can trust in day-to-day workflows.
+`squeezit` is a CLI, JS/TS API, and set of build plugins for lossless image and PDF optimization. It is designed for codebases, asset folders, and content repositories where you want smaller files, predictable behavior, and a command you can trust in day-to-day workflows.
 
-It supports direct file paths, shell-style patterns like `*.png`, glob expressions like `images/**/*.webp`, and a no-argument `compress` mode that scans supported image files in the current directory. Recursive scanning is available when you ask for it.
+It supports direct file paths, shell-style patterns like `*.png`, glob expressions like `images/**/*.webp`, and a no-argument `compress` mode that scans supported image and PDF files in the current directory. Recursive scanning is available when you ask for it.
 
 ## Why Squeezit
 
 - Lossless-first workflow across common web and design formats
+- PDF support with conservative skips for encrypted, signed, or inconclusively inspected documents
 - APNG, JXL, and ICO support alongside common web asset formats
 - Friendly CLI output with clear summaries, skips, and failures
 - Safe threshold-based replacement so tiny wins do not churn your files
@@ -80,9 +81,9 @@ grep "  $ARCHIVE$" SHA256SUMS | shasum -a 256 -c -
 Replace `<VERSION>` and `<target>` with the downloaded archive's values. On
 Linux, replace `shasum -a 256 -c -` with `sha256sum --check -`. The archives
 embed a Node runtime, so no separate Node installation is required; they do
-**not** bundle native image optimizer tools. Install the tools for your
+**not** bundle native image and PDF optimizer tools. Install the tools for your
 platform and run `sqz doctor` to see exactly what is missing before optimizing
-images.
+files.
 
 After installation, both commands are available:
 
@@ -93,7 +94,7 @@ sqz --help
 
 ## Quick Start
 
-Compress supported images in the current directory:
+Compress supported images and PDFs in the current directory:
 
 ```bash
 sqz compress
@@ -182,7 +183,7 @@ exports.images = function images() {
 
 Use `encoding: false` with Gulp 5 so binary buffers are not decoded as UTF-8. Supplied contents take precedence over `file.path`.
 
-The Gulp plugin runs as a Vinyl transform, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It supports buffered Vinyl files, stream-backed Vinyl files by buffering them internally before optimization, and path-backed null Vinyl files when `file.path` is available. Null Vinyl files without a usable path pass through unchanged. It does not expose or use `max` mode.
+The Gulp plugin runs as a Vinyl transform, uses the default compression strategy, and strips image metadata while preserving PDF metadata. It supports buffered Vinyl files, stream-backed Vinyl files by buffering them internally before optimization, and path-backed null Vinyl files when `file.path` is available. Null Vinyl files without a usable path pass through unchanged. It does not expose or use `max` mode.
 
 ### Grunt
 
@@ -207,7 +208,7 @@ module.exports = function (grunt) {
 };
 ```
 
-The Grunt plugin registers a real multi-task, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. v1 respects Grunt file mappings, so it can optimize files in place or write optimized output to mapped destination paths. It does not expose or use `max` mode.
+The Grunt plugin registers a real multi-task, uses the default compression strategy, and strips image metadata while preserving PDF metadata. v1 respects Grunt file mappings, so it can optimize files in place or write optimized output to mapped destination paths. It does not expose or use `max` mode.
 
 ### Vite
 
@@ -220,7 +221,7 @@ export default defineConfig({
 });
 ```
 
-The Vite plugin runs only for production builds, optimizes emitted assets from the output directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It does not expose or use `max` mode.
+The Vite plugin runs only for production builds, optimizes emitted assets from the output directory, uses the default compression strategy, and strips image metadata while preserving PDF metadata. It does not expose or use `max` mode.
 
 ### Webpack
 
@@ -232,7 +233,7 @@ module.exports = {
 };
 ```
 
-The Webpack plugin runs after assets are written to the configured output directory, optimizes emitted image and PDF files from that directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It does not expose or use `max` mode.
+The Webpack plugin runs after assets are written to the configured output directory, optimizes emitted image and PDF files from that directory, uses the default compression strategy, and strips image metadata while preserving PDF metadata. It does not expose or use `max` mode.
 
 ### Rollup
 
@@ -250,7 +251,7 @@ export default defineConfig({
 });
 ```
 
-The Rollup plugin optimizes emitted image and PDF assets with the default compression strategy and enables metadata stripping for images and preserves PDF metadata. It prefers in-memory asset optimization during bundle generation, including hash-safe filename/reference updates when asset bytes change, and uses a post-write output pass as a fallback for emitted files not already handled in memory. It does not expose or use `max` mode.
+The Rollup plugin optimizes emitted image and PDF assets with the default compression strategy and strips image metadata while preserving PDF metadata. It prefers in-memory asset optimization during bundle generation, including hash-safe filename/reference updates when asset bytes change, and uses a post-write output pass as a fallback for emitted files not already handled in memory. It does not expose or use `max` mode.
 
 ### Parcel
 
@@ -287,7 +288,7 @@ The Rollup plugin optimizes emitted image and PDF assets with the default compre
 }
 ```
 
-The Parcel integration is a real Parcel optimizer plugin. It runs in Parcel's asset pipeline, uses the default compression strategy, enables metadata stripping for images and preserves PDF metadata, and is production-only by default. Its small config surface is read from `package.json` under `squeezit.parcel`, and it does not expose or use `max` mode.
+The Parcel integration is a real Parcel optimizer plugin. It runs in Parcel's asset pipeline, uses the default compression strategy, strips image metadata while preserving PDF metadata, and is production-only by default. Its small config surface is read from `package.json` under `squeezit.parcel`, and it does not expose or use `max` mode.
 
 ### Astro
 
@@ -301,7 +302,7 @@ export default defineConfig({
 });
 ```
 
-The Astro wrapper is a thin integration over `squeezit/vite`. It runs the shared Vite output optimizer once at `astro:build:done`, only matters for `astro build`, targets static Astro output in v1, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. SSR and hybrid Astro output are not supported by this wrapper yet, and it does not expose or use `max` mode.
+The Astro wrapper is a thin integration over `squeezit/vite`. It runs the shared Vite output optimizer once at `astro:build:done`, only matters for `astro build`, targets static Astro output in v1, uses the default compression strategy, and strips image metadata while preserving PDF metadata. SSR and hybrid Astro output are not supported by this wrapper yet, and it does not expose or use `max` mode.
 
 ### Next.js
 
@@ -315,9 +316,9 @@ module.exports = withSqueezit({
 });
 ```
 
-The Next.js wrapper augments webpack-based Next builds by injecting the `squeezit` Webpack plugin through `next.config.js`/`next.config.ts`. It uses the default compression strategy, enables metadata stripping for images and preserves PDF metadata, and does not expose or use `max` mode.
+The Next.js wrapper augments webpack-based Next builds by injecting the `squeezit` Webpack plugin through `next.config.js`/`next.config.ts`. It uses the default compression strategy, strips image metadata while preserving PDF metadata, and does not expose or use `max` mode.
 
-Turbopack support is not included in this wrapper yet. It is planned and coming soon, but this integration currently targets Next’s webpack build pipeline only.
+Turbopack is not supported. Use the wrapper with a Webpack-based Next.js build.
 
 ### esbuild
 
@@ -333,7 +334,7 @@ await build({
 });
 ```
 
-The esbuild plugin runs after a successful disk-backed build, optimizes emitted image and PDF files from the written output directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It does not expose or use `max` mode.
+The esbuild plugin runs after a successful disk-backed build, optimizes emitted image and PDF files from the written output directory, uses the default compression strategy, and strips image metadata while preserving PDF metadata. It does not expose or use `max` mode.
 
 ### Babel
 
@@ -345,12 +346,14 @@ export default {
 };
 ```
 
-The Babel plugin is narrower than the emitted-asset integrations. It runs at compile time, is production-only by default, rewrites static local image imports and static JSX string-literal asset references, and writes optimized generated copies under `.squeezit/babel-assets`. It does not mutate source assets and does not expose or use `max` mode.
+The Babel plugin is narrower than the emitted-asset integrations. It runs at compile time, is production-only by default, rewrites static local image and PDF imports and static JSX string-literal asset references, and writes optimized generated copies under `.squeezit/babel-assets`. It does not mutate source assets and does not expose or use `max` mode.
 
 The fixture-value helper and JS/TS API report `filePath` and `outputPath` relative to the effective `cwd`, not as absolute machine-specific paths.
 
 ## Documentation
 
+- [Documentation index](docs/README.md)
+- [PDF optimization and troubleshooting](docs/pdf.md)
 - [API reference](https://github.com/ghaschel/squeezit/blob/main/docs/API.md)
 - [Agent-ready CLI contract](https://github.com/ghaschel/squeezit/blob/main/docs/agent-contract.md)
 - [Agent development harness](https://github.com/ghaschel/squeezit/blob/main/docs/agent-harness.md)
@@ -364,41 +367,41 @@ sqz <command> [arguments] [flags]
 
 ### Commands
 
-| Command                                                       | Purpose                                                            |
-| ------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `sqz compress [patterns...]`                                  | Optimize images. `--profile standard \| max` selects the strategy. |
-| `sqz metadata strip [patterns...]`                            | Remove metadata without recompression. `sqz exif` is its alias.    |
-| `sqz plan compress [patterns...] --output <plan.json>`        | Create a reviewable compression plan without writing images.       |
-| `sqz plan metadata strip [patterns...] --output <plan.json>`  | Create a metadata-removal plan. `sqz plan exif` is its alias.      |
-| `sqz plan apply <plan.json> --yes`                            | Revalidate and apply exactly one reviewed plan.                    |
-| `sqz receipt resume <receipt.json> --output <new.json> --yes` | Retry only safe, unfinished image work in a new linked receipt.    |
-| `sqz deps doctor [patterns...]`                               | Check all tools, or only the tools required by selected inputs.    |
-| `sqz deps install [patterns...]`                              | Install missing tools for all formats or selected inputs.          |
-| `sqz doctor`                                                  | Check Node, platform, update source, and the complete toolchain.   |
-| `sqz update check` / `sqz update apply`                       | Check or apply a global update.                                    |
-| `sqz capabilities --json`                                     | Discover commands, flags, side effects, and JSON schemas.          |
-| `sqz commands`, `sqz help [command]`, `sqz version`           | Discover the installed CLI.                                        |
+| Command                                                       | Purpose                                                                          |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `sqz compress [patterns...]`                                  | Optimize images and PDFs. `--profile standard \| max` selects the strategy.      |
+| `sqz metadata strip [patterns...]`                            | Remove image metadata without recompression; PDFs skip. `sqz exif` is its alias. |
+| `sqz plan compress [patterns...] --output <plan.json>`        | Create a reviewable compression plan without modifying inputs.                   |
+| `sqz plan metadata strip [patterns...] --output <plan.json>`  | Create a metadata-removal plan. `sqz plan exif` is its alias.                    |
+| `sqz plan apply <plan.json> --yes`                            | Revalidate and apply exactly one reviewed plan.                                  |
+| `sqz receipt resume <receipt.json> --output <new.json> --yes` | Retry only safe, unfinished work in a new linked receipt.                        |
+| `sqz deps doctor [patterns...]`                               | Check all tools, or only the tools required by selected inputs.                  |
+| `sqz deps install [patterns...]`                              | Install missing tools for all formats or selected inputs.                        |
+| `sqz doctor`                                                  | Check Node, platform, update source, and the complete toolchain.                 |
+| `sqz update check` / `sqz update apply`                       | Check or apply a global update.                                                  |
+| `sqz capabilities --json`                                     | Discover commands, flags, side effects, and JSON schemas.                        |
+| `sqz commands`, `sqz help [command]`, `sqz version`           | Discover the installed CLI.                                                      |
 
 `sqz` is the canonical binary; `squeezit` remains a full alias. `sqz` with no command shows help.
 
 ### Compression flags
 
-| Flag                        | Description                                                                                                                                                                              |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--profile standard \| max` | `max` preserves the former full/max behavior: heaviest lossless passes, metadata removal, threshold `0`, and a default concurrency cap of `2`. It cannot be combined with `--threshold`. |
-| `-r, --recursive`           | Recurse into input directories.                                                                                                                                                          |
-| `-s, --strip-meta`          | Remove EXIF, IPTC, and XMP metadata during compression.                                                                                                                                  |
-| `-d, --dry-run`             | Report potential changes without writing files.                                                                                                                                          |
-| `-k, --keep-time`           | Preserve input timestamps.                                                                                                                                                               |
-| `-c, --concurrency <n>`     | Set worker count.                                                                                                                                                                        |
-| `--progress auto \| off`    | Use TTY progress automatically or force streaming output.                                                                                                                                |
-| `-t, --threshold <bytes>`   | Minimum bytes saved before replacement; invalid with `--profile max`.                                                                                                                    |
-| `-i, --in-place`            | Create temporary artifacts beside source files.                                                                                                                                          |
-| `-y, --yes`                 | Confirm non-dry-run image changes without an interactive prompt. Required in JSON, JSON Lines, or non-interactive mode.                                                                  |
-| `-v, --verbose`             | Print diagnostics to stderr, or include them in JSON output.                                                                                                                             |
-| `--receipt <path>`          | Atomically checkpoint an auditable receipt for an operational command.                                                                                                                   |
+| Flag                        | Description                                                                                                                                                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--profile standard \| max` | `max` preserves the former full/max behavior: heaviest lossless passes, image metadata removal, PDF metadata preservation, threshold `0`, and a default concurrency cap of `2`. It cannot be combined with `--threshold`. |
+| `-r, --recursive`           | Recurse into input directories.                                                                                                                                                                                           |
+| `-s, --strip-meta`          | Remove image EXIF, IPTC, and XMP metadata during compression; PDF metadata is preserved.                                                                                                                                  |
+| `-d, --dry-run`             | Report potential changes without writing files.                                                                                                                                                                           |
+| `-k, --keep-time`           | Preserve input timestamps.                                                                                                                                                                                                |
+| `-c, --concurrency <n>`     | Set worker count.                                                                                                                                                                                                         |
+| `--progress auto \| off`    | Use TTY progress automatically or force streaming output.                                                                                                                                                                 |
+| `-t, --threshold <bytes>`   | Minimum bytes saved before replacement; invalid with `--profile max`.                                                                                                                                                     |
+| `-i, --in-place`            | Create temporary artifacts beside source files.                                                                                                                                                                           |
+| `-y, --yes`                 | Confirm non-dry-run image or PDF changes without an interactive prompt. Required in JSON, JSON Lines, or non-interactive mode.                                                                                            |
+| `-v, --verbose`             | Print diagnostics to stderr, or include them in JSON output.                                                                                                                                                              |
+| `--receipt <path>`          | Atomically checkpoint an auditable receipt for an operational command.                                                                                                                                                    |
 
-Patterns can be explicit paths, directories, shell patterns, or glob expressions. A `compress` command with no patterns scans supported image extensions in the current directory; scanning is non-recursive unless `--recursive` is supplied.
+Patterns can be explicit paths, directories, shell patterns, or glob expressions. A `compress` command with no patterns scans supported image and PDF extensions in the current directory; scanning is non-recursive unless `--recursive` is supplied.
 
 ### Progress Output
 
@@ -423,7 +426,7 @@ sqz plan apply .squeezit/plans/assets.json --yes
 `plan compress` and `plan metadata strip` resolve files with the normal
 discovery rules, hash each source with SHA-256, record semantic optimization
 options, and snapshot the healthy native tools required for those inputs. They
-do not compress images or estimate savings. The artifact is written atomically;
+do not compress files or estimate savings. The artifact is written atomically;
 an existing `--output` path is never overwritten.
 
 `plan apply` accepts no optimization overrides. It always requires `--yes`,
@@ -552,7 +555,7 @@ Internally, compression behavior is determined with MIME detection where applica
 
 ## Supported Formats
 
-Squeezit currently supports these image format families:
+Squeezit supports these image and document formats:
 
 - `JPEG` (`.jpg`, `.jpeg`): fast lossless optimization by default, heavier passes with `--profile max`
 - `PDF` (`.pdf`): QPDF stream/object compression; preserves content and metadata, skips protected or inconclusively inspected documents
@@ -584,9 +587,28 @@ Notes:
 - RAW files are special-case inputs and only convert to `.dng` with `--profile max`
 - RAW `--profile max` conversion targets the smallest lossless DNG by disabling embedded RAW, preview, and thumbnail payloads; `.rw2` inputs also try the available lossless JPEG predictor variants and keep the smallest result
 
+## Lossless PDF optimization
+
+PDF compression uses QPDF 11.3.0 or newer. It preserves document content and
+metadata; encrypted, signed, and inconclusively inspected documents are skipped.
+Lossless does not mean byte-identical, and savings vary with the input.
+
+```bash
+sqz deps doctor document.pdf
+sqz compress document.pdf --dry-run
+sqz compress document.pdf --profile max
+```
+
+Standard mode uses Flate level 6; max compares levels 6 and 9 from the same
+original snapshot. PDF metadata remains intact even with `--strip-meta`, and
+metadata-only operations skip PDFs. All ten integrations share this policy.
+
+See the [PDF guide](docs/pdf.md) for exact skip reasons, revision-history limits,
+API output-directory behavior, integration boundaries, and troubleshooting.
+
 ## System Dependencies
 
-Squeezit orchestrates native image tools based on the inputs you actually process. It may require binaries such as:
+Squeezit orchestrates native image and PDF tools based on the inputs you actually process. It may require binaries such as:
 
 - `file`
 - MozJPEG's `jpegtran`; `jpegoptim` for the additional `--profile max` candidate
@@ -618,6 +640,14 @@ sqz deps install "images/**/*.{png,jpg}"
 `deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON, JSON Lines, or non-interactive environments; piping an affirmative response is intentionally unsupported.
 
 On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.2.1, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo 1.88 or newer first. Debian/Ubuntu does not provide a supported MozJPEG package: install MozJPEG yourself and point `SQUEEZIT_MOZJPEGTRAN` at its `jpegtran` executable. Squeezit intentionally does not substitute `jpeg-turbo` for MozJPEG.
+
+On Debian/Ubuntu, the catalog offers APT only where the provider can meet the
+supported minimum. JPEGoptim, OptiPNG, SVGO, WebP, libavif, TIFF, ImageMagick,
+ExifTool, and DNGLab require the documented upstream/manual installation when
+the distribution package is unavailable or too old. `sqz deps doctor --json`
+reports actual version gates. Approved native targets and checksum receipts live
+in `scripts/native-tool-targets.json`; they are separate from compatibility
+floors. The macOS system `file` tool remains system-provided.
 
 ## Self-Update
 
@@ -726,12 +756,14 @@ Supported operating systems for tool installation are:
 
 ## Development
 
-This project publishes a Node-targeted CLI, but uses Bun for local development.
+This project publishes a Node-targeted CLI and uses Bun 1.4.4 for local
+development. Use Node 24.22.2 from `.node-version` for development and release
+builds; published consumer support remains Node >=22.13.0.
 
 Install dependencies:
 
 ```bash
-bun install
+bun ci
 ```
 
 Build the published artifact:
@@ -776,46 +808,3 @@ repository-only and read-only; the detailed workflow and JSON contract are in
 ## License
 
 [MIT](https://github.com/ghaschel/squeezit/blob/main/LICENSE)
-
-## Lossless PDF optimization
-
-```bash
-brew install qpdf
-sqz compress document.pdf --dry-run
-sqz compress document.pdf
-sqz compress document.pdf --profile max
-```
-
-PDF support uses QPDF 11.3.0 or newer (tested with 11.3.0 and 12.4.2). It is
-available through the CLI, API, and all ten existing integrations. Standard
-compression uses Flate level 6; max compares levels 6 and 9 from the original.
-Images are never downsampled or lossily re-encoded. PDF metadata is preserved,
-even with `--strip-meta` or in a plugin. `metadata strip` skips PDFs.
-
-Lossless describes document content, not original file bytes. Savings vary and
-may be zero. Older PDFs keep their structural version; this is not certification
-of PDF/A or other archival conformance.
-
-Encrypted PDFs (including empty-password restrictions), signature fields,
-embedded signatures, certification/timestamp indications, and XFA are skipped.
-Documents exposing an earlier cross-reference revision (`/Prev`) are also
-skipped, including some unsigned linearized PDFs, because current objects alone
-cannot rule out signatures in earlier revisions. Parse warnings and inconclusive
-inspection leave the input and any existing destination unchanged. There is no
-password or bypass option. Detached signatures stored outside a PDF cannot be
-detected; a handwritten image is ordinary page content.
-
-Gulp and Parcel preserve skipped stream bytes. Babel only publishes its PDF
-cache and rewrites a reference after accepted optimization. Build tools may
-still copy protected PDFs unchanged as part of their normal build. Rollup's
-in-memory path updates asset names and references together; the existing
-post-write Vite/Webpack/esbuild paths do not recompute final-byte hashes or SRI.
-Astro support is for static builds; Next.js support uses Webpack, not Turbopack.
-
-On Debian/Ubuntu, the catalog offers APT only where the provider can meet the
-supported minimum. JPEGoptim, OptiPNG, SVGO, WebP, libavif, TIFF, ImageMagick,
-ExifTool, and DNGLab require the documented upstream/manual installation when
-the distribution package is unavailable or too old. `sqz deps doctor --json`
-reports actual version gates. Approved native targets and checksum receipts live
-in `scripts/native-tool-targets.json`; they are separate from compatibility
-floors. The macOS system `file` tool remains system-provided.

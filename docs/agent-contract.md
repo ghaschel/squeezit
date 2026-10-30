@@ -157,7 +157,7 @@ than, or appears earlier on `PATH` than, the active Squeezit installation.
 
 Explicit existing unsupported files fail early—before confirmations,
 dependency checks, or writes. Directory scans and glob patterns still ignore
-non-image files so mixed asset directories remain convenient.
+unsupported files so mixed asset directories remain convenient.
 
 ## Reviewable plan and apply workflow
 
@@ -276,6 +276,8 @@ should require `schemaVersion: 2` before relying on this contract.
 
 ## PDF results
 
+See the [PDF guide](pdf.md) for setup, preservation rules, and troubleshooting.
+
 PDF compression preserves content and metadata. Protected or inconclusively
 inspected inputs are successful skips, reported through the existing result and
 event envelopes with optional `skipReason`: `pdf-encrypted`, `pdf-signature`,
@@ -289,3 +291,8 @@ inspects each snapshot again. Resume retains completed skips and reinspects
 pending or failed inputs. Earlier cross-reference revisions (including affected
 unsigned linearized PDFs) and XFA are conservatively unsupported. No password,
 ignore-signature, or force-protected option exists.
+
+A changed source is an operational failure even if inspection or the savings
+threshold would otherwise return a skip. Disabling dependency prechecks does
+not disable PDF inspection. Metadata-only requests report
+`pdf-metadata-unsupported` without invoking QPDF or ExifTool.

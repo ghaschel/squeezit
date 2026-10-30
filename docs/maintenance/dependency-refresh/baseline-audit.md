@@ -1,8 +1,8 @@
-# Dependency audit for the QPDF implementation plan
+# Baseline dependency audit — 2026-10-28
 
 Audited on 2026-10-28 against Squeezit 2.4.3 at `af41b7a`. This audit covers all 55 unique direct npm declarations, all 1,582 lock entries (1,401 versions across 1,194 package names), the complete existing native-tool catalog plus QPDF, 60 Homebrew runtime formula records, Bun, Node, and release Actions.
 
-These are researched upgrade targets and migration requirements. No dependencies were upgraded, and compatibility of a newly resolved graph remains an implementation acceptance gate. The current checkout passed typechecking and 176 fast tests; those are baseline results only. The metadata sweep is exhaustive for the existing lockfile; release-note review focuses on proposed direct/native upgrades and relevant transitive constraints, rather than treating all transitive latest majors as compatible replacements.
+This is the historical pre-upgrade audit. Its target recommendations and advisory counts do not describe the final graph; use the [resolved dependency audit](dependency-audit.md), [hold register](dependency-holds.md), and [implementation results](README.md) for the accepted outcome. The current checkout passed typechecking and 176 fast tests; those are baseline results only. The metadata sweep is exhaustive for the existing lockfile; release-note review focuses on proposed direct/native upgrades and relevant transitive constraints, rather than treating all transitive latest majors as compatible replacements.
 
 ## Implementation registry recheck — 2026-10-30
 

@@ -32,16 +32,24 @@ describe("Oclif package configuration", () => {
     expect(paths).toEqual(
       expect.arrayContaining([
         "docs/API.md",
+        "docs/README.md",
+        "docs/pdf.md",
         "README.md",
         "bin/run.js",
-        "dist/index.js",
         "oclif.manifest.json",
       ])
     );
-    expect(paths.some((path) => path.startsWith("docs/superpowers/"))).toBe(
+    expect(paths.filter((path) => path.startsWith("docs/"))).toEqual(
+      expect.arrayContaining([
+        "docs/agent-contract.md",
+        "docs/agent-harness.md",
+        "docs/releasing.md",
+      ])
+    );
+    expect(paths.some((path) => path.startsWith("docs/maintenance/"))).toBe(
       false
     );
-    expect(paths.some((path) => path.startsWith(".superpowers/"))).toBe(false);
+    expect(paths.some((path) => path.startsWith("docs/plans/"))).toBe(false);
   }, 30_000);
 
   test("publishes the Oclif launcher, command manifest, and canonical binary aliases", async () => {

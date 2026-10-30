@@ -1,8 +1,9 @@
-# PDF support and dependency refresh — implementation report
+# Dependency refresh and PDF validation
 
-Implementation branch: `codex/qpdf-dependency-refresh`, based on `af 41b 7a`.
-This implements the approved [plan](2026-10-28-qpdf-and-dependency-refresh.md)
-and [design](../specs/2026-10-28-qpdf-and-dependency-refresh-design.md).
+Recorded on 2026-10-30 for the update based on `af41b7a`. This is maintainer
+evidence; current behavior is documented in the [PDF guide](../../pdf.md).
+This implements the approved [plan](../../plans/pdf-support-and-dependency-refresh.md)
+and [design](../../plans/pdf-support-design.md).
 No release, tag, publication or push is included.
 
 Implementation commit: `859cc99`. Formatting-only commit: `e11ce15`.
@@ -11,7 +12,7 @@ Implementation commit: `859cc99`. Formatting-only commit: `e11ce15`.
 
 One QPDF pipeline serves the API, CLI and all ten existing adapters. Content
 detection precedes image-specific extension handling, including misleading
-`.jpg`, `.cr 2` and `.cur` names. The pipeline inspects an immutable snapshot and
+`.jpg`, `.cr2` and `.cur` names. The pipeline inspects an immutable snapshot and
 checks the original source again before publishing. Protected or inconclusively
 inspected PDFs preserve both the source and any existing destination.
 
@@ -56,21 +57,21 @@ The final lock resolves ESLint 10.14.0 and Babel 8.0.10, compatible newer releas
 than the original audit targets. Parcel's exported integration now correctly
 declares `@parcel/plugin` as a runtime dependency.
 
-The [final audit](2026-10-30-final-dependency-audit.md) covers all 1,476 lock entries,
+The [final audit](dependency-audit.md) covers all 1,476 lock entries,
 1,320 distinct resolved versions and 1,190 package names. Fresh exact-version and
 latest registry metadata requests completed with zero errors. Of 57 direct names,
 56 are at current registry latest. The [machine inventory](evidence/2026-10-28/final-dependency-audit-2026-10-30.json)
 records every direct declaration, installed version, previous version and role.
 
-| Held dependency                 | Installed/accepted            | Rejected target       | Reason and remaining exposure                                                                                                                                          |
-| ------------------------------- | ----------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TypeScript                      | 6.0.3                         | 7.0.2                 | typescript-eslint 8.72.1 requires `<6.1.0`; reconsider after compiler/lint/declaration/consumer compatibility. No matched advisory.                                    |
-| ExifTool                        | 13.55, Homebrew revision 1    | 13.60                 | Development release; retain the audited production release.                                                                                                            |
-| Gifsicle                        | 1.98                          | 1.99                  | Unreleased at audit time; retain released 1.98.                                                                                                                        |
-| Parent-constrained npm versions | 335 versions across 285 names | Each registry latest  | Every version, latest target and blocking parent range is listed in the [readable hold register](2026-10-30-dependency-holds.md). No incompatible transitive override. |
-| Grunt's Glob                    | 7.1.7                         | 14.0.3                | Latest Grunt 1.6.3 still owns `glob@~7.1.6`. Deprecated/unsupported old major; development host graph. No matched advisory in the final audit.                         |
-| Grunt's inflight                | 1.0.6                         | No newer release      | Glob 7 owns `inflight@^1.0.4`. Deprecated with a memory-leak notice; removal needs a parent migration. No matched advisory.                                            |
-| ATTW's compiler                 | 5.6.1-rc                      | Newer compiler majors | Declaration-analysis tooling intentionally pins its own compiler. It is separate from Squeezit's 6.0.3 compiler; see the exact owner in the hold register.             |
+| Held dependency                 | Installed/accepted            | Rejected target       | Reason and remaining exposure                                                                                                                               |
+| ------------------------------- | ----------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TypeScript                      | 6.0.3                         | 7.0.2                 | typescript-eslint 8.72.1 requires `<6.1.0`; reconsider after compiler/lint/declaration/consumer compatibility. No matched advisory.                         |
+| ExifTool                        | 13.55, Homebrew revision 1    | 13.60                 | Development release; retain the audited production release.                                                                                                 |
+| Gifsicle                        | 1.98                          | 1.99                  | Unreleased at audit time; retain released 1.98.                                                                                                             |
+| Parent-constrained npm versions | 335 versions across 285 names | Each registry latest  | Every version, latest target and blocking parent range is listed in the [readable hold register](dependency-holds.md). No incompatible transitive override. |
+| Grunt's Glob                    | 7.1.7                         | 14.0.3                | Latest Grunt 1.6.3 still owns `glob@~7.1.6`. Deprecated/unsupported old major; development host graph. No matched advisory in the final audit.              |
+| Grunt's inflight                | 1.0.6                         | No newer release      | Glob 7 owns `inflight@^1.0.4`. Deprecated with a memory-leak notice; removal needs a parent migration. No matched advisory.                                 |
+| ATTW's compiler                 | 5.6.1-rc                      | Newer compiler majors | Declaration-analysis tooling intentionally pins its own compiler. It is separate from Squeezit's 6.0.3 compiler; see the exact owner in the hold register.  |
 
 Final `bun audit --json` returned `{}`: zero advisory matches. This is a registry
 match at the recorded audit time, not proof of exploit-free software. The complete
@@ -139,7 +140,7 @@ The completed local checks include:
 - Node 22.13.0, 24.22.2 and 26.13.0 ran built ESM/CJS imports and compiled CLI smoke
   checks on macOS arm64. TypeScript 5.9.3/6.0.3 consumed all 11 exported entry points.
 - All ten real hosts passed both their exact retained floor and accepted newest
-  version using the same PDF build runner. The [boundary evidence](2026-10-30-adapter-host-boundary-evidence.md)
+  version using the same PDF build runner. The [boundary evidence](host-compatibility.md)
   lists all 20 checks, exact dependency manifests and reproduction commands.
 - Authentic self-signed detached CMS signatures are independently verified with
   OpenSSL. Tampering, expired certificates, certification structures and document
@@ -169,8 +170,8 @@ and report an operational failure on a change. All four regressions and the full
 72-test PDF selection passed; scoped independent review approved this final fix.
 
 Formatting changes to historical changelogs are mechanical consequences of the
-updated Prettier version. Internal audit JSON is excluded from formatting and
-published package contents. Product source, public documentation and tests remain
+updated Prettier version. Generated audit snapshots retain their recorded formatting. Plans and
+maintenance records are excluded from published package contents. Product source, public documentation and tests remain
 covered by lint/format checks. Private signing keys were never checked in.
 
 The native Linux ARM64 matrix passed all 72 PDF tests for each combination of
@@ -188,25 +189,16 @@ Intel macOS execution must not be inferred from ARM or Linux results. The offici
 locally. The manifest and configured lane do not prove every native optimizer
 builds on Intel macOS. This remains an explicit platform validation limitation.
 
-## Decisions made during implementation
+## Using these records
 
-These are the four implementation rulings, in the order they were made:
+- [Baseline audit](baseline-audit.md) describes the pre-upgrade graph and proposed targets.
+- [Resolved audit](dependency-audit.md) describes the accepted graph and advisory check.
+- [Dependency holds](dependency-holds.md) lists every retained older version and its owner constraint.
+- [Host compatibility](host-compatibility.md) records exact retained/new host versions and reproduction steps.
+- [Review record](evidence/2026-10-28/implementation-reviews.md) preserves findings and scoped resolutions.
 
-1. The app-created worktree was outside the writable sandbox, so implementation
-   used the dedicated branch in the original checkout. The tradeoff is sharing
-   that checkout's working files; existing files were preserved and the final
-   changes are committed. The attached worktree receives the completed commit
-   for review.
-2. Independent dependency, native-tool and adapter tasks used subagents while
-   the parent owned the shared PDF pipeline. Coordination errors would have
-   caused incompatible interfaces or missed verification; shared integration
-   tests and independent review checked the combined result.
-3. Native validation justified fixing APNG animation loss and AVIF sample/EXIF
-   preservation before accepting new fixture sizes. This adds an `avifdec`
-   requirement and changes expected compressed sizes. If the decision were
-   wrong, users could face an unnecessary dependency or preservation regression;
-   decoded-frame/sample and metadata comparisons support the change.
-4. Historical changelogs received mechanical formatting to pass the upgraded
-   formatter. The cost is additional historical diff noise, isolated in its own
-   commit. Generated audit JSON is excluded from formatting, while product code,
-   tests and public documentation remain checked.
+Dates and source fingerprints bind these results to the tested implementation;
+they are not fresh verification of later changes. Re-run the appropriate lanes
+from the [agent harness](../../agent-harness.md) when changing relevant behavior.
+Raw receipts remain under `evidence/`; do not replace historical measurements
+with new ones without recording the new date and tested source.

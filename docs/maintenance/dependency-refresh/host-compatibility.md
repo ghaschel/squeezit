@@ -56,7 +56,7 @@ BUN_INSTALL_CACHE_DIR="$sqz_host_floor_dir/cache" bun install --cwd "$sqz_host_f
 node tests/helpers/adapter-host-compatibility.cjs "$sqz_host_floor_dir/node_modules" babel,esbuild,astro,gulp,grunt,rollup,vite,webpack,parcel,next
 ```
 
-The actual validation used `/tmp/squeezit-runtime/host-floors/node_modules`, with the pinned Node 24.22.2 and Bun 1.4.4 binaries prepended to `PATH`. The isolated install resolved all exact direct targets. Bun reported two blocked postinstall scripts; all ten selected real builds nevertheless completed successfully without unblocking those scripts or modifying the main installation.
+The recorded validation used an isolated temporary dependency tree, with the pinned Node 24.22.2 and Bun 1.4.4 binaries prepended to `PATH`. The isolated install resolved all exact direct targets. Bun reported two blocked postinstall scripts; all ten selected real builds nevertheless completed successfully without unblocking those scripts or modifying the main installation.
 
 The final retained-floor command exited zero and printed:
 

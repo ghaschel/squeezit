@@ -1,12 +1,12 @@
 # QPDF support and dependency refresh design
 
-Status: proposed implementation design, prepared 2026-10-28. No product implementation or dependency upgrade is included in this planning change.
+Status: implemented design. Prepared 2026-10-28 and validated during implementation on 2026-10-30. See the [implementation record](pdf-support-and-dependency-refresh.md), [current user guide](../pdf.md), and [validation report](../maintenance/dependency-refresh/README.md).
 
 ## Intent and agreed scope
 
 Add lossless PDF optimization to Squeezit using the QPDF executable. Support well-formed PDFs, automatically leave encrypted and digitally signed documents alone, and expose the same behavior through the CLI, existing JS/TS API, and all ten existing integration entry points. Audit and refresh the Node packages, Bun pin, native tools, Homebrew integration, and release runtimes without silently narrowing supported consumer environments.
 
-The user explicitly requested dependable detection for well-formed PDFs and prefers skipping protected documents. The conservative implementation choices below extend that requirement to empty signature fields and inconclusive inspection. They do not promise verification of signature authenticity or detection of detached signatures stored outside the PDF.
+The supported scope is dependable detection for well-formed PDFs with conservative protection skips. The conservative implementation choices below extend that requirement to empty signature fields and inconclusive inspection. They do not promise verification of signature authenticity or detection of detached signatures stored outside the PDF.
 
 ## Approach
 
@@ -25,7 +25,7 @@ The shared core classifies the exact private snapshot it will optimize before in
 3. Detect encryption with `qpdf --is-encrypted`. Exit `0` means skip, including empty-user-password documents with permission restrictions. Exit `2` is only a candidate for further inspection; it is never sufficient proof that a file is safe, since process failures need separate handling. Never request or accept a password, decrypt a document, or change encryption permissions.
 4. Require a clean read-only `qpdf --suppress-recovery --check` result and valid QPDF JSON v2 with no warnings. Parse `encrypt`, `acroform`, `pages`, and the complete `qpdf` object dictionaries, with stream payloads omitted. Validate the page summary before deriving `pageCount`. Missing fields, document parsing failures, recovery, warnings, unsupported JSON versions, timeouts, or an exceeded output limit cause an inspection skip; unavailable execution is a failure as specified in the outcome table. Never combine this check with a rewrite.
 5. Reject any encryption dictionary or `encrypt.encrypted` indication. Reject a non-null `/Prev` in the parsed trailer as `pdf-unsupported-structure`: QPDF's current-object view cannot rule out signatures in superseded revisions. This deliberately also skips linearized PDFs that expose `/Prev`; do not claim those files are signed. Inspect dictionary structures and resolved field inheritance, not text matches in raw PDF bytes. Skip `/FT /Sig`, `/Type /Sig`, `/Type /DocTimeStamp`, a signature `/ByteRange`, nonzero `/SigFlags`, or non-null catalog `/Perms`. This covers filled and empty fields, invisible signatures, certification, document timestamps, and usage-rights signatures conservatively. Inspect nested dictionaries and indirect objects, including unreferenced objects present in the JSON representation. A missing `/Type` does not exempt a signature dictionary. Skip `/XFA` documents rather than pretending this feature interprets XML signing structures.
-6. Bind `input.absolutePath` to a PDF-specific SHA-256 fingerprint and require the completed snapshot to have the same digest before inspecting it. Recheck that source immediately before every publication, including insufficient-savings output copies. Copy from the inspected snapshot rather than rereading live source bytes. A distinct outputDir destination is not compared to the source digest. Reuse plan/resume guards and add this behavior for ordinary API/CLI PDF calls. A changed source is a failure with no replacement. These are optimistic change checks, not an atomic guarantee against another process writing between the final check and replacement.
+6. Bind `input.absolutePath` to a PDF-specific SHA-256 fingerprint and require the completed snapshot to have the same digest before inspecting it. Recheck that source before every inspected skip and immediately before every publication, including insufficient-savings output copies. Copy from the inspected snapshot rather than rereading live source bytes. A distinct outputDir destination is not compared to the source digest. Reuse plan/resume guards and add this behavior for ordinary API/CLI PDF calls. A changed source is a failure with no replacement. These are optimistic change checks, not an atomic guarantee against another process writing between the final check and replacement.
 
 No password, force-protected, or ignore-signature option is added. A graphic of handwriting is ordinary page content and is not a cryptographic signature.
 
@@ -55,34 +55,15 @@ The reversible stream/object operations and optional lossy image operations are 
 
 ## Shared interfaces
 
-Create `src/core/pdf.ts` for typed inspection, classification, process policy, and candidate creation. Keep process arguments as arrays. Use bounded subprocess output and a timeout; these limits produce explicit inspection skips, not partial JSON acceptance. Initial inspection limits: 64 MiB captured JSON and 60 seconds per read-only subprocess, configurable internally for deterministic tests but not new public flags. Candidate processing uses a 120-second subprocess timeout. Treat spawn errors separately from a QPDF exit status.
+The [PDF core](../../src/core/pdf.ts) owns typed inspection, classification, process policy, and candidate creation. Keep process arguments as arrays. Use bounded subprocess output and a timeout; these limits produce explicit inspection skips, not partial JSON acceptance. Initial inspection limits: 64 MiB captured JSON and 60 seconds per read-only subprocess, configurable internally for deterministic tests but not new public flags. Candidate processing uses a 120-second subprocess timeout. Treat spawn errors separately from a QPDF exit status.
 
-Proposed internal types:
+The source definitions are authoritative: `PdfInspection`, `inspectPdf`,
+`classifyPdfJson`, and `optimizePdfSnapshot` live in the PDF core;
+[`PdfSkipReason`](../../src/types/optimization.ts) is exposed through the
+[public API result](../API.md#result-shape). Executable resolution and the
+run-scoped capability cache are internal implementation details.
 
-```ts
-type PdfSkipReason =
-  | "pdf-encrypted"
-  | "pdf-signature"
-  | "pdf-signature-field"
-  | "pdf-inspection-inconclusive"
-  | "pdf-unsupported-structure"
-  | "pdf-metadata-unsupported";
-
-type PdfInspection =
-  | { eligible: true; pdfVersion: string; pageCount: number }
-  | { eligible: false; reason: PdfSkipReason; message: string };
-
-inspectPdf(inputPath: string): Promise<PdfInspection>;
-classifyPdfJson(value: unknown): PdfInspection;
-optimizePdfSnapshot(params: {
-  inputPath: string;
-  workDir: string;
-  max: boolean;
-  pdfVersion: string;
-}): Promise<{ outputPath: string; label: string }>;
-```
-
-The shared orchestration performs inspection before calling `optimizePdfSnapshot`; that function accepts only the inspected immutable workspace path. Add optional `skipReason` to `OptimizationResult` and `ApiOptimizationResult` and propagate it through CLI JSON, events, receipts, and plugins without changing existing status values or schema versions. This distinguishes protected skips from ordinary insufficient-savings skips. Existing generic image skips remain valid without the field.
+The shared orchestration performs inspection before calling `optimizePdfSnapshot`; that function accepts only the inspected immutable workspace path. The optional `skipReason` field is present on `OptimizationResult` and `ApiOptimizationResult` and propagates through CLI JSON, events, receipts, and plugins without changing existing status values or schema versions. This distinguishes protected skips from ordinary insufficient-savings skips. Existing generic image skips remain valid without the field.
 
 | Condition                                                                               | Result                                                             |
 | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -119,9 +100,9 @@ Pin Bun explicitly and update all CI and documentation occurrences together. Reg
 
 Homebrew formulas normally select their current versions; Squeezit's catalog stores minimum supported versions, not a lock of Homebrew installations. Track approved tested native versions separately from compatibility floors. Raise a minimum only for a necessary capability or identified safety fix; do not make Debian's package mappings unusable merely to mirror Homebrew's latest patch. Where a provider cannot supply the required version, use an explicit supported manual/pinned fallback or report it as unavailable. Never claim an APT command satisfies a floor when its package does not.
 
-Target QPDF 12.4.2 in the current macOS validation environment. Proposed minimum QPDF 11.3.0 provides a practical JSON-v2 baseline; implementation must prove the inspector and flags against both that floor and the current target before advertising support. Keep the floor at the oldest actually verified release if 11.3.0 cannot be validated. No Ghostscript or `compress-pdf` dependency is introduced.
+Target QPDF 12.4.2 in the current macOS validation environment. The verified minimum QPDF 11.3.0 provides the JSON-v2 baseline. Both the minimum and 12.4.2 passed the recorded PDF checks. No Ghostscript or `compress-pdf` dependency is introduced.
 
-Exact version findings and hold decisions live in the companion dependency audit; implementation must refresh volatile registry/formula evidence before changing the lockfile.
+Exact version findings and holds live in the [dependency audit](../maintenance/dependency-refresh/dependency-audit.md). Refresh volatile registry/formula evidence before changing the lockfile again.
 
 ## Acceptance and verification
 
@@ -133,9 +114,9 @@ Exact version findings and hold decisions live in the companion dependency audit
 - Dependencies are supported by a reproducible fresh install, consumer-floor and modern-Node tests, real integration tests, package/export checks, and native tests on the documented platforms.
 - Run `bun run verify:agent`, focused PDF tests, `bun run test:integration`, `bun run build`, `bun run check:exports`, and package inspection. Run the serial slow lane once during implementation because native encoder updates and the new PDF max path affect max-profile behavior. Do not run it merely to review these planning files.
 
-## Planning baseline
+## Historical planning baseline (2026-10-28)
 
-Repository baseline: clean `main`, commit `af41b7a`, Squeezit 2.4.3. `bun run typecheck` passed, and `bun run test:fast` passed 176 tests across 24 files before planning-file edits. These results describe the currently installed dependency tree, not the proposed upgrades.
+Repository baseline: clean `main`, commit `af41b7a`, Squeezit 2.4.3. `bun run typecheck` passed, and `bun run test:fast` passed 176 tests across 24 files before planning-file edits. These results describe the pre-upgrade tree. The implementation record links the later validation and remaining gates.
 
 `agent:preflight` reports Bun 1.3.14 against the repository pin 1.3.5; this is a setup prerequisite for implementation, not proof of an upgrade regression. It also reports missing approved MozJPEG and JPEG XL executables, and an older global Squeezit installation shadowing the repository. Use the repository's built entry point for verification. Resolve native-tool readiness before claiming native compression tests pass.
 

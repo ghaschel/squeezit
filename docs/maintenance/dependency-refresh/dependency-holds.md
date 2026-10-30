@@ -14,7 +14,7 @@ a memory-leak notice. These are unresolved maintenance warnings, distinct from
 the zero advisory matches. The machine inventory records all parents, engines,
 registry receipts and the exact lock hash.
 
-[Audit summary](2026-10-30-final-dependency-audit.md) ·
+[Audit summary](dependency-audit.md) ·
 [Complete machine inventory](evidence/2026-10-28/final-dependency-audit-2026-10-30.json)
 
 | Package                                      | Resolved | Registry latest target | Blocking owner constraints                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Remaining advisory/maintenance exposure                                    |

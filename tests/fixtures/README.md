@@ -36,3 +36,7 @@ not just size or QPDF structural validity. Protected fixtures must remain
 byte-identical, including preexisting output destinations. Generation tools
 are test-authoring dependencies only; the checked-in fixtures allow CI to run
 without installing font or image generators.
+
+The [PDF guide](../../docs/pdf.md) documents the expected protection and
+preservation behavior. Maintainer validation receipts are indexed in the
+[dependency refresh report](../../docs/maintenance/dependency-refresh/README.md).

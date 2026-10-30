@@ -85,5 +85,11 @@
     "regressionTestsPassed": true
   },
   "externalPackageInstallations": false,
-  "releaseStatus": "authorized after local validation; delivery tracked by Git history and release workflow"
+  "releaseStatus": "authorized after local validation; delivery tracked by Git history and release workflow",
+  "compatibilityWorkflow": {
+    "trigger": "workflow_dispatch only",
+    "automaticPullRequestChecks": false,
+    "cancelledRun": 41126331078,
+    "reason": "User requested removal of automatic dependency checks to conserve Actions quota"
+  }
 }

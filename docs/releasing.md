@@ -121,7 +121,9 @@ repository-only. The package-content test checks this boundary. Update the
 [documentation index](README.md), [API reference](API.md), and [PDF guide](pdf.md)
 when changing their public behavior; preserve historical release notes.
 
-The separate compatibility workflow builds with the development runtime, then
+The separate compatibility workflow is manual-only (`workflow_dispatch`) to
+avoid automatic GitHub Actions quota usage. Run it explicitly when platform
+validation is needed. It builds with the development runtime, then
 checks supported consumer Node and QPDF versions, including checksum-verified
 QPDF source builds. It also exercises the retained host floors and includes an
 Intel macOS lane. A configured workflow is not evidence of a completed run.

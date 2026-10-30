@@ -18,6 +18,7 @@ async function workflow() {
   return parse(
     await readFile(resolve(root, ".github/workflows/compatibility.yml"), "utf8")
   ) as {
+    on: Record<string, unknown>;
     permissions: Record<string, string>;
     jobs: {
       compatibility: {
@@ -31,6 +32,7 @@ async function workflow() {
 describe("consumer and QPDF compatibility workflow", () => {
   test("bounds the platform/runtime/native matrix independently of the build pin", async () => {
     const value = await workflow();
+    expect(value.on).toEqual({ workflow_dispatch: null });
     expect(value.permissions).toEqual({ contents: "read" });
     expect(value.jobs.compatibility.strategy.matrix.include).toEqual([
       {

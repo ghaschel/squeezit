@@ -117,3 +117,10 @@ after local validation and is tracked separately from these implementation check
 - Serial `test:slow`: stopped at the user's explicit request because of its
   duration (exit 130). Max-profile tests are excluded from this task's acceptance
   checks; no passing result is claimed.
+
+### CI cost policy
+
+At the user's request, the compatibility workflow now runs only through a manual
+`workflow_dispatch`. Its automatic pull-request trigger was removed and run
+41126331078 was cancelled. The six platform jobs are not claimed as passing.
+The existing tag-triggered release workflow remains the publication path.

@@ -54,3 +54,7 @@ applied versions, complete parent constraints, and validation evidence.
 - The user stopped max-profile validation explicitly; the run ended with exit
   130 and is excluded from acceptance. No passing result is claimed.
 - User-authorized delivery: commit, push, release, and await GitHub Actions.
+
+- CI cost policy: automatic compatibility checks were disabled at the user's
+  request; retain manual dispatch and cancel the active six-job run. Release
+  delivery proceeds through the existing tag workflow.

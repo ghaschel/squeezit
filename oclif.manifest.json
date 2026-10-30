@@ -398,6 +398,105 @@
         "install.js"
       ]
     },
+    "deps:upgrade": {
+      "aliases": [],
+      "args": {
+        "patterns": {
+          "description": "Upgrade only tools required by these image or PDF inputs.",
+          "multiple": true,
+          "name": "patterns",
+          "required": false
+        }
+      },
+      "description": "Install or upgrade optimizer tools to at least the tested target versions.",
+      "flags": {
+        "json": {
+          "description": "Format output as json.",
+          "helpGroup": "GLOBAL",
+          "name": "json",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "events": {
+          "description": "Stream structured command events as JSON Lines.",
+          "name": "events",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "jsonl"
+          ],
+          "type": "option"
+        },
+        "receipt": {
+          "description": "Atomically checkpoint an auditable run receipt at this path.",
+          "name": "receipt",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "type": "option"
+        },
+        "recursive": {
+          "char": "r",
+          "description": "Recurse into directories.",
+          "name": "recursive",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "profile": {
+          "description": "Include tools needed for this optimization profile.",
+          "name": "profile",
+          "default": "standard",
+          "hasDynamicHelp": false,
+          "multiple": false,
+          "options": [
+            "standard",
+            "max"
+          ],
+          "type": "option"
+        },
+        "strip-meta": {
+          "description": "Include image metadata stripping tools.",
+          "name": "strip-meta",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "dry-run": {
+          "char": "d",
+          "description": "Show target versions and package commands without installing or upgrading.",
+          "name": "dry-run",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "yes": {
+          "char": "y",
+          "description": "Confirm dependency changes without a prompt.",
+          "name": "yes",
+          "allowNo": false,
+          "type": "boolean"
+        },
+        "verbose": {
+          "char": "v",
+          "description": "Include diagnostic details.",
+          "name": "verbose",
+          "allowNo": false,
+          "type": "boolean"
+        }
+      },
+      "hasDynamicHelp": false,
+      "hiddenAliases": [],
+      "id": "deps:upgrade",
+      "pluginAlias": "squeezit",
+      "pluginName": "squeezit",
+      "pluginType": "core",
+      "strict": true,
+      "enableJsonFlag": true,
+      "isESM": true,
+      "relativePath": [
+        "dist",
+        "commands",
+        "deps",
+        "upgrade.js"
+      ]
+    },
     "doctor": {
       "aliases": [],
       "args": {},

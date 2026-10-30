@@ -127,29 +127,30 @@ Command failures retain the same envelope and add an `error` object:
 Branch on `error.code`, then display or follow `remediation`. Do not parse the
 human-readable `message`.
 
-| Code                      | Meaning                                                                                             | Typical next action                                                         |
-| ------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `VALIDATION_ERROR`        | CLI syntax or incompatible flags are invalid.                                                       | Inspect `sqz capabilities --json` or `--help`, then correct the invocation. |
-| `UNKNOWN_COMMAND`         | A requested command does not exist.                                                                 | Discover commands with `sqz capabilities --json`.                           |
-| `UNSUPPORTED_FORMAT`      | An explicit existing input is not an image Squeezit supports.                                       | Remove it or provide a supported image file.                                |
-| `UNSUPPORTED_PLATFORM`    | The host OS cannot use the native toolchain.                                                        | Use macOS or Debian/Ubuntu Linux.                                           |
-| `DEPENDENCY_MISSING`      | Required optimizer binaries are unavailable or unhealthy.                                           | Run `sqz deps install` or follow the remediation.                           |
-| `CONFIRMATION_REQUIRED`   | A state-changing action was requested in JSON, JSON Lines, or non-interactive mode without `--yes`. | Review the operation and re-run with `--yes`.                               |
-| `OPERATION_CANCELLED`     | An interactive confirmation was declined.                                                           | Stop, or re-run and approve intentionally.                                  |
-| `UPDATE_UNAVAILABLE`      | The requested update source or release cannot be applied.                                           | Use the reported details/remediation or choose an explicit package manager. |
-| `PLAN_INVALID`            | A plan is malformed, unsupported, or its deterministic digest does not match.                       | Create and review a new plan with the current CLI.                          |
-| `PLAN_OUTPUT_EXISTS`      | A requested plan artifact path already exists.                                                      | Choose a new `--output` path or remove the reviewed artifact intentionally. |
-| `PLAN_INPUT_CHANGED`      | A planned source changed, disappeared, or was replaced after planning began.                        | Create and review a new plan before writing images.                         |
-| `PLAN_TOOL_CHANGED`       | A required native optimizer's provider or normalized version changed.                               | Restore the expected toolchain or create a new plan.                        |
-| `PLAN_RUNTIME_CHANGED`    | The Squeezit version or platform differs from the reviewed plan.                                    | Create a new plan in the current environment.                               |
-| `RECEIPT_INVALID`         | A receipt is malformed, unsupported, or its deterministic digest does not match.                    | Create a new receipt with the current CLI.                                  |
-| `RECEIPT_OUTPUT_EXISTS`   | The requested receipt output already exists.                                                        | Choose a new output path; preserve the existing audit artifact.             |
-| `RECEIPT_NOT_RESUMABLE`   | The receipt operation has no eligible retry inputs or is not an image job.                          | Create a new receipt for a supported image operation.                       |
-| `RECEIPT_INPUT_CHANGED`   | A selected input differs from its original receipt fingerprint.                                     | Create and review a new receipt before writing images.                      |
-| `RECEIPT_TOOL_CHANGED`    | A required tool is unhealthy or changed provider/normalized version.                                | Restore the recorded toolchain or create a new receipt.                     |
-| `RECEIPT_RUNTIME_CHANGED` | The Squeezit version or platform no longer matches the receipt.                                     | Create a new receipt in the current runtime.                                |
-| `RECEIPT_WRITE_FAILED`    | A receipt checkpoint could not be written atomically.                                               | Fix the target path or permissions, then create a new receipt.              |
-| `INTERNAL_ERROR`          | An unexpected error reached the command boundary.                                                   | Re-run; report the complete envelope if it persists.                        |
+| Code                        | Meaning                                                                                             | Typical next action                                                                  |
+| --------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `VALIDATION_ERROR`          | CLI syntax or incompatible flags are invalid.                                                       | Inspect `sqz capabilities --json` or `--help`, then correct the invocation.          |
+| `UNKNOWN_COMMAND`           | A requested command does not exist.                                                                 | Discover commands with `sqz capabilities --json`.                                    |
+| `UNSUPPORTED_FORMAT`        | An explicit existing input is not an image Squeezit supports.                                       | Remove it or provide a supported image file.                                         |
+| `UNSUPPORTED_PLATFORM`      | The host OS cannot use the native toolchain.                                                        | Use macOS or Debian/Ubuntu Linux.                                                    |
+| `DEPENDENCY_MISSING`        | Required optimizer binaries are unavailable or unhealthy.                                           | Run `sqz deps install` or follow the remediation.                                    |
+| `DEPENDENCY_UPGRADE_FAILED` | A dependency target is still unmet/unverifiable, or a package command failed.                       | Inspect `toolsAfter`, `blocked`, and `executed`; fix the provider or PATH and retry. |
+| `CONFIRMATION_REQUIRED`     | A state-changing action was requested in JSON, JSON Lines, or non-interactive mode without `--yes`. | Review the operation and re-run with `--yes`.                                        |
+| `OPERATION_CANCELLED`       | An interactive confirmation was declined.                                                           | Stop, or re-run and approve intentionally.                                           |
+| `UPDATE_UNAVAILABLE`        | The requested update source or release cannot be applied.                                           | Use the reported details/remediation or choose an explicit package manager.          |
+| `PLAN_INVALID`              | A plan is malformed, unsupported, or its deterministic digest does not match.                       | Create and review a new plan with the current CLI.                                   |
+| `PLAN_OUTPUT_EXISTS`        | A requested plan artifact path already exists.                                                      | Choose a new `--output` path or remove the reviewed artifact intentionally.          |
+| `PLAN_INPUT_CHANGED`        | A planned source changed, disappeared, or was replaced after planning began.                        | Create and review a new plan before writing images.                                  |
+| `PLAN_TOOL_CHANGED`         | A required native optimizer's provider or normalized version changed.                               | Restore the expected toolchain or create a new plan.                                 |
+| `PLAN_RUNTIME_CHANGED`      | The Squeezit version or platform differs from the reviewed plan.                                    | Create a new plan in the current environment.                                        |
+| `RECEIPT_INVALID`           | A receipt is malformed, unsupported, or its deterministic digest does not match.                    | Create a new receipt with the current CLI.                                           |
+| `RECEIPT_OUTPUT_EXISTS`     | The requested receipt output already exists.                                                        | Choose a new output path; preserve the existing audit artifact.                      |
+| `RECEIPT_NOT_RESUMABLE`     | The receipt operation has no eligible retry inputs or is not an image job.                          | Create a new receipt for a supported image operation.                                |
+| `RECEIPT_INPUT_CHANGED`     | A selected input differs from its original receipt fingerprint.                                     | Create and review a new receipt before writing images.                               |
+| `RECEIPT_TOOL_CHANGED`      | A required tool is unhealthy or changed provider/normalized version.                                | Restore the recorded toolchain or create a new receipt.                              |
+| `RECEIPT_RUNTIME_CHANGED`   | The Squeezit version or platform no longer matches the receipt.                                     | Create a new receipt in the current runtime.                                         |
+| `RECEIPT_WRITE_FAILED`      | A receipt checkpoint could not be written atomically.                                               | Fix the target path or permissions, then create a new receipt.                       |
+| `INTERNAL_ERROR`            | An unexpected error reached the command boundary.                                                   | Re-run; report the complete envelope if it persists.                                 |
 
 `STALE_INSTALLATION` and `SHADOWED_INSTALLATION` are normally doctor warnings,
 not command failures. They identify another discovered binary that is newer
@@ -296,3 +297,23 @@ A changed source is an operational failure even if inspection or the savings
 threshold would otherwise return a skip. Disabling dependency prechecks does
 not disable PDF inspection. Metadata-only requests report
 `pdf-metadata-unsupported` without invoking QPDF or ExifTool.
+
+## Dependency upgrades
+
+`sqz deps upgrade [patterns...] --dry-run --json` previews the tested target
+versions and named package commands without invoking an installer. Preview
+`ok: true` means the plan was produced; `data.ready` means every selected tool
+already meets its target. Real changes require `--yes` in machine-output or
+noninteractive mode. A satisfied environment needs no confirmation or package
+commands, including when Homebrew offers newer packaging revisions or shared
+libraries. Bundled targets change only through Squeezit maintenance releases.
+
+An applied run rechecks executables after the commands and returns
+`DEPENDENCY_UPGRADE_FAILED` if a target remains missing, outdated, or unverifiable,
+or a package command fails. `data` contains `toolsBefore`, `toolsAfter`,
+`commands`, `executed`, `blocked`, `attempted`, `ready`, and `dryRun`. Tool records
+retain compatibility `minimumVersion` and add `targetVersion` and `targetStatus`.
+Executed command records retain exit codes and captured package-manager output.
+The command supports phase events and receipts; dependency operations are not
+resumable through `receipt resume`. See the [dependency guide](dependencies.md)
+for target versions and provider limits.

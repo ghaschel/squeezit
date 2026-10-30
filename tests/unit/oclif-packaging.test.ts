@@ -34,6 +34,7 @@ describe("Oclif package configuration", () => {
         "docs/API.md",
         "docs/README.md",
         "docs/pdf.md",
+        "docs/dependencies.md",
         "README.md",
         "bin/run.js",
         "oclif.manifest.json",

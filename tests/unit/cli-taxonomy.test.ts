@@ -4,6 +4,7 @@ import Capabilities from "../../src/cli/commands/capabilities";
 import Compress from "../../src/cli/commands/compress";
 import DependenciesDoctor from "../../src/cli/commands/deps/doctor";
 import DependenciesInstall from "../../src/cli/commands/deps/install";
+import DependenciesUpgrade from "../../src/cli/commands/deps/upgrade";
 import Doctor from "../../src/cli/commands/doctor";
 import MetadataStrip from "../../src/cli/commands/metadata/strip";
 import PlanApply from "../../src/cli/commands/plan/apply";
@@ -22,6 +23,7 @@ describe("Oclif command taxonomy", () => {
     expect(PlanMetadataStrip.name).toBe("PlanMetadataStrip");
     expect(DependenciesDoctor.name).toBe("DependenciesDoctor");
     expect(DependenciesInstall.name).toBe("DependenciesInstall");
+    expect(DependenciesUpgrade.name).toBe("DependenciesUpgrade");
     expect(Doctor.name).toBe("Doctor");
     expect(UpdateCheck.name).toBe("UpdateCheck");
     expect(UpdateApply.name).toBe("UpdateApply");
@@ -38,6 +40,11 @@ describe("Oclif command taxonomy", () => {
     expect(UpdateCheck.flags.pm.options).toEqual(["npm", "bun", "brew"]);
     expect(PlanCompress.flags.profile.options).toEqual(["standard", "max"]);
     expect(PlanApply.flags.progress.options).toEqual(["auto", "off"]);
+    expect(DependenciesUpgrade.flags.profile.options).toEqual([
+      "standard",
+      "max",
+    ]);
+    expect(DependenciesUpgrade.flags["dry-run"]).toBeDefined();
     expect(PlanCompress.flags.output.required).toBe(true);
   });
 

@@ -3,6 +3,11 @@
 `squeezit` exposes a JS/TS API for image and PDF workflows. See the
 [documentation index](README.md) and [PDF guide](pdf.md) for related behavior.
 
+Use `sqz deps upgrade --dry-run` to preview updates to the tested native-tool
+targets, then `sqz deps upgrade` to apply them. This does not raise the API's
+compatibility minimums. See [optimizer dependencies](dependencies.md) for
+provider behavior and verification.
+
 ## Installation
 
 Requires Node.js 22.13 or later.

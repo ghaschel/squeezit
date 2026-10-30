@@ -85,6 +85,8 @@ export type DependencyCommandRunner = (
 
 export interface DependencyDiagnosticOptions {
   platform?: SupportedPlatform | null;
+  /** Require self-reporting executables to identify their own version. */
+  strictBinaryVersion?: boolean;
   commandExists?: (binary: string) => Promise<boolean>;
   resolveMozjpegBinary?: () => Promise<string | undefined>;
   runCommand?: DependencyCommandRunner;
@@ -456,7 +458,11 @@ export async function diagnoseDependency(
     providerVersion?.provider ?? providerFor(dependency, platform);
   const probe = await commandRunner(resolvedBinary, dependency.versionArgs);
   const directVersion =
-    dependency.versionReporting === "self"
+    dependency.versionReporting === "self" &&
+    (!options.strictBinaryVersion || probe.exitCode === 0) &&
+    (!options.strictBinaryVersion ||
+      !dependency.requiresMozjpeg ||
+      isMozjpegVersion(probe.all))
       ? normalizeDependencyVersion(probe.all, dependency.binary)
       : undefined;
 
@@ -470,7 +476,11 @@ export async function diagnoseDependency(
     );
   }
 
-  if (providerVersion) {
+  if (
+    providerVersion &&
+    (!options.strictBinaryVersion || probe.exitCode === 0) &&
+    (!options.strictBinaryVersion || dependency.versionReporting === "provider")
+  ) {
     const normalizedVersion = normalizeDependencyVersion(
       providerVersion.rawVersion
     );

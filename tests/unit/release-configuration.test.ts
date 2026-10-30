@@ -73,7 +73,7 @@ describe("release configuration", () => {
     ).toBe("1.4.4");
     expect(
       (await readFile(resolve(root, ".node-version"), "utf8")).trim()
-    ).toBe("24.22.2");
+    ).toBe("26.13.0");
     expect(packageJson.engines).toMatchObject({ node: ">=22.13.0" });
   });
 

@@ -121,13 +121,13 @@ describe("tag release workflow", () => {
     expect(jobs.publish_release.permissions).toEqual({ contents: "write" });
   });
 
-  test("pins validation to Ubuntu, Node 24.22.2, and Bun 1.4.4", async () => {
+  test("pins validation to Ubuntu, Node 26.13.0, and Bun 1.4.4", async () => {
     const jobs = requiredJobs(await readWorkflow());
     const validate = jobs.validate;
 
     expect(validate["runs-on"]).toBe("ubuntu-latest");
     expect(action(validate, "actions/setup-node")?.with).toEqual({
-      "node-version": "24.22.2",
+      "node-version": "26.13.0",
       "package-manager-cache": false,
     });
     expect(action(validate, "oven-sh/setup-bun")?.with).toEqual({
@@ -141,8 +141,17 @@ describe("tag release workflow", () => {
     for (const job of Object.values(jobs)) {
       for (const step of job.steps ?? []) {
         if (step.uses?.startsWith("actions/setup-node@")) {
+          const prerequisites = (job.steps ?? []).slice(
+            0,
+            (job.steps ?? []).indexOf(step)
+          );
+          expect(
+            prerequisites.some((prior) =>
+              prior.run?.includes("apt-get install --yes libatomic1")
+            )
+          ).toBe(true);
           expect(step.with).toMatchObject({
-            "node-version": "24.22.2",
+            "node-version": "26.13.0",
             "package-manager-cache": false,
           });
         }

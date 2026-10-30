@@ -251,7 +251,7 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
-    "@astrojs/markdown-remark": "^7.3.0",
+    "@astrojs/markdown-remark": "^7.3.5",
     "@babel/core": "^8.0.10",
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
@@ -288,7 +288,7 @@
     "remark": "^15.0.1",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
-    "rollup": "^4.66.0",
+    "rollup": "^4.67.2",
     "tsup": "^9.0.0",
     "typescript": "6.0.3",
     "typescript-eslint": "^8.72.1",

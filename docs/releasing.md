@@ -103,11 +103,12 @@ formula-managed. It will not convert a globally installed npm/Bun package or a
 standalone archive into a Homebrew installation; use `brew install
 ghaschel/tap/squeezit` for that.
 
-Development and standalone builds pin Node 24.22.2 (`.node-version`) and Bun
-1.4.4 (`packageManager`), with matching exact Bun types. Consumer support stays
-at Node >=22.13.0. Validate packed ESM/CJS and CLI artifacts on Node 22.13.0,
-24.22.2, and separately 26.13.0 before accepting a runtime refresh; Node 26 is
-not the embedded archive runtime. Node 24 Actions need runner >=2.327.1
+Development and CI builds use Node 26.13.0 (`.node-version`) and Bun
+1.4.4 (`packageManager` and matching Bun types). Standalone archives retain Node
+24.22.2 in `package.json` to preserve their existing Linux runtime requirements.
+Public consumer support remains Node >=22.13.0. Validate packed ESM/CJS and CLI
+artifacts on Node 22.13.0, 22.23.4, 24.22.2, and 26.13.0. Linux CI installs
+`libatomic1` before selecting Node 26. Node 24 Actions need runner >=2.327.1
 (>=2.329.0 for authenticated Docker Git); hosted release runners supply this.
 Checkout credentials live under RUNNER_TEMP. Setup-node package-manager caching
 is disabled explicitly in privileged release jobs; npm publishing uses OIDC.

@@ -1,0 +1,4104 @@
+{
+  "collectedAtUtc": "2026-10-30T19:45:41.271150+00:00",
+  "scope": "Fresh read-only metadata, local installed receipts and binary versions; no installations, builds, compression or repository edits. Source and bottle checksums below are publisher/Homebrew metadata, not newly downloaded-and-hashed payloads. No claim of full vulnerability database scan.",
+  "direct": [
+    {
+      "formula": "mozjpeg",
+      "pin": {
+        "version": "4.1.5",
+        "sourceUrl": "https://github.com/mozilla/mozjpeg/archive/refs/tags/v4.1.5.tar.gz",
+        "sha256": "9fcbb7171f6ac383f5b391175d6fb3acde5e64c4c4727274eade84ed0998fcc1",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/mozjpeg.json"
+      },
+      "installed": {
+        "name": "mozjpeg",
+        "active": "4.1.5",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "libpng",
+            "version": "1.6.59",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.59",
+            "declared_directly": true,
+            "compatibility_version": 1
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "4.1.5",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/mozjpeg.json",
+      "freshStable": "4.1.5",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:3a3d8f5b133c78c3cdb9d6ede5dbfee13c01aae3027d79d7283fd8601b4a78c3",
+          "sha256": "3a3d8f5b133c78c3cdb9d6ede5dbfee13c01aae3027d79d7283fd8601b4a78c3"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:ae8b8e5b56ea7d13b5f68225ade34c5e8818d169d8df8a1aa8f12b445dfbe6ff",
+          "sha256": "ae8b8e5b56ea7d13b5f68225ade34c5e8818d169d8df8a1aa8f12b445dfbe6ff"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:93eea531e7d81f0aade7c403f3e0c65d545d9eade6e0e50bd43bf01cee48f110",
+          "sha256": "93eea531e7d81f0aade7c403f3e0c65d545d9eade6e0e50bd43bf01cee48f110"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:5254d35ee2814e82b176fa779fc87a69468969dc28f750aaa602d17fd15d1646",
+          "sha256": "5254d35ee2814e82b176fa779fc87a69468969dc28f750aaa602d17fd15d1646"
+        },
+        "arm64_ventura": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:7b364b6311f2a0bcc20c22f66c38eee66427da82fd22293815456ff0f74027da",
+          "sha256": "7b364b6311f2a0bcc20c22f66c38eee66427da82fd22293815456ff0f74027da"
+        },
+        "arm64_monterey": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:3b30413d731bd4ad5175dad5e460f6606757ccd4f7d595dd722ce265c839d10d",
+          "sha256": "3b30413d731bd4ad5175dad5e460f6606757ccd4f7d595dd722ce265c839d10d"
+        },
+        "sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:fcb0583588eeba6f707aea5899ad93dd5eb49d2982019a4836d817ae0dfbb8bf",
+          "sha256": "fcb0583588eeba6f707aea5899ad93dd5eb49d2982019a4836d817ae0dfbb8bf"
+        },
+        "ventura": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:db38b13c7efa289ddc6248e3068d3eade4c2314f795650d70bebd6c38d4cca3e",
+          "sha256": "db38b13c7efa289ddc6248e3068d3eade4c2314f795650d70bebd6c38d4cca3e"
+        },
+        "monterey": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:6fddd7081db83c75d0098e0e681c4553b1e6d53fbb88cc744a766552f1f796ad",
+          "sha256": "6fddd7081db83c75d0098e0e681c4553b1e6d53fbb88cc744a766552f1f796ad"
+        },
+        "arm64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:b2ecf43cea49223d6fd0bd8e781ed50e2104eb3fe7e5b4a6ec9ca30cbd87ca94",
+          "sha256": "b2ecf43cea49223d6fd0bd8e781ed50e2104eb3fe7e5b4a6ec9ca30cbd87ca94"
+        },
+        "x86_64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/mozjpeg/blobs/sha256:e69f9e76bf590d31a85839acdc52bbee9b1c4ccef0370f82f5a80e9d21c69298",
+          "sha256": "e69f9e76bf590d31a85839acdc52bbee9b1c4ccef0370f82f5a80e9d21c69298"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/mozilla/mozjpeg/archive/refs/tags/v4.1.5.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "9fcbb7171f6ac383f5b391175d6fb3acde5e64c4c4727274eade84ed0998fcc1"
+      },
+      "rubySourceChecksum": {
+        "sha256": "a67d3346d774dfa50b7e331d3584ce47303c69e803c625fe3f8b0a76b340b05f"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "jpegoptim",
+      "pin": {
+        "version": "1.5.6",
+        "sourceUrl": "https://github.com/tjko/jpegoptim/releases/download/v1.5.6/jpegoptim-1.5.6.zip",
+        "sha256": "96cc4c6f6961235db41c8fc7b7b5baebc3179ddb24e96e87a03355beaf6014e2",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/jpegoptim.json"
+      },
+      "installed": {
+        "name": "jpegoptim",
+        "active": "1.5.6",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.1.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.1.3",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "1.5.6",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/formula.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/jpegoptim.json",
+      "freshStable": "1.5.6",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpegoptim/blobs/sha256:affa4a86ce17cc42ea701a1b8f40055b1197f32dfb245d7e29bfe4a79e004819",
+          "sha256": "affa4a86ce17cc42ea701a1b8f40055b1197f32dfb245d7e29bfe4a79e004819"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpegoptim/blobs/sha256:17b597c1c3a8a0d3ed76c1b01e068e9922d0dc2242c92494e88ab25a53da0c76",
+          "sha256": "17b597c1c3a8a0d3ed76c1b01e068e9922d0dc2242c92494e88ab25a53da0c76"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpegoptim/blobs/sha256:03905aa303c9a5d5b6669cac8f0c4f46fbf4fe3f54ede70d9bc8d958a1e486b3",
+          "sha256": "03905aa303c9a5d5b6669cac8f0c4f46fbf4fe3f54ede70d9bc8d958a1e486b3"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpegoptim/blobs/sha256:6db9dfc80fb96a601bca0a090651dfae9725eccb54bfafd262da733b45f75ef8",
+          "sha256": "6db9dfc80fb96a601bca0a090651dfae9725eccb54bfafd262da733b45f75ef8"
+        },
+        "sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpegoptim/blobs/sha256:b2aafb2a469573baffe37024b1086c2b04512e2f3087c1c70100533e3733f866",
+          "sha256": "b2aafb2a469573baffe37024b1086c2b04512e2f3087c1c70100533e3733f866"
+        },
+        "arm64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/jpegoptim/blobs/sha256:bd0b242dd53f3b2bfce6c34f065b399ced6b8452225df225e1655c42cf848efd",
+          "sha256": "bd0b242dd53f3b2bfce6c34f065b399ced6b8452225df225e1655c42cf848efd"
+        },
+        "x86_64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/jpegoptim/blobs/sha256:44cf0605e6d6dc761b5e75770b2534c52da44bfdb0aa913d8841933aa7db35fb",
+          "sha256": "44cf0605e6d6dc761b5e75770b2534c52da44bfdb0aa913d8841933aa7db35fb"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/tjko/jpegoptim/releases/download/v1.5.6/jpegoptim-1.5.6.zip",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "96cc4c6f6961235db41c8fc7b7b5baebc3179ddb24e96e87a03355beaf6014e2"
+      },
+      "rubySourceChecksum": {
+        "sha256": "12028606b45ec7c376cf1246f07815439cf554eb9b2ec1d9534c928d76826922"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "pngcrush",
+      "pin": {
+        "version": "1.8.13",
+        "sourceUrl": "https://downloads.sourceforge.net/project/pmt/pngcrush/1.8.13/pngcrush-1.8.13-nolib.tar.xz",
+        "sha256": "3b4eac8c5c69fe0894ad63534acedf6375b420f7038f7fc003346dd352618350",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/pngcrush.json"
+      },
+      "installed": {
+        "name": "pngcrush",
+        "active": "1.8.13",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "libpng",
+            "version": "1.6.53",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.53",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "1.8.13",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/formula.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/pngcrush.json",
+      "freshStable": "1.8.13",
+      "revision": 0,
+      "bottleRebuild": 2,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/pngcrush/blobs/sha256:97f2a1a5fe296694a65abbc4f75259a3d813d2a3967e7ccf1da8c51157229050",
+          "sha256": "97f2a1a5fe296694a65abbc4f75259a3d813d2a3967e7ccf1da8c51157229050"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/pngcrush/blobs/sha256:d480e8fcafb2cce34d273a2142d1db3513fb094e2e1c6b638b67d2114b75a91f",
+          "sha256": "d480e8fcafb2cce34d273a2142d1db3513fb094e2e1c6b638b67d2114b75a91f"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/pngcrush/blobs/sha256:86ee7fe3bb318dd870dfa82ed5e765ef2852723c2dc0a2406cbaf131779bc0fe",
+          "sha256": "86ee7fe3bb318dd870dfa82ed5e765ef2852723c2dc0a2406cbaf131779bc0fe"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/pngcrush/blobs/sha256:e98af00364a8cae0050e46f60c6b7ae0213d43fff7ae59616aacee39e33931b0",
+          "sha256": "e98af00364a8cae0050e46f60c6b7ae0213d43fff7ae59616aacee39e33931b0"
+        },
+        "sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/pngcrush/blobs/sha256:9e118f22662c43c9d1520be4b73645146939660c600e428aa540df8261ea1843",
+          "sha256": "9e118f22662c43c9d1520be4b73645146939660c600e428aa540df8261ea1843"
+        },
+        "arm64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/pngcrush/blobs/sha256:b2c169a69b99d3ca7c13d4b8779adfd09568b8b9059c0d510e66008905513f8a",
+          "sha256": "b2c169a69b99d3ca7c13d4b8779adfd09568b8b9059c0d510e66008905513f8a"
+        },
+        "x86_64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/pngcrush/blobs/sha256:68503c123cc4886ca3b1e759a7b29e9c9e7abed51d31f78f37f197c4bf66affd",
+          "sha256": "68503c123cc4886ca3b1e759a7b29e9c9e7abed51d31f78f37f197c4bf66affd"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://downloads.sourceforge.net/project/pmt/pngcrush/1.8.13/pngcrush-1.8.13-nolib.tar.xz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "3b4eac8c5c69fe0894ad63534acedf6375b420f7038f7fc003346dd352618350"
+      },
+      "rubySourceChecksum": {
+        "sha256": "095c1951eb3ec23b9412af2f2b7db4aa2e9af6bc0de37958aae22c5a7350b926"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "optipng",
+      "pin": {
+        "version": "7.9.1",
+        "sourceUrl": "https://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-7.9.1/optipng-7.9.1.tar.gz",
+        "sha256": "c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/optipng.json"
+      },
+      "installed": {
+        "name": "optipng",
+        "active": "7.9.1",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "libpng",
+            "version": "1.6.55",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.55",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "7.9.1",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/formula.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/optipng.json",
+      "freshStable": "7.9.1",
+      "revision": 0,
+      "bottleRebuild": 1,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/optipng/blobs/sha256:b9728b9e05f75a3de4387e927bf7d615d3cb122c7edfc56d6f979ba56b3916e3",
+          "sha256": "b9728b9e05f75a3de4387e927bf7d615d3cb122c7edfc56d6f979ba56b3916e3"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/optipng/blobs/sha256:7bc1a16e16342def4b3cb3264737beaa1319d6487d812066d341b2d7e7652512",
+          "sha256": "7bc1a16e16342def4b3cb3264737beaa1319d6487d812066d341b2d7e7652512"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/optipng/blobs/sha256:04c60466375077fc2707c4b663c4557f684c2a5a0ad6492f16e6b20faa8c02f9",
+          "sha256": "04c60466375077fc2707c4b663c4557f684c2a5a0ad6492f16e6b20faa8c02f9"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/optipng/blobs/sha256:24a250dca1b1322b7f7bd3057752f92e5d77c232342c8e3649b10fbe1eb617f9",
+          "sha256": "24a250dca1b1322b7f7bd3057752f92e5d77c232342c8e3649b10fbe1eb617f9"
+        },
+        "sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/optipng/blobs/sha256:fce585cdebd10bee1694e8b44078da666cd5d1459634f8ac22a8202711254a55",
+          "sha256": "fce585cdebd10bee1694e8b44078da666cd5d1459634f8ac22a8202711254a55"
+        },
+        "arm64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/optipng/blobs/sha256:ad4fcb25fbeaa03ff1a1f53a22c4660ab127f14a6e2370814135bd645692500e",
+          "sha256": "ad4fcb25fbeaa03ff1a1f53a22c4660ab127f14a6e2370814135bd645692500e"
+        },
+        "x86_64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/optipng/blobs/sha256:a0d382808f584669781d2c1bdc4db551cad72e10408669a4618db0f2e3532a67",
+          "sha256": "a0d382808f584669781d2c1bdc4db551cad72e10408669a4618db0f2e3532a67"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-7.9.1/optipng-7.9.1.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29"
+      },
+      "rubySourceChecksum": {
+        "sha256": "e49eba1d377c5a0f57c25ea60f09eb64b174af17268a1c723a9d38d1a0168726"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "zopfli",
+      "pin": {
+        "version": "1.0.3",
+        "sourceUrl": "https://github.com/google/zopfli/archive/refs/tags/zopfli-1.0.3.tar.gz",
+        "sha256": "e955a7739f71af37ef3349c4fa141c648e8775bceb2195be07e86f8e638814bd",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/zopfli.json"
+      },
+      "installed": {
+        "name": "zopfli",
+        "active": "1.0.3_1",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "1.0.3",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/formula.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/zopfli.json",
+      "freshStable": "1.0.3",
+      "revision": 1,
+      "bottleRebuild": 2,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/zopfli/blobs/sha256:02117d2bae99aaab9586b5a3aa395993d6f0c65a31b4e289d240d32e2aeaba7e",
+          "sha256": "02117d2bae99aaab9586b5a3aa395993d6f0c65a31b4e289d240d32e2aeaba7e"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/zopfli/blobs/sha256:3cf189287454c0abe8c1da5747609ebe859ba188a3b9763cb44dbb5f759d32ae",
+          "sha256": "3cf189287454c0abe8c1da5747609ebe859ba188a3b9763cb44dbb5f759d32ae"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/zopfli/blobs/sha256:4fe7df0649344fda621be648ce9c9d93b9d82e3e590fb292c7b7db3c54c70585",
+          "sha256": "4fe7df0649344fda621be648ce9c9d93b9d82e3e590fb292c7b7db3c54c70585"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/zopfli/blobs/sha256:7ca2a485245ef744247a319113e9d202f7adca1702a4f1a1b2bda367616055b0",
+          "sha256": "7ca2a485245ef744247a319113e9d202f7adca1702a4f1a1b2bda367616055b0"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/zopfli/blobs/sha256:bec0c8be797f1b8d0530193dd4bb13e23620dbbcc5cf6c26a62ddbdecd271c6e",
+          "sha256": "bec0c8be797f1b8d0530193dd4bb13e23620dbbcc5cf6c26a62ddbdecd271c6e"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/google/zopfli/archive/refs/tags/zopfli-1.0.3.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "e955a7739f71af37ef3349c4fa141c648e8775bceb2195be07e86f8e638814bd"
+      },
+      "rubySourceChecksum": {
+        "sha256": "b3f9ed555aec9fb79407af08664f2ef0ac83b13e7b301379f9336c5676082553"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "oxipng",
+      "pin": {
+        "version": "10.2.1",
+        "sourceUrl": "https://github.com/oxipng/oxipng/archive/refs/tags/v10.2.1.tar.gz",
+        "sha256": "460ccfcdcc9c3877b9f7fae1dfd4f2a3f93d3b2a2af3e3b62ca32b163f923cca",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/oxipng.json",
+        "minimumRust": "1.88.0"
+      },
+      "installed": {
+        "name": "oxipng",
+        "active": "10.2.1",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "10.2.1",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/oxipng.json",
+      "freshStable": "10.2.1",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/oxipng/blobs/sha256:db9a337fddbb8d2153ac22b5a9761298bfbb3b8ec6d6d51085a4586877843977",
+          "sha256": "db9a337fddbb8d2153ac22b5a9761298bfbb3b8ec6d6d51085a4586877843977"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/oxipng/blobs/sha256:860172692307e908ce2fbef75e7a877a66b1d3dd8d70692108389519ca6a9d6c",
+          "sha256": "860172692307e908ce2fbef75e7a877a66b1d3dd8d70692108389519ca6a9d6c"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/oxipng/blobs/sha256:e5e927976512c5418e0e34bc29cb29a5b14054cf180881234b6fa802d787e5ce",
+          "sha256": "e5e927976512c5418e0e34bc29cb29a5b14054cf180881234b6fa802d787e5ce"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/oxipng/blobs/sha256:8034f39876c03d3c85d2955ef4bfb26123d021bd0ec85390a5c9b4cbe9515b5b",
+          "sha256": "8034f39876c03d3c85d2955ef4bfb26123d021bd0ec85390a5c9b4cbe9515b5b"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/oxipng/blobs/sha256:bcc4caf4f5799b424e2da229f3bb1b1163f6587db9d88a6aaf8716d4a1eb0592",
+          "sha256": "bcc4caf4f5799b424e2da229f3bb1b1163f6587db9d88a6aaf8716d4a1eb0592"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/oxipng/blobs/sha256:07babc404b99d6cf41571149878e95edb9457f247bf72327c634722901e4d25c",
+          "sha256": "07babc404b99d6cf41571149878e95edb9457f247bf72327c634722901e4d25c"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/oxipng/oxipng/archive/refs/tags/v10.2.1.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "460ccfcdcc9c3877b9f7fae1dfd4f2a3f93d3b2a2af3e3b62ca32b163f923cca"
+      },
+      "rubySourceChecksum": {
+        "sha256": "f193024462fe869a6552b6bb1fee7b03007d4c4404bdbc652651224d7532ef82"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "gifsicle",
+      "pin": {
+        "version": "1.98",
+        "sourceUrl": "https://www.lcdf.org/gifsicle/gifsicle-1.98.tar.gz",
+        "sha256": "e9d4cc0816db95c64d32e79f778836db0f1f7eb15868490bd330104e5146b66e",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/gifsicle.json"
+      },
+      "installed": {
+        "name": "gifsicle",
+        "active": "1.98",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "1.98",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/gifsicle.json",
+      "freshStable": "1.98",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/gifsicle/blobs/sha256:f63c4f62ba3fe4edf1d2a15185e20d33449a97f61e057b4ac701e120d0fc2c18",
+          "sha256": "f63c4f62ba3fe4edf1d2a15185e20d33449a97f61e057b4ac701e120d0fc2c18"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/gifsicle/blobs/sha256:e1967131476c690b30ceb427e62b8815295181dc07e062a93b8febefaf4e227d",
+          "sha256": "e1967131476c690b30ceb427e62b8815295181dc07e062a93b8febefaf4e227d"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/gifsicle/blobs/sha256:920b2bab19d19c912a9b26adc928934c7fe513c4f6877ea1366fb555308036a2",
+          "sha256": "920b2bab19d19c912a9b26adc928934c7fe513c4f6877ea1366fb555308036a2"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/gifsicle/blobs/sha256:7a20a7b49085747f88d21c0609efb80fd3b1c0c2c791f11a85b4ab22e2f7e740",
+          "sha256": "7a20a7b49085747f88d21c0609efb80fd3b1c0c2c791f11a85b4ab22e2f7e740"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/gifsicle/blobs/sha256:d3b0516e2fee18cd7496d5eb5157f92fee1c1ecd87dbeadd2a675326bdfd7b0e",
+          "sha256": "d3b0516e2fee18cd7496d5eb5157f92fee1c1ecd87dbeadd2a675326bdfd7b0e"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://www.lcdf.org/gifsicle/gifsicle-1.98.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "e9d4cc0816db95c64d32e79f778836db0f1f7eb15868490bd330104e5146b66e"
+      },
+      "rubySourceChecksum": {
+        "sha256": "6d73300990772e1b3aeac4e483dd7f9fe536e44352c441addc30f196c1e27f15"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "svgo",
+      "pin": {
+        "version": "4.1.0",
+        "sourceUrl": "https://github.com/svg/svgo/archive/refs/tags/v4.1.0.tar.gz",
+        "sha256": "8c9d43624e108eab29e369fdca68ea160e57b37a364907b499b5d6a4436cb59b",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/svgo.json"
+      },
+      "installed": {
+        "name": "svgo",
+        "active": "4.1.0",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "fmt",
+            "version": "12.2.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "12.2.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "ada-url",
+            "version": "4.0.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "4.0.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "brotli",
+            "version": "1.2.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.2.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "c-ares",
+            "version": "1.34.8",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.34.8",
+            "declared_directly": false
+          },
+          {
+            "full_name": "hdrhistogram_c",
+            "version": "0.11.10",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "0.11.10",
+            "declared_directly": false
+          },
+          {
+            "full_name": "icu4c@78",
+            "version": "78.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "78.3",
+            "declared_directly": false
+          },
+          {
+            "full_name": "libffi",
+            "version": "3.8.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.8.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "libnghttp2",
+            "version": "1.70.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.70.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "libnghttp3",
+            "version": "1.18.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.18.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "ca-certificates",
+            "version": "2026-08-13",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "2026-08-13",
+            "declared_directly": false
+          },
+          {
+            "full_name": "openssl@3",
+            "version": "3.6.4",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.6.4",
+            "declared_directly": false
+          },
+          {
+            "full_name": "libngtcp2",
+            "version": "1.25.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.25.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "libuv",
+            "version": "1.52.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.52.1",
+            "declared_directly": false
+          },
+          {
+            "full_name": "llhttp",
+            "version": "9.4.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "9.4.3",
+            "declared_directly": false
+          },
+          {
+            "full_name": "simdutf",
+            "version": "9.1.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "9.1.1",
+            "declared_directly": false
+          },
+          {
+            "full_name": "merve",
+            "version": "1.2.2",
+            "revision": 2,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.2.2_2",
+            "declared_directly": false
+          },
+          {
+            "full_name": "nbytes",
+            "version": "0.1.4",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "0.1.4",
+            "declared_directly": false
+          },
+          {
+            "full_name": "simdjson",
+            "version": "4.6.11",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "4.6.11",
+            "declared_directly": false
+          },
+          {
+            "full_name": "readline",
+            "version": "8.3.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "8.3.3",
+            "declared_directly": false
+          },
+          {
+            "full_name": "sqlite",
+            "version": "3.53.4",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "3.53.4",
+            "declared_directly": false
+          },
+          {
+            "full_name": "uvwasi",
+            "version": "0.0.23",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "0.0.23",
+            "declared_directly": false
+          },
+          {
+            "full_name": "lz4",
+            "version": "1.10.0",
+            "revision": 0,
+            "bottle_rebuild": 2,
+            "pkg_version": "1.10.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "xz",
+            "version": "5.8.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "5.8.3",
+            "declared_directly": false
+          },
+          {
+            "full_name": "zstd",
+            "version": "1.5.7",
+            "revision": 1,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.5.7_1",
+            "declared_directly": false
+          },
+          {
+            "full_name": "node",
+            "version": "26.8.2",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "26.8.2",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "4.1.0",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/svgo.json",
+      "freshStable": "4.1.0",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "all": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/svgo/blobs/sha256:5351c22c31e538f311094815088539fbb18b4ee409b5de0ae5ff8bed40279242",
+          "sha256": "5351c22c31e538f311094815088539fbb18b4ee409b5de0ae5ff8bed40279242"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/svg/svgo/archive/refs/tags/v4.1.0.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "8c9d43624e108eab29e369fdca68ea160e57b37a364907b499b5d6a4436cb59b"
+      },
+      "rubySourceChecksum": {
+        "sha256": "193cccbac39cbd4eed3f2fcc2e860fe36e9f9ef84e5e27f9a64f94cffb6ad798"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "webp",
+      "pin": {
+        "version": "1.6.0",
+        "sourceUrl": "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.6.0.tar.gz",
+        "sha256": "e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/webp.json"
+      },
+      "installed": {
+        "name": "webp",
+        "active": "1.6.0",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "giflib",
+            "version": "5.2.2",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "5.2.2",
+            "declared_directly": true
+          },
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.1.2",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.1.2",
+            "declared_directly": true
+          },
+          {
+            "full_name": "libpng",
+            "version": "1.6.50",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.50",
+            "declared_directly": true
+          },
+          {
+            "full_name": "xz",
+            "version": "5.8.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "5.8.1",
+            "declared_directly": false
+          },
+          {
+            "full_name": "lz4",
+            "version": "1.10.0",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "1.10.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "zstd",
+            "version": "1.5.7",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "1.5.7",
+            "declared_directly": false
+          },
+          {
+            "full_name": "libtiff",
+            "version": "4.7.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "4.7.1",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "1.6.0",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/formula.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/webp.json",
+      "freshStable": "1.6.0",
+      "revision": 0,
+      "bottleRebuild": 1,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:85d3cb86c87f53f027b48cdfe15a31e82932caa43344a6fe06e00e5de402a3e7",
+          "sha256": "85d3cb86c87f53f027b48cdfe15a31e82932caa43344a6fe06e00e5de402a3e7"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:89d7380c156284433cf5a130b82423b1a3d83b4aac88fe88ba35d174bcc9d3b6",
+          "sha256": "89d7380c156284433cf5a130b82423b1a3d83b4aac88fe88ba35d174bcc9d3b6"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:3f5c1ccc592312b2170bc1ea673f902aa65fc479aa9a4c308ff0b1b1a35315fe",
+          "sha256": "3f5c1ccc592312b2170bc1ea673f902aa65fc479aa9a4c308ff0b1b1a35315fe"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:3aa68517215779bc0c0a877c934c81ed82e5d5727c0114878ccfd6a1fa138fae",
+          "sha256": "3aa68517215779bc0c0a877c934c81ed82e5d5727c0114878ccfd6a1fa138fae"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/webp/blobs/sha256:74466119f8e80a2375631657c0daaf53c910938c4a8754385c579b4d71f95887",
+          "sha256": "74466119f8e80a2375631657c0daaf53c910938c4a8754385c579b4d71f95887"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.6.0.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564"
+      },
+      "rubySourceChecksum": {
+        "sha256": "41b28d58db0c173be8b8cf18e2de50057c92eaff9c0a1ad6a28d3d998a2ec8fd"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "libheif",
+      "pin": {
+        "version": "1.23.7",
+        "sourceUrl": "https://github.com/strukturag/libheif/releases/download/v1.23.7/libheif-1.23.7.tar.gz",
+        "sha256": "f7483e818503ea6224c8863e4a56ac02c7089021a98472c811c12aa19faf2475",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/libheif.json"
+      },
+      "installed": {
+        "name": "libheif",
+        "active": "1.23.7",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "libvmaf",
+            "version": "3.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.1",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "aom",
+            "version": "3.15.2",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.15.2",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.1",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libde265",
+            "version": "1.1.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.1.3",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libpng",
+            "version": "1.6.59",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.59",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "giflib",
+            "version": "6.1.3",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "6.1.3",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "webp",
+            "version": "1.6.0",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "1.6.0",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "xz",
+            "version": "5.8.4",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "5.8.4",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "lz4",
+            "version": "1.10.0",
+            "revision": 0,
+            "bottle_rebuild": 3,
+            "pkg_version": "1.10.0",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "zstd",
+            "version": "1.5.7",
+            "revision": 1,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.5.7_1",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libtiff",
+            "version": "4.7.2",
+            "revision": 0,
+            "bottle_rebuild": 2,
+            "pkg_version": "4.7.2",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "x265",
+            "version": "4.3",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "4.3",
+            "declared_directly": true,
+            "compatibility_version": 2
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "1.23.7",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/libheif.json",
+      "freshStable": "1.23.7",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libheif/blobs/sha256:d5af967d356fde118a4aa06c24c7a2b2a94f66212ef19751d749b3f1a7d01ac6",
+          "sha256": "d5af967d356fde118a4aa06c24c7a2b2a94f66212ef19751d749b3f1a7d01ac6"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libheif/blobs/sha256:fbd2a57774b892db8fbfc27a480e2df3d0873dfb89060eab07430185971f9fcd",
+          "sha256": "fbd2a57774b892db8fbfc27a480e2df3d0873dfb89060eab07430185971f9fcd"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libheif/blobs/sha256:e9b55aa4e52656b23436826996bfaa1f42f9d27f6126b6694ab216f2b0aac656",
+          "sha256": "e9b55aa4e52656b23436826996bfaa1f42f9d27f6126b6694ab216f2b0aac656"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libheif/blobs/sha256:c02e710a43db46377d21d3a451c54ef8e9fe3e8fff656a9a26c68dd1199f9fea",
+          "sha256": "c02e710a43db46377d21d3a451c54ef8e9fe3e8fff656a9a26c68dd1199f9fea"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libheif/blobs/sha256:20528e568f06ecd5d786f0123654079a9d03a8c93182121fe90b754f7cb3a1ea",
+          "sha256": "20528e568f06ecd5d786f0123654079a9d03a8c93182121fe90b754f7cb3a1ea"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/strukturag/libheif/releases/download/v1.23.7/libheif-1.23.7.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "f7483e818503ea6224c8863e4a56ac02c7089021a98472c811c12aa19faf2475"
+      },
+      "rubySourceChecksum": {
+        "sha256": "ccf020d6dc644a50858261556eec24a0aa8695045676793d4cd2f0c4328fcecb"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "libavif",
+      "pin": {
+        "version": "1.4.2",
+        "sourceUrl": "https://github.com/AOMediaCodec/libavif/archive/refs/tags/v1.4.2.tar.gz",
+        "sha256": "2b645287340ba5a631d268b551dc2d72bd73ac33335962dd36dcdb6d8366921d",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/libavif.json",
+        "binaries": ["avifenc", "avifdec"]
+      },
+      "installed": {
+        "name": "libavif",
+        "active": "1.4.2",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "libvmaf",
+            "version": "3.2.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "aom",
+            "version": "3.15.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.15.0",
+            "declared_directly": true
+          },
+          {
+            "full_name": "dav1d",
+            "version": "1.5.4",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.5.4",
+            "declared_directly": true
+          },
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.2.0",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "3.2.0",
+            "declared_directly": true
+          },
+          {
+            "full_name": "libpng",
+            "version": "1.6.58",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.58",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "1.4.2",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/libavif.json",
+      "freshStable": "1.4.2",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libavif/blobs/sha256:f615b9691140a7dca60456cc6fa89f797039567d44637c5bedca28b7065a3190",
+          "sha256": "f615b9691140a7dca60456cc6fa89f797039567d44637c5bedca28b7065a3190"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libavif/blobs/sha256:584d41a9ad0fd601fac27735b928483c3f8494d4e08d6461599f7fabc915783b",
+          "sha256": "584d41a9ad0fd601fac27735b928483c3f8494d4e08d6461599f7fabc915783b"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libavif/blobs/sha256:0d1a9ce6320d9ddacb3e7ca31bb2ef3216529755ab1df24eac833fec27b25c95",
+          "sha256": "0d1a9ce6320d9ddacb3e7ca31bb2ef3216529755ab1df24eac833fec27b25c95"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libavif/blobs/sha256:0c6314fd072001e7cb03d1cc065d7934dcf25edca3e8d413008ca268f1429582",
+          "sha256": "0c6314fd072001e7cb03d1cc065d7934dcf25edca3e8d413008ca268f1429582"
+        },
+        "sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libavif/blobs/sha256:5ebfe4ae085f4dd3e13a6c833b104939ac11d6abc28ea7a2413f471548444e68",
+          "sha256": "5ebfe4ae085f4dd3e13a6c833b104939ac11d6abc28ea7a2413f471548444e68"
+        },
+        "arm64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/libavif/blobs/sha256:99cf708f4f061f25e916e4212cd9ba2159daa5a498689f94b25995edbe7f734f",
+          "sha256": "99cf708f4f061f25e916e4212cd9ba2159daa5a498689f94b25995edbe7f734f"
+        },
+        "x86_64_linux": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/libavif/blobs/sha256:824125e726a4ea8c4495ef60d538ef5b769037bd9c4acc7c5a757d0cd03c4819",
+          "sha256": "824125e726a4ea8c4495ef60d538ef5b769037bd9c4acc7c5a757d0cd03c4819"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/AOMediaCodec/libavif/archive/refs/tags/v1.4.2.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "2b645287340ba5a631d268b551dc2d72bd73ac33335962dd36dcdb6d8366921d"
+      },
+      "rubySourceChecksum": {
+        "sha256": "8e7cf385a33b68479b281592a434216f17a2d37f60831efa312af2bfa1c04b1e"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "libtiff",
+      "pin": {
+        "version": "4.7.2",
+        "sourceUrl": "https://download.osgeo.org/libtiff/tiff-4.7.2.tar.gz",
+        "sha256": "672bd7d10aee4606171afb864f3570b83340f6a33e2c186dc0512f7145ffdf6a",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/libtiff.json"
+      },
+      "installed": {
+        "name": "libtiff",
+        "active": "4.7.2",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.2.0",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "3.2.0",
+            "declared_directly": true
+          },
+          {
+            "full_name": "giflib",
+            "version": "6.1.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "6.1.3",
+            "declared_directly": false
+          },
+          {
+            "full_name": "libpng",
+            "version": "1.6.58",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.58",
+            "declared_directly": false
+          },
+          {
+            "full_name": "webp",
+            "version": "1.6.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.0",
+            "declared_directly": true
+          },
+          {
+            "full_name": "xz",
+            "version": "5.8.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "5.8.3",
+            "declared_directly": true
+          },
+          {
+            "full_name": "lz4",
+            "version": "1.10.0",
+            "revision": 0,
+            "bottle_rebuild": 2,
+            "pkg_version": "1.10.0",
+            "declared_directly": false
+          },
+          {
+            "full_name": "zstd",
+            "version": "1.5.7",
+            "revision": 1,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.5.7_1",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "4.7.2",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/libtiff.json",
+      "freshStable": "4.7.2",
+      "revision": 0,
+      "bottleRebuild": 2,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:2678f5bb80b0578e79c76f747b637781ab3629b0c393e8c7d060ead4d42f9d6c",
+          "sha256": "2678f5bb80b0578e79c76f747b637781ab3629b0c393e8c7d060ead4d42f9d6c"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:9a0ff1ac153879e9fb324951f33fc52c797149a6de44176e4fb80f0c8adad9a8",
+          "sha256": "9a0ff1ac153879e9fb324951f33fc52c797149a6de44176e4fb80f0c8adad9a8"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:e971adc15ce3387a9c68a10ff1cf431755faf0e86b9d3a6daf668efc2f6f31d8",
+          "sha256": "e971adc15ce3387a9c68a10ff1cf431755faf0e86b9d3a6daf668efc2f6f31d8"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:4504c9c0fd45de525e9a532da674b703bda04d377d7471f70cf611954da1fb1d",
+          "sha256": "4504c9c0fd45de525e9a532da674b703bda04d377d7471f70cf611954da1fb1d"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:076896f22523cb34a4c1f8488bd27049d57b30f6e0232c74578df432700d61f2",
+          "sha256": "076896f22523cb34a4c1f8488bd27049d57b30f6e0232c74578df432700d61f2"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/libtiff/blobs/sha256:565e06c1da5aca67e2993315807301afddd252372c0896b76be515895b3c053a",
+          "sha256": "565e06c1da5aca67e2993315807301afddd252372c0896b76be515895b3c053a"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://download.osgeo.org/libtiff/tiff-4.7.2.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "672bd7d10aee4606171afb864f3570b83340f6a33e2c186dc0512f7145ffdf6a"
+      },
+      "rubySourceChecksum": {
+        "sha256": "8acf5e0f22700b2c18fb5419721ccc0bf7a202dfc27d5b36543166222589ec3d"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "imagemagick",
+      "pin": {
+        "version": "7.1.2-34",
+        "sourceUrl": "https://github.com/ImageMagick/ImageMagick/releases/download/7.1.2-34/ImageMagick-7.1.2-34.7z",
+        "sha256": "a376053195cbab4618855e1a7d90f85f41b95ec2240a91e9c0fe5815d231960d",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/imagemagick.json"
+      },
+      "installed": {
+        "name": "imagemagick",
+        "active": "7.1.2-34",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "brotli",
+            "version": "1.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.2.1",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libpng",
+            "version": "1.6.59",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.59",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "freetype",
+            "version": "2.15.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "2.15.0",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.1",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libvmaf",
+            "version": "3.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.1",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "aom",
+            "version": "3.15.2",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.15.2",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libde265",
+            "version": "1.1.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.1.3",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "giflib",
+            "version": "6.1.3",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "6.1.3",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "webp",
+            "version": "1.6.0",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "1.6.0",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "xz",
+            "version": "5.8.4",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "5.8.4",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "lz4",
+            "version": "1.10.0",
+            "revision": 0,
+            "bottle_rebuild": 3,
+            "pkg_version": "1.10.0",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "zstd",
+            "version": "1.5.7",
+            "revision": 1,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.5.7_1",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libtiff",
+            "version": "4.7.2",
+            "revision": 0,
+            "bottle_rebuild": 2,
+            "pkg_version": "4.7.2",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "x265",
+            "version": "4.3",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "4.3",
+            "declared_directly": false,
+            "compatibility_version": 2
+          },
+          {
+            "full_name": "libheif",
+            "version": "1.23.7",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.23.7",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "m4",
+            "version": "1.4.21",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.4.21",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libtool",
+            "version": "2.6.2",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "2.6.2",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "little-cms2",
+            "version": "2.19.1",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "2.19.1",
+            "declared_directly": true,
+            "compatibility_version": 1
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "7.1.2-34",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/imagemagick.json",
+      "freshStable": "7.1.2-34",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": "/opt/homebrew/Cellar",
+          "url": "https://ghcr.io/v2/homebrew/core/imagemagick/blobs/sha256:aa9163d6f8aaa76a2e094117108c54987693a52e769742a86fa54f7da68d73c8",
+          "sha256": "aa9163d6f8aaa76a2e094117108c54987693a52e769742a86fa54f7da68d73c8"
+        },
+        "arm64_tahoe": {
+          "cellar": "/opt/homebrew/Cellar",
+          "url": "https://ghcr.io/v2/homebrew/core/imagemagick/blobs/sha256:4bd66f421d38a1b0daac64882a94f1edadc0abfe65c636990c9f9084979444e5",
+          "sha256": "4bd66f421d38a1b0daac64882a94f1edadc0abfe65c636990c9f9084979444e5"
+        },
+        "arm64_sequoia": {
+          "cellar": "/opt/homebrew/Cellar",
+          "url": "https://ghcr.io/v2/homebrew/core/imagemagick/blobs/sha256:1e2da96f3dc276daf4f743a8c2484c6cec8cd7fa34dc0d163e60142964e5eca5",
+          "sha256": "1e2da96f3dc276daf4f743a8c2484c6cec8cd7fa34dc0d163e60142964e5eca5"
+        },
+        "arm64_linux": {
+          "cellar": "/home/linuxbrew/.linuxbrew/Cellar",
+          "url": "https://ghcr.io/v2/homebrew/core/imagemagick/blobs/sha256:e318769f883d2aeeb85861bba5fd0d26af8942b0cb6937ce4bb04dd251f163f2",
+          "sha256": "e318769f883d2aeeb85861bba5fd0d26af8942b0cb6937ce4bb04dd251f163f2"
+        },
+        "x86_64_linux": {
+          "cellar": "/home/linuxbrew/.linuxbrew/Cellar",
+          "url": "https://ghcr.io/v2/homebrew/core/imagemagick/blobs/sha256:9f0850f3c21f1d0283ca5e951a6cbf7fa1b377ad8a45fe02e72ac8a019bfd3d1",
+          "sha256": "9f0850f3c21f1d0283ca5e951a6cbf7fa1b377ad8a45fe02e72ac8a019bfd3d1"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/ImageMagick/ImageMagick/releases/download/7.1.2-34/ImageMagick-7.1.2-34.7z",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "a376053195cbab4618855e1a7d90f85f41b95ec2240a91e9c0fe5815d231960d"
+      },
+      "rubySourceChecksum": {
+        "sha256": "9691820f710a4cce625645bb700dce63c847918d30782ab15c580262fea7264f"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "exiftool",
+      "pin": {
+        "version": "13.55",
+        "sourceUrl": "https://downloads.sourceforge.net/project/exiftool/Image-ExifTool-13.55.tar.gz",
+        "sha256": "5f4c81d34ad406538c2871ad72dbfceb5d9b412b2f16cbbeb4d712d270846667",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/exiftool.json"
+      },
+      "installed": {
+        "name": "exiftool",
+        "active": "13.55_1",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "13.55",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/exiftool.json",
+      "freshStable": "13.55",
+      "revision": 1,
+      "bottleRebuild": 1,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/exiftool/blobs/sha256:b2be112059660150c63351003a49503472acca8ff37cea2d14f16fad106d9909",
+          "sha256": "b2be112059660150c63351003a49503472acca8ff37cea2d14f16fad106d9909"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/exiftool/blobs/sha256:e6c1e9b3dfeb0a75ca5c85b03ece555aa69528d6cc0bae152b17ccef19054707",
+          "sha256": "e6c1e9b3dfeb0a75ca5c85b03ece555aa69528d6cc0bae152b17ccef19054707"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/exiftool/blobs/sha256:d349210864b16b26f0896e5dc6869a065b6b32434519765f2b6ab25012d53e10",
+          "sha256": "d349210864b16b26f0896e5dc6869a065b6b32434519765f2b6ab25012d53e10"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/exiftool/blobs/sha256:ef6f151663dbd33f721e6d7cfeeaefe15fc7bbdf6c244f5430334ee55e500e60",
+          "sha256": "ef6f151663dbd33f721e6d7cfeeaefe15fc7bbdf6c244f5430334ee55e500e60"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/exiftool/blobs/sha256:91255626d9c2badf4f81b744b99b1d7f22f3628f3e8b2a1ed31b71da8e5b901d",
+          "sha256": "91255626d9c2badf4f81b744b99b1d7f22f3628f3e8b2a1ed31b71da8e5b901d"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://downloads.sourceforge.net/project/exiftool/Image-ExifTool-13.55.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "5f4c81d34ad406538c2871ad72dbfceb5d9b412b2f16cbbeb4d712d270846667"
+      },
+      "rubySourceChecksum": {
+        "sha256": "753e549b053010342bb8e29043212ddedaa6c8a369340551fd41d7998aac23eb"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "dnglab",
+      "pin": {
+        "version": "0.8.0",
+        "sourceUrl": "https://github.com/dnglab/dnglab/archive/refs/tags/v0.8.0.tar.gz",
+        "sha256": "432b8ac8f553289e06c0d78b37ae6f9546e80b736ef879f2ee66b66345590c4d",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/dnglab.json"
+      },
+      "installed": {
+        "name": "dnglab",
+        "active": "0.8.0",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "0.8.0",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/dnglab.json",
+      "freshStable": "0.8.0",
+      "revision": 0,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/dnglab/blobs/sha256:7c17db110faa5bbd3b4969611566769f0576aef59934c3afbdbe63acea63e672",
+          "sha256": "7c17db110faa5bbd3b4969611566769f0576aef59934c3afbdbe63acea63e672"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/dnglab/blobs/sha256:27d958d8246856fb1a25e3dd521762bcbf1b87822f790f4a6cc238b23a3ab8dd",
+          "sha256": "27d958d8246856fb1a25e3dd521762bcbf1b87822f790f4a6cc238b23a3ab8dd"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/dnglab/blobs/sha256:8ce158b689cc93fb85322d9e0df0afa2f224e0588ffa510856bdbe4d830000b5",
+          "sha256": "8ce158b689cc93fb85322d9e0df0afa2f224e0588ffa510856bdbe4d830000b5"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any_skip_relocation",
+          "url": "https://ghcr.io/v2/homebrew/core/dnglab/blobs/sha256:13168fe0f37d3d963270e65af52567427f0db526df6c42b95929eea9b2eb01fa",
+          "sha256": "13168fe0f37d3d963270e65af52567427f0db526df6c42b95929eea9b2eb01fa"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/dnglab/blobs/sha256:670fb5a9c5299075b1c181006e827fb6208c2a5eb7ab24c98e2e4dc73caa7e1a",
+          "sha256": "670fb5a9c5299075b1c181006e827fb6208c2a5eb7ab24c98e2e4dc73caa7e1a"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/dnglab/blobs/sha256:2b0ff147fffa91adf12ba1b1e7ba9ac65c203a27837db384380546ee9ee83563",
+          "sha256": "2b0ff147fffa91adf12ba1b1e7ba9ac65c203a27837db384380546ee9ee83563"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/dnglab/dnglab/archive/refs/tags/v0.8.0.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "432b8ac8f553289e06c0d78b37ae6f9546e80b736ef879f2ee66b66345590c4d"
+      },
+      "rubySourceChecksum": {
+        "sha256": "1da5891038faa2bc810852a11bde9ce88cb89a05987b20dcb389a9ff11f9180d"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "jpeg-xl",
+      "pin": {
+        "version": "0.12.0",
+        "sourceUrl": "https://github.com/libjxl/libjxl/archive/refs/tags/v0.12.0.tar.gz",
+        "sha256": "03e9be69a30be4011f559da75328b6d7cea8ad921fabfbd551ce10bf45cdc992",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/jpeg-xl.json"
+      },
+      "installed": {
+        "name": "jpeg-xl",
+        "active": "0.12.0_1",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "brotli",
+            "version": "1.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.2.1",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "giflib",
+            "version": "6.1.3",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "6.1.3",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "highway",
+            "version": "1.4.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.4.0",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "imath",
+            "version": "3.2.3",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.3",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.1",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libpng",
+            "version": "1.6.59",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.59",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "webp",
+            "version": "1.6.0",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "1.6.0",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "xz",
+            "version": "5.8.4",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "5.8.4",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "lz4",
+            "version": "1.10.0",
+            "revision": 0,
+            "bottle_rebuild": 3,
+            "pkg_version": "1.10.0",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "zstd",
+            "version": "1.5.7",
+            "revision": 1,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.5.7_1",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libtiff",
+            "version": "4.7.2",
+            "revision": 0,
+            "bottle_rebuild": 2,
+            "pkg_version": "4.7.2",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "little-cms2",
+            "version": "2.19.1",
+            "revision": 0,
+            "bottle_rebuild": 1,
+            "pkg_version": "2.19.1",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "libdeflate",
+            "version": "1.26",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.26",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "openjph",
+            "version": "0.32.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "0.32.0",
+            "declared_directly": false,
+            "compatibility_version": 7
+          },
+          {
+            "full_name": "openexr",
+            "version": "3.5.2",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.5.2",
+            "declared_directly": true,
+            "compatibility_version": 2
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "0.12.0",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/jpeg-xl.json",
+      "freshStable": "0.12.0",
+      "revision": 1,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpeg-xl/blobs/sha256:f5613d8fd10ef72372c1fe2b14ccb51fa332f4119f916deabb9fa07b8a1f3f3a",
+          "sha256": "f5613d8fd10ef72372c1fe2b14ccb51fa332f4119f916deabb9fa07b8a1f3f3a"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpeg-xl/blobs/sha256:1da12f614c4db97c3afa09d7dec5b9e719dca06bb1a3f545358ff38ce6dbb33b",
+          "sha256": "1da12f614c4db97c3afa09d7dec5b9e719dca06bb1a3f545358ff38ce6dbb33b"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpeg-xl/blobs/sha256:3c193d49dacde5e78331ff37462b5ef7f09d44279801ad2df911a7a5d618c109",
+          "sha256": "3c193d49dacde5e78331ff37462b5ef7f09d44279801ad2df911a7a5d618c109"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpeg-xl/blobs/sha256:164c7ce15a5764ec30fc41ccb62229e9f88896e5c05f0391a67a225e8fc1a92a",
+          "sha256": "164c7ce15a5764ec30fc41ccb62229e9f88896e5c05f0391a67a225e8fc1a92a"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/jpeg-xl/blobs/sha256:10819cf13cf5b5fcc5c8170c5c857fd6903dfcc02f328899c76f69ddd4ee8fbe",
+          "sha256": "10819cf13cf5b5fcc5c8170c5c857fd6903dfcc02f328899c76f69ddd4ee8fbe"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/libjxl/libjxl/archive/refs/tags/v0.12.0.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "03e9be69a30be4011f559da75328b6d7cea8ad921fabfbd551ce10bf45cdc992"
+      },
+      "rubySourceChecksum": {
+        "sha256": "1e76478e13ef6cd18c73676e029f043cc0511386deeb07db11ddee7aa70217fd"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "icoutils",
+      "pin": {
+        "version": "0.32.3",
+        "sourceUrl": "https://download.savannah.gnu.org/releases/icoutils/icoutils-0.32.3.tar.bz2",
+        "sha256": "17abe02d043a253b68b47e3af69c9fc755b895db68fdc8811786125df564c6e0",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/icoutils.json"
+      },
+      "installed": {
+        "name": "icoutils",
+        "active": "0.32.3",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "libpng",
+            "version": "1.6.55",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "1.6.55",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "0.32.3",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/formula.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/icoutils.json",
+      "freshStable": "0.32.3",
+      "revision": 0,
+      "bottleRebuild": 1,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:93cf10e38bd52d721bea5b6b13f1281e1b6a1cd481bd2132dac68faded9de977",
+          "sha256": "93cf10e38bd52d721bea5b6b13f1281e1b6a1cd481bd2132dac68faded9de977"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:5f28e12b6168d398c1b6a45fdd31fbe562734bf4e0bb9b92473326fe3652db3c",
+          "sha256": "5f28e12b6168d398c1b6a45fdd31fbe562734bf4e0bb9b92473326fe3652db3c"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:1f134eb8d5bfda13e1afd2742d87488abb2bd651f0ec059b6bbea76add8a647f",
+          "sha256": "1f134eb8d5bfda13e1afd2742d87488abb2bd651f0ec059b6bbea76add8a647f"
+        },
+        "arm64_sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:273cfd4c47669dcb185b256f41952316faeb9c7f263c86e602b81e5b1d4c9302",
+          "sha256": "273cfd4c47669dcb185b256f41952316faeb9c7f263c86e602b81e5b1d4c9302"
+        },
+        "arm64_ventura": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:6d0b6015b32488d5eadeed7af574b0b07c8071dfaae487a41f5306585eb8510b",
+          "sha256": "6d0b6015b32488d5eadeed7af574b0b07c8071dfaae487a41f5306585eb8510b"
+        },
+        "arm64_monterey": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:cca2c49761f3c0c2c4d8261af392cb156b43d49e99d16af0962584717c1e2ad3",
+          "sha256": "cca2c49761f3c0c2c4d8261af392cb156b43d49e99d16af0962584717c1e2ad3"
+        },
+        "arm64_big_sur": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:561bdf394863bd566ebfd0f9f5c5cb084d9eeeeb21c4013dc67f49ca2f382d68",
+          "sha256": "561bdf394863bd566ebfd0f9f5c5cb084d9eeeeb21c4013dc67f49ca2f382d68"
+        },
+        "sonoma": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:09886292b02d85b40a34e8dfe38379b89455ed50cb0002313f88e022906e4927",
+          "sha256": "09886292b02d85b40a34e8dfe38379b89455ed50cb0002313f88e022906e4927"
+        },
+        "ventura": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:bc125498f4fb92c602479703be80ef4e1870dd4f74159e1ed0d2fd801179ba75",
+          "sha256": "bc125498f4fb92c602479703be80ef4e1870dd4f74159e1ed0d2fd801179ba75"
+        },
+        "monterey": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:23f46510e0108a2342a83ba36aa2b11346d18a3f5ae29aa238cb249f3e4fa3e8",
+          "sha256": "23f46510e0108a2342a83ba36aa2b11346d18a3f5ae29aa238cb249f3e4fa3e8"
+        },
+        "big_sur": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:2f71fa8b1131f534d2d7d674642091a80f61108a376240bd6e19c92d436aecfe",
+          "sha256": "2f71fa8b1131f534d2d7d674642091a80f61108a376240bd6e19c92d436aecfe"
+        },
+        "arm64_linux": {
+          "cellar": "/home/linuxbrew/.linuxbrew/Cellar",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:628929761f445827749c377cd6309471d0f4f5e70f3f70b6004d052f3dd8d1d0",
+          "sha256": "628929761f445827749c377cd6309471d0f4f5e70f3f70b6004d052f3dd8d1d0"
+        },
+        "x86_64_linux": {
+          "cellar": "/home/linuxbrew/.linuxbrew/Cellar",
+          "url": "https://ghcr.io/v2/homebrew/core/icoutils/blobs/sha256:4bcbbfe1270c90d060baf5fe79eea7cd07daaae074c110b57e8505eac348cdb8",
+          "sha256": "4bcbbfe1270c90d060baf5fe79eea7cd07daaae074c110b57e8505eac348cdb8"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://download.savannah.gnu.org/releases/icoutils/icoutils-0.32.3.tar.bz2",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "17abe02d043a253b68b47e3af69c9fc755b895db68fdc8811786125df564c6e0"
+      },
+      "rubySourceChecksum": {
+        "sha256": "c2e3db5aa360fa0d1060cc8119eaad2873b31877e18b61f63a11044988c7b508"
+      },
+      "pinVersionUrlShaMatch": true
+    },
+    {
+      "formula": "qpdf",
+      "pin": {
+        "version": "12.4.2",
+        "sourceUrl": "https://github.com/qpdf/qpdf/releases/download/v12.4.2/qpdf-12.4.2.tar.gz",
+        "sha256": "8a58af5b6141319287c1883bec8bd1bd545b7567b7fc5e6ce5d25a1c85f36397",
+        "auditedAt": "2026-10-30",
+        "receiptSource": "https://formulae.brew.sh/api/formula/qpdf.json"
+      },
+      "installed": {
+        "name": "qpdf",
+        "active": "12.4.2_1",
+        "poured_from_bottle": true,
+        "built_as_bottle": true,
+        "runtime_dependencies": [
+          {
+            "full_name": "jpeg-turbo",
+            "version": "3.2.1",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "3.2.1",
+            "declared_directly": true,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "ca-certificates",
+            "version": "2026-10-20",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "2026-10-20",
+            "declared_directly": false,
+            "compatibility_version": 1
+          },
+          {
+            "full_name": "openssl@4",
+            "version": "4.1.0",
+            "revision": 0,
+            "bottle_rebuild": 0,
+            "pkg_version": "4.1.0",
+            "declared_directly": true
+          }
+        ],
+        "source": {
+          "spec": "stable",
+          "versions": {
+            "stable": "12.4.2",
+            "head": null,
+            "version_scheme": 0,
+            "compatibility_version": null
+          },
+          "path": "/Users/guilhermehaschel/Library/Caches/Homebrew/api/internal/packages.arm64_tahoe.jws.json",
+          "tap_git_head": null,
+          "tap": "homebrew/core"
+        }
+      },
+      "freshApiUrl": "https://formulae.brew.sh/api/formula/qpdf.json",
+      "freshStable": "12.4.2",
+      "revision": 1,
+      "bottleRebuild": 0,
+      "bottles": {
+        "arm64_golden_gate": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/qpdf/blobs/sha256:6a29f56ee4fbb9f342f0d257b2d8a719dfddda9b2fdc184d0ce5c6689a72d60e",
+          "sha256": "6a29f56ee4fbb9f342f0d257b2d8a719dfddda9b2fdc184d0ce5c6689a72d60e"
+        },
+        "arm64_tahoe": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/qpdf/blobs/sha256:266096bc99d1f3df03a686608bcdf98c4ca57e8b3dc0e7da4e4e97666956476a",
+          "sha256": "266096bc99d1f3df03a686608bcdf98c4ca57e8b3dc0e7da4e4e97666956476a"
+        },
+        "arm64_sequoia": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/qpdf/blobs/sha256:801ac5a6b352e1cf25028490f0528af657f55bc6d0f805a912c8beac9eb41d7b",
+          "sha256": "801ac5a6b352e1cf25028490f0528af657f55bc6d0f805a912c8beac9eb41d7b"
+        },
+        "arm64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/qpdf/blobs/sha256:5b675fe704f52cea79fce57e49a65686b7c6df760c1bdbd252a5d60f333ce24a",
+          "sha256": "5b675fe704f52cea79fce57e49a65686b7c6df760c1bdbd252a5d60f333ce24a"
+        },
+        "x86_64_linux": {
+          "cellar": ":any",
+          "url": "https://ghcr.io/v2/homebrew/core/qpdf/blobs/sha256:e4144b621208fb7ec500835f86be2a4f2087fec215928aef581f74a160e10b97",
+          "sha256": "e4144b621208fb7ec500835f86be2a4f2087fec215928aef581f74a160e10b97"
+        }
+      },
+      "sourceReceipt": {
+        "url": "https://github.com/qpdf/qpdf/releases/download/v12.4.2/qpdf-12.4.2.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "8a58af5b6141319287c1883bec8bd1bd545b7567b7fc5e6ce5d25a1c85f36397"
+      },
+      "rubySourceChecksum": {
+        "sha256": "1a013dfcaf66b899ddaaf87472345f149daa4c66fd7deecfa128be56cf72d808"
+      },
+      "pinVersionUrlShaMatch": true
+    }
+  ],
+  "closure": [
+    {
+      "name": "abseil",
+      "stable": "20260817.0",
+      "active": "20260817.0",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "ada-url",
+      "stable": "4.0.0_1",
+      "active": "4.0.0",
+      "revision": 1,
+      "bottle_rebuild": 0,
+      "dependencies": ["fmt", "simdutf"],
+      "uses_from_macos": [
+        {
+          "python": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "aom",
+      "stable": "3.15.2",
+      "active": "3.15.2",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["libvmaf"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "brotli",
+      "stable": "1.2.1",
+      "active": "1.2.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "c-ares",
+      "stable": "1.34.9",
+      "active": "1.34.8",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "ca-certificates",
+      "stable": "2026-10-20",
+      "active": "2026-09-25",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": ["all"],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "dav1d",
+      "stable": "1.5.4",
+      "active": "1.5.4",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "dnglab",
+      "stable": "0.8.0",
+      "active": "0.8.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "exiftool",
+      "stable": "13.55_1",
+      "active": "13.55_1",
+      "revision": 1,
+      "bottle_rebuild": 1,
+      "dependencies": ["brotli", "xz"],
+      "uses_from_macos": ["perl"],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "fmt",
+      "stable": "12.2.0",
+      "active": "12.2.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "freetype",
+      "stable": "2.15.0",
+      "active": "2.15.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["brotli", "libpng"],
+      "uses_from_macos": ["bzip2"],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "giflib",
+      "stable": "6.1.3",
+      "active": "6.1.3",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "gifsicle",
+      "stable": "1.98",
+      "active": "1.98",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "hdrhistogram_c",
+      "stable": "0.12.1",
+      "active": "0.11.10",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "highway",
+      "stable": "1.4.0",
+      "active": "1.4.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "icoutils",
+      "stable": "0.32.3",
+      "active": "0.32.3",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": ["libpng"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "arm64_ventura",
+        "arm64_monterey",
+        "arm64_big_sur",
+        "sonoma",
+        "ventura",
+        "monterey",
+        "big_sur",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "icu4c@79",
+      "stable": "79.1",
+      "active": "79.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "imagemagick",
+      "stable": "7.1.2-34",
+      "active": "7.1.2-34",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [
+        "freetype",
+        "jpeg-turbo",
+        "libheif",
+        "libpng",
+        "libtiff",
+        "libtool",
+        "little-cms2",
+        "webp",
+        "xz"
+      ],
+      "uses_from_macos": ["bzip2", "libxml2"],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "imath",
+      "stable": "3.2.3",
+      "active": "3.2.3",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "jpeg-turbo",
+      "stable": "3.2.1",
+      "active": "3.2.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "jpeg-xl",
+      "stable": "0.12.0_1",
+      "active": "0.12.0_1",
+      "revision": 1,
+      "bottle_rebuild": 0,
+      "dependencies": [
+        "brotli",
+        "giflib",
+        "highway",
+        "imath",
+        "jpeg-turbo",
+        "libpng",
+        "little-cms2",
+        "openexr"
+      ],
+      "uses_from_macos": [
+        {
+          "libxml2": "build"
+        },
+        {
+          "libxslt": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "jpegoptim",
+      "stable": "1.5.6",
+      "active": "1.5.6",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["jpeg-turbo"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libavif",
+      "stable": "1.4.2",
+      "active": "1.4.2",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["aom", "dav1d", "jpeg-turbo", "libpng"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libde265",
+      "stable": "1.1.3",
+      "active": "1.1.3",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libdeflate",
+      "stable": "1.26",
+      "active": "1.26",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libffi",
+      "stable": "3.8.0",
+      "active": "3.8.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libheif",
+      "stable": "1.23.7",
+      "active": "1.23.7",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [
+        "aom",
+        "jpeg-turbo",
+        "libde265",
+        "libpng",
+        "libtiff",
+        "webp",
+        "x265"
+      ],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libmagic",
+      "stable": "5.48",
+      "active": null,
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libnghttp2",
+      "stable": "1.70.0",
+      "active": "1.70.0",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libpng",
+      "stable": "1.6.59",
+      "active": "1.6.59",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libtiff",
+      "stable": "4.7.2",
+      "active": "4.7.2",
+      "revision": 0,
+      "bottle_rebuild": 2,
+      "dependencies": ["jpeg-turbo", "webp", "xz", "zstd"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libtool",
+      "stable": "2.6.2",
+      "active": "2.6.2",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["m4"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "tahoe",
+        "sequoia",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libuv",
+      "stable": "1.53.0",
+      "active": "1.52.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "libvmaf",
+      "stable": "3.2.1",
+      "active": "3.2.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [
+        {
+          "vim": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "little-cms2",
+      "stable": "2.19.1",
+      "active": "2.19.1",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": ["jpeg-turbo", "libtiff"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "llhttp",
+      "stable": "9.4.3",
+      "active": "9.4.3",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "lz4",
+      "stable": "1.10.0",
+      "active": "1.10.0",
+      "revision": 0,
+      "bottle_rebuild": 3,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "m4",
+      "stable": "1.4.21",
+      "active": "1.4.21",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "tahoe",
+        "sequoia",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "merve",
+      "stable": "1.2.2_4",
+      "active": "1.2.2_2",
+      "revision": 4,
+      "bottle_rebuild": 0,
+      "dependencies": ["simdutf"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "mozjpeg",
+      "stable": "4.1.5",
+      "active": "4.1.5",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["libpng"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "arm64_ventura",
+        "arm64_monterey",
+        "sonoma",
+        "ventura",
+        "monterey",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "nbytes",
+      "stable": "0.1.4",
+      "active": "0.1.4",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "node",
+      "stable": "26.13.0_1",
+      "active": "26.8.2",
+      "revision": 1,
+      "bottle_rebuild": 0,
+      "dependencies": [
+        "abseil",
+        "ada-url",
+        "brotli",
+        "c-ares",
+        "hdrhistogram_c",
+        "icu4c@79",
+        "libffi",
+        "libnghttp2",
+        "libuv",
+        "llhttp",
+        "merve",
+        "nbytes",
+        "openssl@4",
+        "simdjson",
+        "simdutf",
+        "sqlite",
+        "uvwasi",
+        "zstd",
+        "highway"
+      ],
+      "uses_from_macos": ["python"],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "openexr",
+      "stable": "3.5.2",
+      "active": "3.5.2",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["imath", "libdeflate", "openjph", "zstd"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "openjph",
+      "stable": "0.32.0",
+      "active": "0.32.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["libtiff"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "openssl@4",
+      "stable": "4.1.0",
+      "active": "4.0.3",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["ca-certificates"],
+      "uses_from_macos": [
+        {
+          "perl": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "optipng",
+      "stable": "7.9.1",
+      "active": "7.9.1",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": ["libpng"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "oxipng",
+      "stable": "10.2.1",
+      "active": "10.2.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "pngcrush",
+      "stable": "1.8.13",
+      "active": "1.8.13",
+      "revision": 0,
+      "bottle_rebuild": 2,
+      "dependencies": ["libpng"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "qpdf",
+      "stable": "12.4.2_1",
+      "active": "12.4.2_1",
+      "revision": 1,
+      "bottle_rebuild": 0,
+      "dependencies": ["jpeg-turbo", "openssl@4"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "readline",
+      "stable": "8.3.6",
+      "active": "8.3.3",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": ["ncurses"],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "simdjson",
+      "stable": "5.0.7",
+      "active": "4.6.11",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "simdutf",
+      "stable": "9.3.3",
+      "active": "9.1.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["icu4c@79"],
+      "uses_from_macos": [
+        {
+          "python": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "sqlite",
+      "stable": "3.54.1",
+      "active": "3.53.4",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["readline"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "svgo",
+      "stable": "4.1.0",
+      "active": "4.1.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["node"],
+      "uses_from_macos": [],
+      "bottles": ["all"],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "uvwasi",
+      "stable": "0.0.23",
+      "active": "0.0.23",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": ["libuv"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "webp",
+      "stable": "1.6.0",
+      "active": "1.6.0",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": ["giflib", "jpeg-turbo", "libpng"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "x265",
+      "stable": "4.3",
+      "active": "4.3",
+      "revision": 0,
+      "bottle_rebuild": 1,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "xz",
+      "stable": "5.8.4",
+      "active": "5.8.4",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "zopfli",
+      "stable": "1.0.3_1",
+      "active": "1.0.3_1",
+      "revision": 1,
+      "bottle_rebuild": 2,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    },
+    {
+      "name": "zstd",
+      "stable": "1.5.7_1",
+      "active": "1.5.7_1",
+      "revision": 1,
+      "bottle_rebuild": 0,
+      "dependencies": ["lz4", "xz"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_sonoma",
+        "tahoe",
+        "sequoia",
+        "sonoma",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null
+    }
+  ],
+  "availableHomebrewChanges": [
+    {
+      "name": "ada-url",
+      "stable": "4.0.0_1",
+      "active": "4.0.0",
+      "revision": 1,
+      "bottle_rebuild": 0,
+      "dependencies": ["fmt", "simdutf"],
+      "uses_from_macos": [
+        {
+          "python": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/ada-url/ada/archive/refs/tags/v4.0.0.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "6d6c7ef7dd2e329320d34eb2ab29ccdc879ee3935af9dfb894a6640e58dc381d"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "52379177f404f68787018154cfee6754b42455bf376830d5c27123946d1a93d5"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/ada-url.json"
+    },
+    {
+      "name": "c-ares",
+      "stable": "1.34.9",
+      "active": "1.34.8",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/c-ares/c-ares/releases/download/v1.34.9/c-ares-1.34.9.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "9364b70a12eb59a06830fb488d9357f90100dff0d98b23ea3593a183d43e6f2f"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "0d6e516cdfac37e00bf121e61db1252ef4e8e89593568039862f081bd639e239"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/c-ares.json"
+    },
+    {
+      "name": "ca-certificates",
+      "stable": "2026-10-20",
+      "active": "2026-09-25",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": ["all"],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://curl.se/ca/cacert-2026-10-20.pem",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "796f1389bfea13c0ed78f663b765baaff54a508e5483786bd6ece73c5e3e3cbe"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "535300ac0e99511a36340454bd5287cfff097191de9d7b9675ed924f3a692317"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/ca-certificates.json"
+    },
+    {
+      "name": "hdrhistogram_c",
+      "stable": "0.12.1",
+      "active": "0.11.10",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/HdrHistogram/HdrHistogram_c/archive/refs/tags/0.12.1.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "b2cff564b49f900e7f951c95428100a4aed36561703237ffc5e41b4843d804ce"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "fb1802ef660c892dd90fe7ec47a14e38ce6e662703f52a39cb96a5b1774cae6f"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/hdrhistogram_c.json"
+    },
+    {
+      "name": "jpeg-turbo",
+      "stable": "3.2.1",
+      "active": "3.2.0",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/3.2.1/libjpeg-turbo-3.2.1.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "c27ad72a68da151177929aa969ae773a2da5ac2af9ce946079314fdac8cece7f"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "417b865aed8adfe7e5acd8f17baa35ff02a0901e8e7707f9f908da101fbb5b0b"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/jpeg-turbo.json"
+    },
+    {
+      "name": "libuv",
+      "stable": "1.53.0",
+      "active": "1.52.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://dist.libuv.org/dist/v1.53.0/libuv-v1.53.0.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "cb0d6dd2128d5a95bd242c6cc982a24fe608fa93da57b6b4ec763b0018c53e64"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "ce98fd5a27fe5e0d9114f0d31507c6735a5784974b4aa0f5a6fa59bece96bf84"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/libuv.json"
+    },
+    {
+      "name": "merve",
+      "stable": "1.2.2_4",
+      "active": "1.2.2_2",
+      "revision": 4,
+      "bottle_rebuild": 0,
+      "dependencies": ["simdutf"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/nodejs/merve/archive/refs/tags/v1.2.2.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "8f19c2132447b9113545ffd399cb2bc1e61c6166743921b04883f8e1d778d69e"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "5c3df22d858d3120b3a6ca76283124fa1aea1e879c00e855e144f7b83a9c8c16"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/merve.json"
+    },
+    {
+      "name": "node",
+      "stable": "26.13.0_1",
+      "active": "26.8.2",
+      "revision": 1,
+      "bottle_rebuild": 0,
+      "dependencies": [
+        "abseil",
+        "ada-url",
+        "brotli",
+        "c-ares",
+        "hdrhistogram_c",
+        "icu4c@79",
+        "libffi",
+        "libnghttp2",
+        "libuv",
+        "llhttp",
+        "merve",
+        "nbytes",
+        "openssl@4",
+        "simdjson",
+        "simdutf",
+        "sqlite",
+        "uvwasi",
+        "zstd",
+        "highway"
+      ],
+      "uses_from_macos": ["python"],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://nodejs.org/dist/v26.13.0/node-v26.13.0.tar.xz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "263f639ecfa7a17b49438d76cdbf9aff73179e3c7cb789da69b900718427fa2e"
+      },
+      "patches": [
+        {
+          "strip": "p1",
+          "file": "Patches/node/icu4c-79.patch",
+          "type": "unofficial"
+        }
+      ],
+      "localPatchChecksums": {
+        "Patches/node/icu4c-79.patch": "7e6c50808fe8b9406fd2464b66814a9bf2c8d892268374ac9bcb7ec8039a65e9"
+      },
+      "rubySourceChecksum": {
+        "sha256": "ad0483fbcc6e36759d551a241d41f86aaf71b5b85750f935419d231ea47693f1"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/node.json"
+    },
+    {
+      "name": "openssl@4",
+      "stable": "4.1.0",
+      "active": "4.0.3",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["ca-certificates"],
+      "uses_from_macos": [
+        {
+          "perl": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/openssl/openssl/releases/download/openssl-4.1.0/openssl-4.1.0.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "50c17baf54cb008f6ce42d50deb4b28050a1aad711636cabd4b241c7e90cc2fd"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "50f58cda0dfd54aabc627e53205a88afc2e1780d83f43a99c525b58950c32049"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/openssl@4.json"
+    },
+    {
+      "name": "readline",
+      "stable": "8.3.6",
+      "active": "8.3.3",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": ["ncurses"],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://ftpmirror.gnu.org/readline/readline-8.3.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "fe5383204467828cd495ee8d1d3c037a7eba1389c22bc6a041f627976f9061cc"
+      },
+      "patches": [
+        {
+          "strip": "p0",
+          "url": "https://ftpmirror.gnu.org/readline/readline-8.3-patches/readline83-001",
+          "sha256": "21f0a03106dbe697337cd25c70eb0edbaa2bdb6d595b45f83285cdd35bac84de",
+          "type": "cherry-pick"
+        },
+        {
+          "strip": "p0",
+          "url": "https://ftpmirror.gnu.org/readline/readline-8.3-patches/readline83-002",
+          "sha256": "e27364396ba9f6debf7cbaaf1a669e2b2854241ae07f7eca74ca8a8ba0c97472",
+          "type": "cherry-pick"
+        },
+        {
+          "strip": "p0",
+          "url": "https://ftpmirror.gnu.org/readline/readline-8.3-patches/readline83-003",
+          "sha256": "72dee13601ce38f6746eb15239999a7c56f8e1ff5eb1ec8153a1f213e4acdb29",
+          "type": "cherry-pick"
+        },
+        {
+          "strip": "p0",
+          "url": "https://ftpmirror.gnu.org/readline/readline-8.3-patches/readline83-004",
+          "sha256": "1f189c4566aa35950964647b9ec3be1a821e42b86048129c63eb7f9d4d2f5a74",
+          "type": "cherry-pick"
+        },
+        {
+          "strip": "p0",
+          "url": "https://ftpmirror.gnu.org/readline/readline-8.3-patches/readline83-005",
+          "sha256": "5481adbe161c9f6ba972c74db9e18c7aa351d3df3035cc4a673a1aa06247d1c6",
+          "type": "cherry-pick"
+        },
+        {
+          "strip": "p0",
+          "url": "https://ftpmirror.gnu.org/readline/readline-8.3-patches/readline83-006",
+          "sha256": "4ebd261a608287796e171af0ea9af5a1e3122e46672accda2484b6698c47c1a4",
+          "type": "cherry-pick"
+        }
+      ],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "ead60941ba0f81334499b208e26382eefda15eb1b9614c417d70f1d827dc2e64"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/readline.json"
+    },
+    {
+      "name": "simdjson",
+      "stable": "5.0.7",
+      "active": "4.6.11",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": [],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/simdjson/simdjson/archive/refs/tags/v5.0.7.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "a5282c9b00f6c8b5217f434636c78ee7c9019f2fd2aa478ba850d2e2584c0994"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "90adbc8e94a19728700522d341f23127092b32e816d4f5f1246856f79242cc95"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/simdjson.json"
+    },
+    {
+      "name": "simdutf",
+      "stable": "9.3.3",
+      "active": "9.1.1",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["icu4c@79"],
+      "uses_from_macos": [
+        {
+          "python": "build"
+        }
+      ],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://github.com/simdutf/simdutf/archive/refs/tags/v9.3.3.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "441e374e8629bd8469f6d5cde9f0fa17ef3ad158aeb077791606d8aa73b565ef"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "200d28856006f626a019e48cf7ff69cea53e982dc51377001b58cc3b929bacd6"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/simdutf.json"
+    },
+    {
+      "name": "sqlite",
+      "stable": "3.54.1",
+      "active": "3.53.4",
+      "revision": 0,
+      "bottle_rebuild": 0,
+      "dependencies": ["readline"],
+      "uses_from_macos": [],
+      "bottles": [
+        "arm64_golden_gate",
+        "arm64_tahoe",
+        "arm64_sequoia",
+        "arm64_linux",
+        "x86_64_linux"
+      ],
+      "disabled": false,
+      "deprecated": false,
+      "error": null,
+      "sourceReceipt": {
+        "url": "https://www.sqlite.org/2026/sqlite-autoconf-3540100.tar.gz",
+        "tag": null,
+        "revision": null,
+        "using": null,
+        "checksum": "926ef8d3eab93fbf6e06011901273eec076b25594a4e1cdadd50c987f4f6d64e"
+      },
+      "patches": [],
+      "localPatchChecksums": {},
+      "rubySourceChecksum": {
+        "sha256": "cb22e585906d9ef444d357c8ae68e64697365447011333bd336d5fb15838a116"
+      },
+      "formulaApiUrl": "https://formulae.brew.sh/api/formula/sqlite.json"
+    }
+  ],
+  "upstreamAhead": {
+    "simdjson": {
+      "installed": "4.6.11",
+      "homebrew": "5.0.7",
+      "latestStable": "5.1.0",
+      "releaseUrl": "https://github.com/simdjson/simdjson/releases/tag/v5.1.0",
+      "publishedAt": "2026-10-30T00:42:09Z",
+      "sourceTarballChecksum": null,
+      "note": "Homebrew not yet packages 5.1.0; 5.0.8 corrected SOVERSION to35; needs source provenance and dependent rebuild validation."
+    }
+  },
+  "debian": [
+    {
+      "name": "file",
+      "url": "https://packages.debian.org/trixie/file",
+      "version": "1:5.46-5",
+      "summary": " ] [ Source: file ] Package: file (1:5.46-5) Links for file Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package file : [file_5."
+    },
+    {
+      "name": "mozjpeg",
+      "url": "https://packages.debian.org/trixie/mozjpeg",
+      "version": null,
+      "summary": " Debian -- Error skip the navigation Packages About Debian Getting Debian Support Developers' Corner / Packages Error No such package. See our contact page to get in touch. Content Copyright \u00a9 1997 - 2026 SPI Inc. ; See license terms . Debian is a trademark of SPI Inc. Learn more about this site . This service is sponsored by MIT Computer Science & Artificial Intelligence Lab . "
+    },
+    {
+      "name": "jpegoptim",
+      "url": "https://packages.debian.org/trixie/jpegoptim",
+      "version": "1.4.7-1 and others",
+      "summary": "Source: jpegoptim ] Package: jpegoptim (1.4.7-1 and others) Links for jpegoptim Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package jpegoptim "
+    },
+    {
+      "name": "pngcrush",
+      "url": "https://packages.debian.org/trixie/pngcrush",
+      "version": "1.8.13-1 and others",
+      "summary": " Source: pngcrush ] Package: pngcrush (1.8.13-1 and others) Links for pngcrush Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package pngcrush : "
+    },
+    {
+      "name": "optipng",
+      "url": "https://packages.debian.org/trixie/optipng",
+      "version": "0.7.8+ds-1 and others",
+      "summary": "[ Source: optipng ] Package: optipng (0.7.8+ds-1 and others) Links for optipng Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package optipng : [o"
+    },
+    {
+      "name": "zopfli",
+      "url": "https://packages.debian.org/trixie/zopfli",
+      "version": "1.0.3-3",
+      "summary": " [ Source: zopfli ] Package: zopfli (1.0.3-3) Links for zopfli Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package zopfli : [zop"
+    },
+    {
+      "name": "oxipng",
+      "url": "https://packages.debian.org/trixie/oxipng",
+      "version": null,
+      "summary": " Debian -- Error skip the navigation Packages About Debian Getting Debian Support Developers' Corner / Packages Error No such package. See our contact page to get in touch. Content Copyright \u00a9 1997 - 2026 SPI Inc. ; See license terms . Debian is a trademark of SPI Inc. Learn more about this site . This service is sponsored by MIT Computer Science & Artificial Intelligence Lab . "
+    },
+    {
+      "name": "gifsicle",
+      "url": "https://packages.debian.org/trixie/gifsicle",
+      "version": "1.96-1",
+      "summary": " Source: gifsicle ] Package: gifsicle (1.96-1) Links for gifsicle Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package gifsicle : "
+    },
+    {
+      "name": "node-svgo",
+      "url": "https://packages.debian.org/trixie/node-svgo",
+      "version": null,
+      "summary": " Debian -- Error skip the navigation Packages About Debian Getting Debian Support Developers' Corner / Packages Error Package not available in this suite. See our contact page to get in touch. Content Copyright \u00a9 1997 - 2026 SPI Inc. ; See license terms . Debian is a trademark of SPI Inc. Learn more about this site . This service is sponsored by University of Helsinki - Department of Computer Science . "
+    },
+    {
+      "name": "webp",
+      "url": "https://packages.debian.org/trixie/webp",
+      "version": "1.5.0-0.1",
+      "summary": "[ Source: libwebp ] Package: webp (1.5.0-0.1) Links for webp Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package libwebp : [libw"
+    },
+    {
+      "name": "libheif-examples",
+      "url": "https://packages.debian.org/trixie/libheif-examples",
+      "version": "1.23.6-2~deb13u1",
+      "summary": "[ Source: libheif ] Package: libheif-examples (1.23.6-2~deb13u1) [ security ] Links for libheif-examples Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Sourc"
+    },
+    {
+      "name": "libavif-bin",
+      "url": "https://packages.debian.org/trixie/libavif-bin",
+      "version": "1.2.1-1.2",
+      "summary": "[ Source: libavif ] Package: libavif-bin (1.2.1-1.2) Links for libavif-bin Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package libavif "
+    },
+    {
+      "name": "libtiff-tools",
+      "url": "https://packages.debian.org/trixie/libtiff-tools",
+      "version": "4.7.0-3+deb13u3",
+      "summary": " ] [ Source: tiff ] Package: libtiff-tools (4.7.0-3+deb13u3) Links for libtiff-tools Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package tiff :"
+    },
+    {
+      "name": "imagemagick",
+      "url": "https://packages.debian.org/trixie/imagemagick",
+      "version": "8:7.1.1.43+dfsg1-1+deb13u13",
+      "summary": "urce: imagemagick ] Package: imagemagick (8:7.1.1.43+dfsg1-1+deb13u13) [ security ] Links for imagemagick Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Pac"
+    },
+    {
+      "name": "libimage-exiftool-perl",
+      "url": "https://packages.debian.org/trixie/libimage-exiftool-perl",
+      "version": "13.25+dfsg-1",
+      "summary": "age-exiftool-perl ] Package: libimage-exiftool-perl (13.25+dfsg-1) Links for libimage-exiftool-perl Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Packa"
+    },
+    {
+      "name": "dnglab",
+      "url": "https://packages.debian.org/trixie/dnglab",
+      "version": null,
+      "summary": " Debian -- Error skip the navigation Packages About Debian Getting Debian Support Developers' Corner / Packages Error No such package. See our contact page to get in touch. Content Copyright \u00a9 1997 - 2026 SPI Inc. ; See license terms . Debian is a trademark of SPI Inc. Learn more about this site . This service is sponsored by Hewlett-Packard . "
+    },
+    {
+      "name": "libjxl-tools",
+      "url": "https://packages.debian.org/trixie/libjxl-tools",
+      "version": "0.11.2-0.1~deb13u3",
+      "summary": "[ Source: jpeg-xl ] Package: libjxl-tools (0.11.2-0.1~deb13u3) [ security ] Links for libjxl-tools Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Pa"
+    },
+    {
+      "name": "icoutils",
+      "url": "https://packages.debian.org/trixie/icoutils",
+      "version": "0.32.3-6",
+      "summary": " Source: icoutils ] Package: icoutils (0.32.3-6) Links for icoutils Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package icoutils : "
+    },
+    {
+      "name": "qpdf",
+      "url": "https://packages.debian.org/trixie/qpdf",
+      "version": "12.2.0-1",
+      "summary": " ] [ Source: qpdf ] Package: qpdf (12.2.0-1) Links for qpdf Debian Resources: Bug Reports Developer Information Debian Changelog Copyright File Debian Patch Tracker Download Source Package qpdf : [qpdf_12"
+    }
+  ]
+}

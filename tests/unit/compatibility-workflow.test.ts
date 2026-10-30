@@ -46,14 +46,20 @@ describe("consumer and QPDF compatibility workflow", () => {
         hostFloors: true,
       },
       {
-        os: "macos-latest",
-        node: "24.22.2",
+        os: "ubuntu-latest",
+        node: "22.23.4",
         qpdf: "12.4.2",
         hostFloors: false,
       },
       {
         os: "macos-26-intel",
-        node: "24.22.2",
+        node: "26.13.0",
+        qpdf: "12.4.2",
+        hostFloors: false,
+      },
+      {
+        os: "ubuntu-latest",
+        node: "26.13.0",
         qpdf: "12.4.2",
         hostFloors: false,
       },
@@ -65,11 +71,19 @@ describe("consumer and QPDF compatibility workflow", () => {
       },
     ]);
     const steps = value.jobs.compatibility.steps;
+    const firstNode = steps.findIndex((step) =>
+      step.uses?.startsWith("actions/setup-node@")
+    );
+    expect(
+      steps
+        .slice(0, firstNode)
+        .some((step) => step.run?.includes("apt-get install --yes libatomic1"))
+    ).toBe(true);
     const nodes = steps.filter((step) =>
       step.uses?.startsWith("actions/setup-node@")
     );
     expect(nodes.map((step) => step.with?.["node-version"])).toEqual([
-      "24.22.2",
+      "26.13.0",
       "${{ matrix.node }}",
     ]);
     expect(

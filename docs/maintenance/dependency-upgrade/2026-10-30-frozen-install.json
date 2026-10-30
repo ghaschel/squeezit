@@ -1,0 +1,7 @@
+{
+  "command": "bun ci --ignore-scripts (fresh temporary directory)",
+  "exitCode": 0,
+  "lockUnchanged": true,
+  "lockSha256": "09cb965e728b8c427c7857bae2ef04cf64f1fe450c321c596df5b60a431e3308",
+  "installedPackages": 1307
+}

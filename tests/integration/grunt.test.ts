@@ -13,10 +13,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const gruntFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -32,7 +35,7 @@ const gruntFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const gruntAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -44,6 +47,15 @@ afterEach(async () => {
 });
 
 describe("grunt integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs in mapped and in-place Grunt files", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldGruntProject(workspace, true);
+    await runGruntMode(workspace, "optimized");
+    await findBuiltAssets(join(workspace, "optimized"));
+    await runGruntMode(workspace, "inplace");
+    await findBuiltAssets(join(workspace, "inplace"));
+  });
+
   test("registers a multi-task that uses default mode with metadata stripping", () => {
     let registration:
       | {
@@ -141,11 +153,14 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldGruntProject(workspace: string): Promise<void> {
+async function scaffoldGruntProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "input"), { recursive: true });
   await mkdir(join(workspace, "inplace"), { recursive: true });
 
-  const fixtures = getGruntFixtures();
+  const fixtures = getGruntFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(fixture.sourcePath, join(workspace, "input", fixture.fileName));
     await cp(fixture.sourcePath, join(workspace, "inplace", fixture.fileName));
@@ -176,6 +191,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -190,12 +206,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getGruntFixtures(): Array<{
+function getGruntFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return gruntFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];

@@ -174,11 +174,15 @@ const { src, dest } = require("gulp");
 const { squeezitGulp } = require("squeezit/gulp");
 
 exports.images = function images() {
-  return src("assets/**/*").pipe(squeezitGulp()).pipe(dest("dist/assets"));
+  return src("assets/**/*", { encoding: false })
+    .pipe(squeezitGulp())
+    .pipe(dest("dist/assets"));
 };
 ```
 
-The Gulp plugin runs as a Vinyl transform, uses the default compression strategy, and always enables metadata stripping. It supports buffered Vinyl files, stream-backed Vinyl files by buffering them internally before optimization, and path-backed null Vinyl files when `file.path` is available. Null Vinyl files without a usable path pass through unchanged. It does not expose or use `max` mode.
+Use `encoding: false` with Gulp 5 so binary buffers are not decoded as UTF-8. Supplied contents take precedence over `file.path`.
+
+The Gulp plugin runs as a Vinyl transform, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It supports buffered Vinyl files, stream-backed Vinyl files by buffering them internally before optimization, and path-backed null Vinyl files when `file.path` is available. Null Vinyl files without a usable path pass through unchanged. It does not expose or use `max` mode.
 
 ### Grunt
 
@@ -203,7 +207,7 @@ module.exports = function (grunt) {
 };
 ```
 
-The Grunt plugin registers a real multi-task, uses the default compression strategy, and always enables metadata stripping. v1 respects Grunt file mappings, so it can optimize files in place or write optimized output to mapped destination paths. It does not expose or use `max` mode.
+The Grunt plugin registers a real multi-task, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. v1 respects Grunt file mappings, so it can optimize files in place or write optimized output to mapped destination paths. It does not expose or use `max` mode.
 
 ### Vite
 
@@ -216,7 +220,7 @@ export default defineConfig({
 });
 ```
 
-The Vite plugin runs only for production builds, optimizes emitted assets from the output directory, uses the default compression strategy, and always enables metadata stripping. It does not expose or use `max` mode.
+The Vite plugin runs only for production builds, optimizes emitted assets from the output directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It does not expose or use `max` mode.
 
 ### Webpack
 
@@ -228,7 +232,7 @@ module.exports = {
 };
 ```
 
-The Webpack plugin runs after assets are written to the configured output directory, optimizes emitted image files from that directory, uses the default compression strategy, and always enables metadata stripping. It does not expose or use `max` mode.
+The Webpack plugin runs after assets are written to the configured output directory, optimizes emitted image and PDF files from that directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It does not expose or use `max` mode.
 
 ### Rollup
 
@@ -246,7 +250,7 @@ export default defineConfig({
 });
 ```
 
-The Rollup plugin optimizes emitted image assets with the default compression strategy and always enables metadata stripping. It prefers in-memory asset optimization during bundle generation, including hash-safe filename/reference updates when asset bytes change, and uses a post-write output pass as a fallback for emitted files not already handled in memory. It does not expose or use `max` mode.
+The Rollup plugin optimizes emitted image and PDF assets with the default compression strategy and enables metadata stripping for images and preserves PDF metadata. It prefers in-memory asset optimization during bundle generation, including hash-safe filename/reference updates when asset bytes change, and uses a post-write output pass as a fallback for emitted files not already handled in memory. It does not expose or use `max` mode.
 
 ### Parcel
 
@@ -261,7 +265,7 @@ The Rollup plugin optimizes emitted image assets with the default compression st
     "url:*": ["@parcel/transformer-raw"]
   },
   "optimizers": {
-    "*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}": [
+    "*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl,pdf}": [
       "...",
       "./node_modules/squeezit/dist/parcel.cjs"
     ]
@@ -283,7 +287,7 @@ The Rollup plugin optimizes emitted image assets with the default compression st
 }
 ```
 
-The Parcel integration is a real Parcel optimizer plugin. It runs in Parcel's asset pipeline, uses the default compression strategy, always enables metadata stripping, and is production-only by default. Its small config surface is read from `package.json` under `squeezit.parcel`, and it does not expose or use `max` mode.
+The Parcel integration is a real Parcel optimizer plugin. It runs in Parcel's asset pipeline, uses the default compression strategy, enables metadata stripping for images and preserves PDF metadata, and is production-only by default. Its small config surface is read from `package.json` under `squeezit.parcel`, and it does not expose or use `max` mode.
 
 ### Astro
 
@@ -297,7 +301,7 @@ export default defineConfig({
 });
 ```
 
-The Astro wrapper is a thin integration over `squeezit/vite`. It only matters for `astro build`, targets static Astro output in v1, uses the default compression strategy, and always enables metadata stripping. SSR and hybrid Astro output are not supported by this wrapper yet, and it does not expose or use `max` mode.
+The Astro wrapper is a thin integration over `squeezit/vite`. It runs the shared Vite output optimizer once at `astro:build:done`, only matters for `astro build`, targets static Astro output in v1, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. SSR and hybrid Astro output are not supported by this wrapper yet, and it does not expose or use `max` mode.
 
 ### Next.js
 
@@ -311,7 +315,7 @@ module.exports = withSqueezit({
 });
 ```
 
-The Next.js wrapper augments webpack-based Next builds by injecting the `squeezit` Webpack plugin through `next.config.js`/`next.config.ts`. It uses the default compression strategy, always enables metadata stripping, and does not expose or use `max` mode.
+The Next.js wrapper augments webpack-based Next builds by injecting the `squeezit` Webpack plugin through `next.config.js`/`next.config.ts`. It uses the default compression strategy, enables metadata stripping for images and preserves PDF metadata, and does not expose or use `max` mode.
 
 Turbopack support is not included in this wrapper yet. It is planned and coming soon, but this integration currently targets Next’s webpack build pipeline only.
 
@@ -329,7 +333,7 @@ await build({
 });
 ```
 
-The esbuild plugin runs after a successful disk-backed build, optimizes emitted image files from the written output directory, uses the default compression strategy, and always enables metadata stripping. It does not expose or use `max` mode.
+The esbuild plugin runs after a successful disk-backed build, optimizes emitted image and PDF files from the written output directory, uses the default compression strategy, and enables metadata stripping for images and preserves PDF metadata. It does not expose or use `max` mode.
 
 ### Babel
 
@@ -551,6 +555,7 @@ Internally, compression behavior is determined with MIME detection where applica
 Squeezit currently supports these image format families:
 
 - `JPEG` (`.jpg`, `.jpeg`): fast lossless optimization by default, heavier passes with `--profile max`
+- `PDF` (`.pdf`): QPDF stream/object compression; preserves content and metadata, skips protected or inconclusively inspected documents
 - `PNG` (`.png`): fast `oxipng` optimization by default, heavier candidate comparison with `--profile max`
 - `APNG` (`.apng`, animated PNG payloads): optimized losslessly with `oxipng`
 - `GIF` (`.gif`): fast lossless optimization by default, strongest `gifsicle` pass with `--profile max`
@@ -569,7 +574,7 @@ Notes:
 
 - If a lossless result is larger, the file is skipped and never replaced
 - `sqz metadata strip` is metadata-only and does not run recompression pipelines
-- `--profile max` always strips metadata in addition to raising encoder effort across the supported recompression pipelines
+- `--profile max` strips image metadata and raises encoder effort; PDF metadata is always preserved
 - `--profile max` forces the replacement threshold to `0`, so any positive lossless reduction is accepted
 - JPEG standard mode uses one lossless MozJPEG pass; JPEG max mode also runs JPEGoptim from the original input and keeps the smaller result, trading additional CPU time for that comparison
 - ICO support is focused on modernizing containers while preserving icon sizes, not preserving original legacy BMP-style encoding byte-for-byte
@@ -590,11 +595,12 @@ Squeezit orchestrates native image tools based on the inputs you actually proces
 - `svgo`
 - `cwebp`, `dwebp`, `webpinfo`, `webpmux`
 - `heif-enc`
-- `avifenc`
+- `avifenc` and `avifdec`
 - `tiffcp`
 - `magick`
 - `exiftool`
 - `cjxl`
+- `qpdf`
 - `icotool`
 - `dnglab` for RAW to DNG conversion with `--profile max`
 
@@ -611,7 +617,7 @@ sqz deps install "images/**/*.{png,jpg}"
 
 `deps install` and `update apply` prompt in an interactive terminal. They require `--yes` in JSON, JSON Lines, or non-interactive environments; piping an affirmative response is intentionally unsupported.
 
-On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.1.0, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo first if it is not already available. Debian/Ubuntu does not provide a supported MozJPEG package: install MozJPEG yourself and point `SQUEEZIT_MOZJPEGTRAN` at its `jpegtran` executable. Squeezit intentionally does not substitute `jpeg-turbo` for MozJPEG.
+On Debian/Ubuntu, Squeezit uses APT for supported packages and Cargo for `oxipng` 10.2.1, which Ubuntu does not provide as a suitable APT package. Install Rust/Cargo 1.88 or newer first. Debian/Ubuntu does not provide a supported MozJPEG package: install MozJPEG yourself and point `SQUEEZIT_MOZJPEGTRAN` at its `jpegtran` executable. Squeezit intentionally does not substitute `jpeg-turbo` for MozJPEG.
 
 ## Self-Update
 
@@ -654,7 +660,7 @@ Every Squeezit-owned operational/display command accepts `--json` and writes exa
     "invocationPath": "/path/to/bin/sqz",
     "executablePath": "/path/to/squeezit/bin/run.js",
     "packageRoot": "/path/to/squeezit",
-    "nodeVersion": "24.16.0",
+    "nodeVersion": "24.22.2",
     "cwd": "/path/to/project",
     "platform": "darwin-arm64"
   }
@@ -770,3 +776,46 @@ repository-only and read-only; the detailed workflow and JSON contract are in
 ## License
 
 [MIT](https://github.com/ghaschel/squeezit/blob/main/LICENSE)
+
+## Lossless PDF optimization
+
+```bash
+brew install qpdf
+sqz compress document.pdf --dry-run
+sqz compress document.pdf
+sqz compress document.pdf --profile max
+```
+
+PDF support uses QPDF 11.3.0 or newer (tested with 11.3.0 and 12.4.2). It is
+available through the CLI, API, and all ten existing integrations. Standard
+compression uses Flate level 6; max compares levels 6 and 9 from the original.
+Images are never downsampled or lossily re-encoded. PDF metadata is preserved,
+even with `--strip-meta` or in a plugin. `metadata strip` skips PDFs.
+
+Lossless describes document content, not original file bytes. Savings vary and
+may be zero. Older PDFs keep their structural version; this is not certification
+of PDF/A or other archival conformance.
+
+Encrypted PDFs (including empty-password restrictions), signature fields,
+embedded signatures, certification/timestamp indications, and XFA are skipped.
+Documents exposing an earlier cross-reference revision (`/Prev`) are also
+skipped, including some unsigned linearized PDFs, because current objects alone
+cannot rule out signatures in earlier revisions. Parse warnings and inconclusive
+inspection leave the input and any existing destination unchanged. There is no
+password or bypass option. Detached signatures stored outside a PDF cannot be
+detected; a handwritten image is ordinary page content.
+
+Gulp and Parcel preserve skipped stream bytes. Babel only publishes its PDF
+cache and rewrites a reference after accepted optimization. Build tools may
+still copy protected PDFs unchanged as part of their normal build. Rollup's
+in-memory path updates asset names and references together; the existing
+post-write Vite/Webpack/esbuild paths do not recompute final-byte hashes or SRI.
+Astro support is for static builds; Next.js support uses Webpack, not Turbopack.
+
+On Debian/Ubuntu, the catalog offers APT only where the provider can meet the
+supported minimum. JPEGoptim, OptiPNG, SVGO, WebP, libavif, TIFF, ImageMagick,
+ExifTool, and DNGLab require the documented upstream/manual installation when
+the distribution package is unavailable or too old. `sqz deps doctor --json`
+reports actual version gates. Approved native targets and checksum receipts live
+in `scripts/native-tool-targets.json`; they are separate from compatibility
+floors. The macOS system `file` tool remains system-provided.

@@ -1,4 +1,4 @@
-import { constants } from "node:fs";
+import { closeSync, constants, openSync, readSync } from "node:fs";
 import { access, readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 
@@ -11,6 +11,7 @@ import { commandExists, runCheckedCommand, runCommand } from "../utils/exec";
 
 export type DependencyName =
   | "file"
+  | "qpdf"
   | "jpegtran"
   | "jpegoptim"
   | "pngcrush"
@@ -26,6 +27,7 @@ export type DependencyName =
   | "gif2webp"
   | "heif-enc"
   | "avifenc"
+  | "avifdec"
   | "tiffcp"
   | "magick"
   | "exiftool"
@@ -36,11 +38,7 @@ export type DependencyName =
 export type SupportedPlatform = "macos" | "debian";
 
 export type DependencyProvider =
-  | "apt"
-  | "brew"
-  | "manual"
-  | "system"
-  | "unknown";
+  "apt" | "brew" | "manual" | "system" | "unknown";
 
 export type DependencyInstaller = "apt" | "brew" | "cargo";
 
@@ -60,10 +58,7 @@ export interface DependencyInstallOptions {
 }
 
 export type DependencyHealthStatus =
-  | "healthy"
-  | "missing"
-  | "outdated"
-  | "unverifiable";
+  "healthy" | "missing" | "outdated" | "unverifiable";
 
 export interface DependencyDiagnosticSpec extends DependencySpec {
   minimumVersion: string;
@@ -130,6 +125,15 @@ export const DEPENDENCY_CATALOG: Record<
     versionArgs: ["--version"],
     versionReporting: "self",
   },
+  qpdf: {
+    binary: "qpdf",
+    required: true,
+    brewPackage: "qpdf",
+    aptPackage: "qpdf",
+    minimumVersion: "11.3.0",
+    versionArgs: ["--version"],
+    versionReporting: "self",
+  },
   jpegtran: {
     binary: "jpegtran",
     required: true,
@@ -145,7 +149,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "jpegoptim",
     required: true,
     brewPackage: "jpegoptim",
-    aptPackage: "jpegoptim",
+    manualInstall:
+      "Install jpegoptim >=1.5.6 from upstream source; distribution package versions may be older",
     minimumVersion: "1.5.6",
     versionArgs: ["--version"],
     versionReporting: "self",
@@ -163,7 +168,7 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "optipng",
     required: true,
     brewPackage: "optipng",
-    aptPackage: "optipng",
+    manualInstall: "Install OptiPNG >=7.9.1 from upstream source",
     minimumVersion: "7.9.1",
     versionArgs: ["-v"],
     versionReporting: "self",
@@ -183,7 +188,7 @@ export const DEPENDENCY_CATALOG: Record<
     brewPackage: "oxipng",
     cargoPackage: {
       crate: "oxipng",
-      version: "10.1.0",
+      version: "10.2.1",
     },
     minimumVersion: "10.1.0",
     versionArgs: ["--version"],
@@ -202,7 +207,7 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "svgo",
     required: true,
     brewPackage: "svgo",
-    aptPackage: "node-svgo",
+    manualInstall: "Install SVGO with npm: npm install --global svgo@4.1.0",
     minimumVersion: "4.0.1",
     versionArgs: ["--version"],
     versionReporting: "self",
@@ -211,7 +216,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "cwebp",
     required: true,
     brewPackage: "webp",
-    aptPackage: "webp",
+    manualInstall:
+      "Install WebP >=1.6.0 from upstream source (cwebp, dwebp, webpinfo, webpmux, gif2webp)",
     minimumVersion: "1.6.0",
     versionArgs: ["-version"],
     versionReporting: "self",
@@ -220,7 +226,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "dwebp",
     required: true,
     brewPackage: "webp",
-    aptPackage: "webp",
+    manualInstall:
+      "Install WebP >=1.6.0 from upstream source (cwebp, dwebp, webpinfo, webpmux, gif2webp)",
     minimumVersion: "1.6.0",
     versionArgs: ["-version"],
     versionReporting: "self",
@@ -229,7 +236,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "webpinfo",
     required: true,
     brewPackage: "webp",
-    aptPackage: "webp",
+    manualInstall:
+      "Install WebP >=1.6.0 from upstream source (cwebp, dwebp, webpinfo, webpmux, gif2webp)",
     minimumVersion: "1.6.0",
     versionArgs: ["-version"],
     versionReporting: "self",
@@ -238,7 +246,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "webpmux",
     required: true,
     brewPackage: "webp",
-    aptPackage: "webp",
+    manualInstall:
+      "Install WebP >=1.6.0 from upstream source (cwebp, dwebp, webpinfo, webpmux, gif2webp)",
     minimumVersion: "1.6.0",
     versionArgs: ["-version"],
     versionReporting: "self",
@@ -247,7 +256,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "gif2webp",
     required: true,
     brewPackage: "webp",
-    aptPackage: "webp",
+    manualInstall:
+      "Install WebP >=1.6.0 from upstream source (cwebp, dwebp, webpinfo, webpmux, gif2webp)",
     minimumVersion: "1.6.0",
     versionArgs: ["-version"],
     versionReporting: "self",
@@ -261,11 +271,20 @@ export const DEPENDENCY_CATALOG: Record<
     versionArgs: ["--version"],
     versionReporting: "self",
   },
+  avifdec: {
+    binary: "avifdec",
+    required: true,
+    brewPackage: "libavif",
+    manualInstall: "Install libavif >=1.4.0 with avifdec from upstream source",
+    minimumVersion: "1.4.0",
+    versionArgs: ["--version"],
+    versionReporting: "self",
+  },
   avifenc: {
     binary: "avifenc",
     required: true,
     brewPackage: "libavif",
-    aptPackage: "libavif-bin",
+    manualInstall: "Install libavif >=1.4.0 with avifenc from upstream source",
     minimumVersion: "1.4.0",
     versionArgs: ["--version"],
     versionReporting: "self",
@@ -274,7 +293,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "tiffcp",
     required: true,
     brewPackage: "libtiff",
-    aptPackage: "libtiff-tools",
+    manualInstall:
+      "Install libtiff >=4.7.1 tools from upstream source; distribution security backports do not imply this CLI compatibility floor",
     minimumVersion: "4.7.1",
     versionArgs: ["-h"],
     versionReporting: "self",
@@ -283,7 +303,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "magick",
     required: true,
     brewPackage: "imagemagick",
-    aptPackage: "imagemagick",
+    manualInstall:
+      "Install ImageMagick >=7.1.2-9 from upstream source with the required codec delegates",
     minimumVersion: "7.1.2-9",
     versionArgs: ["-version"],
     versionReporting: "self",
@@ -292,7 +313,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "exiftool",
     required: true,
     brewPackage: "exiftool",
-    aptPackage: "libimage-exiftool-perl",
+    manualInstall:
+      "Install ExifTool production 13.55 from https://exiftool.org/ (minimum 13.50)",
     minimumVersion: "13.50",
     versionArgs: ["-ver"],
     versionReporting: "self",
@@ -301,7 +323,8 @@ export const DEPENDENCY_CATALOG: Record<
     binary: "dnglab",
     required: true,
     brewPackage: "dnglab",
-    aptPackage: "dnglab",
+    manualInstall:
+      "Install DNGLab >=0.7.2 from https://github.com/dnglab/dnglab/releases",
     minimumVersion: "0.7.2",
     versionArgs: ["--version"],
     versionReporting: "self",
@@ -565,7 +588,7 @@ function remediationFor(
   }
 
   if (platform === "debian" && dependency.cargoPackage) {
-    return `Install with Cargo: cargo install ${dependency.cargoPackage.crate} --version ${dependency.cargoPackage.version} --locked`;
+    return `Requires Rust >=1.88.0. Install with Cargo: cargo install ${dependency.cargoPackage.crate} --version ${dependency.cargoPackage.version} --locked`;
   }
 
   if (dependency.manualInstall) {
@@ -627,12 +650,13 @@ const FORMAT_DEPENDENCIES: Record<string, DependencyName[]> = {
   svg: ["svgo"],
   tiff: ["tiffcp"],
   heif: ["magick", "heif-enc"],
-  avif: ["magick", "avifenc"],
+  avif: ["avifdec", "avifenc"],
   bmp: ["magick"],
   jxl: ["cjxl"],
   ico: ["icotool", "oxipng", "exiftool"],
   cur: ["icotool", "oxipng", "exiftool"],
   raw: [],
+  pdf: ["qpdf"],
 };
 
 const STRIP_METADATA_FORMATS = new Set([
@@ -662,7 +686,7 @@ export function collectRequiredDependencies(
     const required = new Set<DependencyName>(["file"]);
 
     for (const input of inputs) {
-      const format = formatFamilyFromExtension(input.absolutePath);
+      const format = formatFamilyForInput(input.absolutePath);
       if (!format) {
         continue;
       }
@@ -676,7 +700,7 @@ export function collectRequiredDependencies(
         continue;
       }
 
-      if (format === "bmp") {
+      if (format === "bmp" || format === "pdf") {
         continue;
       }
 
@@ -689,7 +713,7 @@ export function collectRequiredDependencies(
   const required = new Set<DependencyName>(["file"]);
 
   for (const input of inputs) {
-    const format = formatFamilyFromExtension(input.absolutePath);
+    const format = formatFamilyForInput(input.absolutePath);
     if (!format) {
       continue;
     }
@@ -798,7 +822,7 @@ export async function installDependencies(
   if (platform === "debian" && cargoPackages.length > 0) {
     if (!(await binaryExists("cargo"))) {
       throw new Error(
-        "Cargo is required to install this tool on Debian/Ubuntu. Install Rust and Cargo, then retry."
+        "Cargo is required to install this tool on Debian/Ubuntu. Install Rust >=1.88.0 and Cargo, then retry."
       );
     }
 
@@ -923,6 +947,24 @@ export function buildMissingDependencyMessage(
   ].join("\n");
 }
 
+/** Dependency selection is conservative for PDFs even when their extension lies. */
+function formatFamilyForInput(filePath: string): string | null {
+  let descriptor: number | undefined;
+  try {
+    descriptor = openSync(filePath, "r");
+    const header = Buffer.alloc(1024);
+    const length = readSync(descriptor, header, 0, header.length, 0);
+    if (header.subarray(0, length).includes(Buffer.from("%PDF-"))) {
+      return "pdf";
+    }
+  } catch {
+    // Planned/missing paths still need extension-based dependency reporting.
+  } finally {
+    if (descriptor !== undefined) closeSync(descriptor);
+  }
+  return formatFamilyFromExtension(filePath);
+}
+
 function formatFamilyFromExtension(filePath: string): string | null {
   const extension = extname(filePath).toLowerCase();
 
@@ -956,6 +998,8 @@ function formatFamilyFromExtension(filePath: string): string | null {
       return "ico";
     case ".cur":
       return "cur";
+    case ".pdf":
+      return "pdf";
     default:
       return RAW_EXTENSIONS.has(extension) ? "raw" : null;
   }

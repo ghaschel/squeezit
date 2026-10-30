@@ -54,7 +54,8 @@ export async function optimizeFile(
         result,
         normalized.mode,
         normalized.cwd,
-        inputByAbsolutePath.get(result.filePath)
+        inputByAbsolutePath.get(result.filePath),
+        normalized.core.dryRun
       )
     );
   });
@@ -97,7 +98,8 @@ export async function optimizeFiles(
           result,
           normalized.mode,
           normalized.cwd,
-          inputByAbsolutePath.get(result.filePath)
+          inputByAbsolutePath.get(result.filePath),
+          normalized.core.dryRun
         )
       );
     }
@@ -182,10 +184,12 @@ function toApiResult(
   result: OptimizationResult,
   mode: ApiOptimizationMode,
   cwd: string,
-  resolvedInput?: ResolvedInput
+  resolvedInput?: ResolvedInput,
+  dryRun = false
 ): ApiOptimizationResult {
   const outputPath = result.targetPath ?? result.filePath;
   const wroteOutput =
+    !dryRun &&
     result.status !== "dry-run" &&
     (result.status === "optimized" || outputPath !== result.filePath);
 
@@ -201,6 +205,7 @@ function toApiResult(
     changed: result.status === "optimized" || result.status === "dry-run",
     wroteOutput,
     message: result.message,
+    ...(result.skipReason ? { skipReason: result.skipReason } : {}),
   };
 }
 
@@ -212,5 +217,6 @@ export type {
   FixtureValueReport,
   OptimizeFileOptions,
   OptimizeFilesOptions,
+  PdfSkipReason,
 } from "../types";
 export { toReportedPath } from "./paths";

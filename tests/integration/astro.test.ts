@@ -1,4 +1,11 @@
-import { cp, mkdir, stat, symlink, writeFile } from "node:fs/promises";
+import {
+  cp,
+  mkdir,
+  readFile,
+  stat,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import { extname, join } from "node:path";
 
 import { execa } from "execa";
@@ -10,10 +17,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const astroFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -29,7 +39,7 @@ const astroFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const astroAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -41,6 +51,15 @@ afterEach(async () => {
 });
 
 describe("astro integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through the real Astro host", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldAstroProject(workspace, true);
+    await buildProject(workspace, "optimized");
+    await findBuiltAssets(join(workspace, "dist-optimized"));
+    await buildProject(workspace, "disabled");
+    await findBuiltAssets(join(workspace, "dist-disabled"));
+  });
+
   test("exports a callable astro integration wrapper", () => {
     const integration = squeezitAstro();
 
@@ -108,7 +127,10 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldAstroProject(workspace: string): Promise<void> {
+async function scaffoldAstroProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "src", "pages"), { recursive: true });
   await mkdir(join(workspace, "src", "fixtures"), { recursive: true });
   await symlink(
@@ -117,7 +139,14 @@ async function scaffoldAstroProject(workspace: string): Promise<void> {
     "dir"
   );
 
-  const fixtures = getAstroFixtures();
+  await mkdir(join(workspace, "public"), { recursive: true });
+  await cp(representativeFixtures.pdf, join(workspace, "public/publicPdf.pdf"));
+  await cp(
+    representativeFixtures.pdfProtected,
+    join(workspace, "public/public-pdfProtected.pdf")
+  );
+
+  const fixtures = getAstroFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(
       fixture.sourcePath,
@@ -155,17 +184,17 @@ async function buildProject(
     "utf8"
   );
 
-  await execa(
-    "node",
-    [join(process.cwd(), "node_modules", "astro", "astro.js"), "build"],
-    {
-      cwd: workspace,
-      env: {
-        ASTRO_TELEMETRY_DISABLED: "1",
-      },
-      reject: true,
-    }
+  const astroRoot = join(process.cwd(), "node_modules", "astro");
+  const astroPackage = JSON.parse(
+    await readFile(join(astroRoot, "package.json"), "utf8")
   );
+  await execa("node", [join(astroRoot, astroPackage.bin.astro), "build"], {
+    cwd: workspace,
+    env: {
+      ASTRO_TELEMETRY_DISABLED: "1",
+    },
+    reject: true,
+  });
 }
 
 async function findBuiltAssets(directory: string): Promise<string[]> {
@@ -176,6 +205,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -190,12 +220,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getAstroFixtures(): Array<{
+function getAstroFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return astroFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];
@@ -267,7 +298,8 @@ function buildAstroConfigSource(
     `  outDir: "./dist-${mode}",`,
     "  vite: {",
     "    assetsInclude: [",
-    "      /\\.(png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i,",
+    '      "**/*.pdf",',
+    "      /\\.(pdf|png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i,",
     "    ],",
     "  },",
     ...(usesIntegration ? [`  integrations: [${integration}],`] : []),

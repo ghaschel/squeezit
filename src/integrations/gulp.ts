@@ -18,6 +18,7 @@ interface VinylLike {
 }
 
 const supportedExtensions = new Set([
+  ".pdf",
   ".jpg",
   ".jpeg",
   ".png",
@@ -103,15 +104,15 @@ async function handleGulpFile(
     const fileName = getVinylFileName(file);
     const tempPath = join(tempWorkspace, fileName);
 
-    if (file.path) {
-      await cp(file.path, tempPath);
-    } else if (file.isStream() && file.contents) {
+    if (file.isStream() && file.contents) {
       await writeFile(
         tempPath,
         await readStreamToBuffer(file.contents as NodeJS.ReadableStream)
       );
     } else if (file.isBuffer() && Buffer.isBuffer(file.contents)) {
       await writeFile(tempPath, file.contents);
+    } else if (file.path) {
+      await cp(file.path, tempPath);
     } else {
       return file;
     }

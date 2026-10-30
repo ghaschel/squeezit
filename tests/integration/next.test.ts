@@ -12,10 +12,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const nextFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -31,7 +34,7 @@ const nextFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const nextAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -43,6 +46,15 @@ afterEach(async () => {
 });
 
 describe("next integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through the real Next host", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldNextProject(workspace, true);
+    await buildProject(workspace, "optimized");
+    await findBuiltAssets(join(workspace, ".next-optimized", "static"));
+    await buildProject(workspace, "disabled");
+    await findBuiltAssets(join(workspace, ".next-disabled", "static"));
+  });
+
   test("wraps next config and preserves an existing webpack hook", async () => {
     const calls: string[] = [];
     const wrapped = withSqueezit({
@@ -147,7 +159,10 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldNextProject(workspace: string): Promise<void> {
+async function scaffoldNextProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "pages"), { recursive: true });
   await mkdir(join(workspace, "fixtures"), { recursive: true });
   await symlink(
@@ -156,7 +171,7 @@ async function scaffoldNextProject(workspace: string): Promise<void> {
     "dir"
   );
 
-  const fixtures = getNextFixtures();
+  const fixtures = getNextFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(fixture.sourcePath, join(workspace, "fixtures", fixture.fileName));
   }
@@ -217,6 +232,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -231,12 +247,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getNextFixtures(): Array<{
+function getNextFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return nextFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];
@@ -292,7 +309,7 @@ function buildNextConfigSource(
     "  },",
     "  webpack(config) {",
     "    config.module.rules.push({",
-    "      test: /\\.(png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i,",
+    "      test: /\\.(pdf|png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i,",
     "      resourceQuery: /url/,",
     "      type: 'asset/resource',",
     "    });",

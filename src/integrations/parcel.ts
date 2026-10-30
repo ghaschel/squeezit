@@ -21,6 +21,7 @@ import type {
 } from "../types";
 
 const supportedParcelBundleTypes = new Set([
+  "pdf",
   "png",
   "gif",
   "webp",
@@ -161,11 +162,9 @@ export const squeezitParcel = new Optimizer<SqueezitParcelPluginOptions, void>({
       await assertDependencies([input]);
     }
 
+    const originalContents = await normalizeParcelContents(contents);
     const optimized = await optimizeAsset(
-      createBufferAsset(
-        basename(input.absolutePath),
-        await normalizeParcelContents(contents)
-      ),
+      createBufferAsset(basename(input.absolutePath), originalContents),
       createParcelCoreOptions()
     );
 
@@ -177,7 +176,7 @@ export const squeezitParcel = new Optimizer<SqueezitParcelPluginOptions, void>({
 
     if (optimized.result.status !== "optimized") {
       return {
-        contents,
+        contents: originalContents,
         map,
         type: bundle.type,
       };

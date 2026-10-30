@@ -9,6 +9,7 @@ import type { CoreInputResolutionOptions, ResolvedInput } from "../types";
 const { pathExists } = fsExtra;
 
 const SUPPORTED_EXTENSIONS = new Set([
+  ".pdf",
   ".jpg",
   ".jpeg",
   ".png",

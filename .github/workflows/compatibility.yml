@@ -1,0 +1,131 @@
+name: Consumer and PDF compatibility
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility:
+    name: ${{ matrix.os }} / Node ${{ matrix.node }} / QPDF ${{ matrix.qpdf }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            node: "22.13.0"
+            qpdf: "11.3.0"
+            hostFloors: false
+          - os: ubuntu-latest
+            node: "24.22.2"
+            qpdf: "12.4.2"
+            hostFloors: true
+          - os: macos-latest
+            node: "24.22.2"
+            qpdf: "12.4.2"
+            hostFloors: false
+          - os: macos-26-intel
+            node: "24.22.2"
+            qpdf: "12.4.2"
+            hostFloors: false
+          - os: macos-latest
+            node: "26.13.0"
+            qpdf: "12.4.2"
+            hostFloors: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select development build runtime
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24.22.2"
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.4"
+      - name: Frozen dependency installation and development build
+        run: |
+          bun ci
+          bun run build
+      - name: Install native build and independent rendering prerequisites
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            sudo apt-get update
+            sudo apt-get install --yes build-essential cmake pkg-config zlib1g-dev libjpeg-dev libssl-dev poppler-utils file
+          else
+            brew install cmake pkgconf jpeg-turbo openssl@3 poppler
+            echo "$(brew --prefix openssl@3)/bin" >> "$GITHUB_PATH"
+          fi
+      - name: Build checksum-verified QPDF in private runner prefix
+        shell: bash
+        env:
+          QPDF_MATRIX_VERSION: ${{ matrix.qpdf }}
+        run: |
+          if [[ "$QPDF_MATRIX_VERSION" == "11.3.0" ]]; then
+            QPDF_VERSION="11.3.0"
+            QPDF_URL="https://github.com/qpdf/qpdf/releases/download/v11.3.0/qpdf-11.3.0.tar.gz"
+            QPDF_SHA256="547cee67de77b5c4ef4917e57d2db9c848cfe3aa950361f68d36367a3a03936e"
+          else
+            read -r QPDF_VERSION QPDF_URL QPDF_SHA256 < <(bun scripts/native-tool-target.ts qpdf)
+            test "$QPDF_VERSION" = "$QPDF_MATRIX_VERSION"
+          fi
+          ARCHIVE="$RUNNER_TEMP/qpdf-$QPDF_VERSION.tar.gz"
+          PREFIX="$RUNNER_TEMP/qpdf"
+          curl --fail --location --retry 3 --output "$ARCHIVE" "$QPDF_URL"
+          echo "$QPDF_SHA256  $ARCHIVE" | shasum --algorithm 256 --check
+          tar -xzf "$ARCHIVE" -C "$RUNNER_TEMP"
+          CMAKE_PREFIX=""
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            CMAKE_PREFIX="$(brew --prefix jpeg-turbo);$(brew --prefix openssl@3)"
+          fi
+          cmake -S "$RUNNER_TEMP/qpdf-$QPDF_VERSION" -B "$RUNNER_TEMP/qpdf-build" \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$PREFIX" \
+            -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX" -DCMAKE_INSTALL_LIBDIR=lib \
+            -DCMAKE_INSTALL_RPATH="$PREFIX/lib" -DBUILD_TESTING=OFF
+          cmake --build "$RUNNER_TEMP/qpdf-build" --parallel 2
+          cmake --install "$RUNNER_TEMP/qpdf-build"
+          "$PREFIX/bin/qpdf" --version | grep -F "qpdf version $QPDF_VERSION"
+          echo "$PREFIX/bin" >> "$GITHUB_PATH"
+      - name: Select consumer runtime after building
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+          package-manager-cache: false
+      - name: Test PDF protection, processes, content and independent rendering
+        run: node node_modules/vitest/vitest.mjs run tests/unit/pdf.test.ts tests/integration/pdf-process.test.ts tests/integration/api-pdf.test.ts tests/integration/api-pdf-signatures.test.ts tests/integration/api-pdf-preservation.test.ts --maxWorkers 2 --maxConcurrency 2
+      - name: Smoke built ESM, CJS and JSON CLI on consumer runtime
+        shell: bash
+        run: |
+          node --input-type=module -e 'await import("./dist/index.js")'
+          node -e 'require("./dist/index.cjs")'
+          node bin/run.js --version
+          node bin/run.js capabilities --json > "$RUNNER_TEMP/capabilities.json"
+          node --input-type=module -e 'import fs from "node:fs"; const value=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(value.ok !== true || value.command !== "capabilities" || value.schemaVersion !== 2) process.exit(1)' "$RUNNER_TEMP/capabilities.json"
+      - name: Test all ten retained exact integration host floors
+        if: matrix.hostFloors
+        shell: bash
+        run: |
+          HOST_ROOT="$RUNNER_TEMP/host-floors"
+          mkdir -p "$HOST_ROOT"
+          cat > "$HOST_ROOT/package.json" <<'JSON'
+          {
+            "name": "squeezit-host-floor-validation",
+            "private": true,
+            "dependencies": {
+              "@babel/core": "7.0.0", "astro": "5.18.0", "esbuild": "0.27.4",
+              "gulp": "5.0.1", "grunt": "1.6.1", "parcel": "2.16.0",
+              "@parcel/core": "2.16.0", "@parcel/config-default": "2.16.0",
+              "@parcel/transformer-raw": "2.16.0", "@parcel/cache": "2.16.0",
+              "@parcel/fs": "2.16.0", "rollup": "4.52.3", "vite": "8.0.2",
+              "webpack": "5.105.4", "next": "16.2.1", "react": "19.2.4",
+              "react-dom": "19.2.4"
+            }
+          }
+          JSON
+          bun install --cwd "$HOST_ROOT"
+          node tests/helpers/adapter-host-compatibility.cjs "$HOST_ROOT/node_modules" babel,esbuild,astro,gulp,grunt,rollup,vite,webpack,parcel,next

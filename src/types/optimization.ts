@@ -1,4 +1,5 @@
 export type SupportedFormat =
+  | "pdf"
   | "jpeg"
   | "png"
   | "apng"
@@ -49,8 +50,17 @@ export interface OptimizationResult {
   optimizedSize: number;
   savedBytes: number;
   message?: string;
+  skipReason?: PdfSkipReason;
   targetPath?: string;
 }
+
+export type PdfSkipReason =
+  | "pdf-encrypted"
+  | "pdf-signature"
+  | "pdf-signature-field"
+  | "pdf-inspection-inconclusive"
+  | "pdf-unsupported-structure"
+  | "pdf-metadata-unsupported";
 
 export interface Summary {
   processed: number;

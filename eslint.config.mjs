@@ -41,6 +41,19 @@ export default [
     },
   },
   {
+    files: ["**/*.cjs", "**/*.mjs"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+        module: "readonly",
+        require: "readonly",
+        console: "readonly",
+        Buffer: "readonly",
+      },
+    },
+    rules: { "@typescript-eslint/no-require-imports": "off" },
+  },
+  {
     ignores: [
       "dist/**",
       "node_modules/**",

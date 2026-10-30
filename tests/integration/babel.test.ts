@@ -10,6 +10,9 @@ import {
 } from "../helpers/fixture-manifest";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
+type BabelPluginFactory =
+  typeof import("../../src/integrations/babel").squeezitBabel;
+
 const workspaces: string[] = [];
 
 afterEach(async () => {
@@ -69,6 +72,95 @@ describe("babel integration", () => {
 
       expect(await stat(generatedCur)).toBeDefined();
     }
+  });
+
+  test("publishes only accepted PDFs and preserves protected references and cache files", async () => {
+    const workspace = await createWorkspace();
+    await mkdir(join(workspace, "src", "assets"), { recursive: true });
+    await cp(
+      representativeFixtures.pdf,
+      join(workspace, "src/assets/document.pdf")
+    );
+    await cp(
+      representativeFixtures.pdfProtected,
+      join(workspace, "src/assets/protected.pdf")
+    );
+    await cp(
+      representativeFixtures.pdfProtected,
+      join(workspace, "src/assets/disguised.jpg")
+    );
+    await writeFile(
+      join(workspace, "src/assets/inconclusive.pdf"),
+      "%PDF-1.7 malformed"
+    );
+    const cache = join(
+      workspace,
+      ".squeezit/babel-assets/src/assets/protected.pdf"
+    );
+    await mkdir(join(cache, ".."), { recursive: true });
+    const previousCache = Buffer.from(
+      "existing cache must survive a protected skip"
+    );
+    await writeFile(cache, previousCache);
+    const inconclusiveCache = join(
+      workspace,
+      ".squeezit/babel-assets/src/assets/inconclusive.pdf"
+    );
+    await writeFile(inconclusiveCache, previousCache);
+    await writeFile(
+      join(workspace, "src/fixture.tsx"),
+      [
+        'import safe from "./assets/document.pdf";',
+        'import protectedDocument from "./assets/protected.pdf";',
+        'import disguised from "./assets/disguised.jpg";',
+        'import uncertain from "./assets/inconclusive.pdf";',
+        'const repeated = require("./assets/document.pdf");',
+        'const protectedRequire = require("./assets/protected.pdf");',
+        'export const links = <><a href="./assets/document.pdf"/><a href="./assets/protected.pdf"/></>;',
+      ].join("\n")
+    );
+    const sourceBefore = await readFile(
+      join(workspace, "src/assets/document.pdf")
+    );
+    const { code } = await transformFixture(workspace, "production", {
+      checkDependencies: false,
+    });
+    expect(
+      code.match(/\.squeezit\/babel-assets\/src\/assets\/document\.pdf/g)
+    ).toHaveLength(3);
+    expect(code.match(/\.\/assets\/protected\.pdf/g)).toHaveLength(3);
+    expect(code).toContain("./assets/disguised.jpg");
+    await expect(
+      stat(join(workspace, ".squeezit/babel-assets/src/assets/disguised.jpg"))
+    ).rejects.toThrow();
+    expect(code).toContain("./assets/inconclusive.pdf");
+    expect(await readFile(inconclusiveCache)).toEqual(previousCache);
+    expect(await readFile(cache)).toEqual(previousCache);
+    const optimized = await readFile(
+      join(workspace, ".squeezit/babel-assets/src/assets/document.pdf")
+    );
+    expect(optimized.length).toBeLessThan(sourceBefore.length);
+    expect(await readFile(join(workspace, "src/assets/document.pdf"))).toEqual(
+      sourceBefore
+    );
+  });
+
+  test("does not create a persistent Babel cache for a protected PDF", async () => {
+    const workspace = await createWorkspace();
+    await mkdir(join(workspace, "src/assets"), { recursive: true });
+    await cp(
+      representativeFixtures.pdfProtected,
+      join(workspace, "src/assets/protected.pdf")
+    );
+    await writeFile(
+      join(workspace, "src/fixture.tsx"),
+      'export { default } from "./assets/protected.pdf";\nimport document from "./assets/protected.pdf";'
+    );
+    const { code } = await transformFixture(workspace, "production", {
+      checkDependencies: false,
+    });
+    expect(code).not.toContain(".squeezit");
+    await expect(stat(join(workspace, ".squeezit"))).rejects.toThrow();
   });
 
   test("is a no-op outside production by default", async () => {
@@ -213,19 +305,19 @@ async function transformFixture(
 }
 
 async function loadBuiltBabelPlugin(): Promise<{
-  squeezitBabel: (...args: unknown[]) => unknown;
+  squeezitBabel: BabelPluginFactory;
 }> {
   const loaded = (await import(
     resolve(process.cwd(), "dist", "babel.cjs")
   )) as {
     default?: unknown;
-    squeezitBabel?: (...args: unknown[]) => unknown;
+    squeezitBabel?: BabelPluginFactory;
   };
 
   const squeezitBabel =
     loaded.squeezitBabel ??
     (typeof loaded.default === "function"
-      ? (loaded.default as (...args: unknown[]) => unknown)
+      ? (loaded.default as BabelPluginFactory)
       : undefined);
 
   if (typeof squeezitBabel !== "function") {

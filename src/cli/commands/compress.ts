@@ -38,7 +38,7 @@ export default class Compress extends SqueezitOperationCommand {
   };
 
   static override description =
-    "Compress image files with safe lossless optimization.";
+    "Compress image and PDF files with safe lossless optimization.";
 
   static override flags = {
     recursive: Flags.boolean({
@@ -51,7 +51,8 @@ export default class Compress extends SqueezitOperationCommand {
       options: ["standard", "max"] as const,
     })(),
     "strip-meta": Flags.boolean({
-      description: "Remove EXIF/IPTC/XMP metadata.",
+      description:
+        "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",
     }),
     "dry-run": Flags.boolean({
       char: "d",

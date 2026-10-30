@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { createReadStream } from "node:fs";
 import {
   readdir,
   readFile,
@@ -12,6 +14,12 @@ import { basename, dirname, extname, join, parse } from "node:path";
 import fsExtra from "fs-extra";
 
 import { resolveMozjpegBinary } from "../core/dependencies";
+import {
+  hasPdfHeader,
+  inspectPdf,
+  optimizePdfSnapshot,
+  pdfSkip,
+} from "../core/pdf";
 import type {
   CoreOptimizationOptions,
   DetectedImage,
@@ -38,6 +46,7 @@ const RAW_EXTENSIONS = new Set([
 ]);
 
 const EXTENSION_FORMAT_HINTS: Partial<Record<string, SupportedFormat>> = {
+  ".pdf": "pdf",
   ".apng": "apng",
   ".bmp": "bmp",
   ".cur": "cur",
@@ -57,6 +66,7 @@ const EXTENSION_FORMAT_HINTS: Partial<Record<string, SupportedFormat>> = {
 };
 
 const MIME_TO_FORMAT: Record<string, SupportedFormat> = {
+  "application/pdf": "pdf",
   "image/jpeg": "jpeg",
   "image/png": "png",
   "image/gif": "gif",
@@ -131,6 +141,7 @@ export async function optimizeImages(
   lifecycle?: OptimizationLifecycle
 ): Promise<Summary> {
   const startedAt = Date.now();
+  const pdfProbes = new Map<string, Promise<void>>();
   const results: OptimizationResult[] = [];
 
   await runWithConcurrency(
@@ -138,7 +149,7 @@ export async function optimizeImages(
     inputs,
     async (input, index) => {
       await lifecycle?.onInputStarted?.(input, index);
-      const result = await optimizeImage(input, options, inputGuard);
+      const result = await optimizeImage(input, options, inputGuard, pdfProbes);
       results.push(result);
       onResult?.(result);
       await lifecycle?.onInputCompleted?.(input, index, result);
@@ -182,11 +193,14 @@ export function summarizeOptimizationResults(
 export async function optimizeImage(
   input: ResolvedInput,
   options: CoreOptimizationOptions,
-  inputGuard?: OptimizationInputGuard
+  inputGuard?: OptimizationInputGuard,
+  pdfProbes?: Map<string, Promise<void>>
 ): Promise<OptimizationResult> {
   try {
+    const detected = await detectImage(input.absolutePath);
+    if (detected?.format === "pdf")
+      return await optimizePdfInput(input, options, inputGuard, pdfProbes);
     if (options.exifOnly) {
-      const detected = await detectImage(input.absolutePath);
       if (!detected) {
         return skippedResult(
           input.absolutePath,
@@ -205,6 +219,8 @@ export async function optimizeImage(
       await copy(input.absolutePath, workingInputPath, { overwrite: true });
 
       try {
+        if (await hasPdfHeader(workingInputPath))
+          throw new Error("Source format changed while preparing input");
         if (detected.format === "svg") {
           return await stripSvgMetadataOnly(
             input.absolutePath,
@@ -256,7 +272,6 @@ export async function optimizeImage(
       }
     }
 
-    const detected = await detectImage(input.absolutePath);
     if (!detected) {
       return skippedResult(input.absolutePath, "[SKIP]", "unsupported format");
     }
@@ -279,6 +294,8 @@ export async function optimizeImage(
     await copy(input.absolutePath, workingInputPath, { overwrite: true });
 
     try {
+      if (await hasPdfHeader(workingInputPath))
+        throw new Error("Source format changed while preparing input");
       const pipeline = await runPipeline({
         detected,
         originalPath: input.absolutePath,
@@ -375,9 +392,116 @@ export async function optimizeImage(
   }
 }
 
+async function fileDigest(path: string): Promise<string> {
+  const hash = createHash("sha256");
+  for await (const chunk of createReadStream(path)) hash.update(chunk);
+  return hash.digest("hex");
+}
+
+async function optimizePdfInput(
+  input: ResolvedInput,
+  options: CoreOptimizationOptions,
+  inputGuard?: OptimizationInputGuard,
+  pdfProbes?: Map<string, Promise<void>>
+): Promise<OptimizationResult> {
+  await inputGuard?.verify(input);
+  const originalStats = await stat(input.absolutePath);
+  const skipped = (
+    reason: Parameters<typeof pdfSkip>[0]
+  ): OptimizationResult => ({
+    filePath: input.absolutePath,
+    label: "[PDF]",
+    status: "skipped",
+    originalSize: originalStats.size,
+    optimizedSize: originalStats.size,
+    savedBytes: 0,
+    skipReason: reason,
+    message: pdfSkip(reason).message,
+  });
+  if (options.exifOnly) return skipped("pdf-metadata-unsupported");
+  const digest = await fileDigest(input.absolutePath);
+  const verify = async () => {
+    await inputGuard?.verify(input);
+    if ((await fileDigest(input.absolutePath)) !== digest)
+      throw new Error("PDF source changed during optimization");
+  };
+  const workDir = await createWorkDirectory(
+    input.absolutePath,
+    options.inPlace
+  );
+  try {
+    const snapshot = join(workDir, "input.pdf");
+    await copy(input.absolutePath, snapshot, { overwrite: false });
+    if ((await fileDigest(snapshot)) !== digest)
+      throw new Error("PDF source changed while preparing snapshot");
+    if ((await stat(snapshot)).size !== originalStats.size)
+      throw new Error("PDF source changed while acquiring baseline");
+    const inspection = await inspectPdf(snapshot, pdfProbes);
+    if (!inspection.eligible) {
+      await verify();
+      return skipped(inspection.reason);
+    }
+    const candidate = await optimizePdfSnapshot({
+      inputPath: snapshot,
+      workDir,
+      max: options.max,
+      pdfVersion: inspection.pdfVersion,
+      executable: inspection.executable,
+    });
+    const size = (await stat(candidate.outputPath)).size;
+    const savedBytes = originalStats.size - size;
+    const targetPath = input.outputPath ?? input.absolutePath;
+    const base = {
+      filePath: input.absolutePath,
+      label: "[PDF]",
+      originalSize: originalStats.size,
+      optimizedSize: size,
+      savedBytes: Math.max(0, savedBytes),
+      targetPath,
+    };
+    if (size >= originalStats.size - options.threshold) {
+      await verify();
+      if (
+        !options.dryRun &&
+        input.preserveOriginal &&
+        targetPath !== input.absolutePath
+      ) {
+        await writeSkippedOutput({
+          sourcePath: snapshot,
+          targetPath,
+          keepTime: options.keepTime,
+          originalAtime: originalStats.atime,
+          originalMtime: originalStats.mtime,
+        });
+      }
+      return {
+        ...base,
+        status: "skipped",
+        message: describeSkipReason(savedBytes, options.threshold),
+      };
+    }
+    await verify();
+    if (options.dryRun) return { ...base, status: "dry-run" };
+    await applyReplacement({
+      sourcePath: candidate.outputPath,
+      originalPath: input.absolutePath,
+      targetPath,
+      preserveOriginal: input.preserveOriginal ?? false,
+      keepTime: options.keepTime,
+      originalAtime: originalStats.atime,
+      originalMtime: originalStats.mtime,
+    });
+    return { ...base, status: "optimized" };
+  } finally {
+    await remove(workDir);
+  }
+}
+
 export async function detectImage(
   filePath: string
 ): Promise<DetectedImage | null> {
+  if (await hasPdfHeader(filePath))
+    return { format: "pdf", mimeType: "application/pdf", animated: false };
   const rawExtension = extname(filePath).toLowerCase();
   if (RAW_EXTENSIONS.has(rawExtension)) {
     return {
@@ -393,7 +517,7 @@ export async function detectImage(
   let format =
     MIME_TO_FORMAT[mimeType] ?? EXTENSION_FORMAT_HINTS[rawExtension] ?? null;
 
-  if (rawExtension === ".cur") {
+  if (rawExtension === ".cur" && format !== "pdf") {
     format = "cur";
   }
 
@@ -429,6 +553,8 @@ async function runPipeline(params: {
   const { detected, originalPath, workingInputPath, workDir, options } = params;
 
   switch (detected.format) {
+    case "pdf":
+      throw new Error("PDF inputs require guarded inspection");
     case "png":
       return optimizePng(workingInputPath, workDir, options);
     case "apng":
@@ -495,6 +621,7 @@ async function optimizePngLike(
       {
         effort: options.max ? "max" : "4",
         stripMetadata: options.stripMeta,
+        animated,
       }
     ),
   ];
@@ -553,12 +680,13 @@ async function optimizeWithOxipng(
   options: {
     effort: string;
     stripMetadata: boolean;
+    animated?: boolean;
   }
 ): Promise<CandidateResult> {
   const args = ["-o", options.effort];
 
   if (options.stripMetadata) {
-    args.push("--strip", "all");
+    args.push("--strip", options.animated ? "safe" : "all");
   }
 
   args.push("--out", outputPath, inputPath);
@@ -820,14 +948,28 @@ async function optimizeAvif(
 ): Promise<PipelineResult> {
   const pngPath = join(workDir, "stage.png");
   const optimizedPath = join(workDir, "optimized.avif");
-  await runCheckedCommand("magick", [inputPath, pngPath]);
-  await runCheckedCommand("avifenc", [
-    "--lossless",
-    "-s",
-    options.max ? "0" : "6",
-    pngPath,
-    optimizedPath,
-  ]);
+  await runCheckedCommand("avifdec", ["--depth", "16", inputPath, pngPath]);
+  const args = ["--lossless", "-s", options.max ? "0" : "6"];
+  // libavif's PNG reader retains ICC/XMP but requires EXIF explicitly.
+  if (!options.stripMeta) {
+    const png = await readFile(pngPath);
+    for (let offset = 8; offset + 12 <= png.length;) {
+      const length = png.readUInt32BE(offset);
+      if (offset + length + 12 > png.length)
+        throw new Error("Invalid AVIF PNG intermediate");
+      if (png.toString("ascii", offset + 4, offset + 8) === "eXIf") {
+        const exifPath = join(workDir, "retained-exif.tiff");
+        await writeFile(
+          exifPath,
+          png.subarray(offset + 8, offset + 8 + length)
+        );
+        args.push("--exif", exifPath);
+        break;
+      }
+      offset += length + 12;
+    }
+  }
+  await runCheckedCommand("avifenc", [...args, pngPath, optimizedPath]);
   if (options.stripMeta) {
     await stripMetadata(optimizedPath);
   }

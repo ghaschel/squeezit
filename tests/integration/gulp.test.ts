@@ -1,5 +1,8 @@
-import { cp, mkdir, stat } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { cp, mkdir, readFile, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
+import { Readable } from "node:stream";
+import { promisify } from "node:util";
 
 import { glob } from "glob";
 import { dest, src } from "gulp";
@@ -13,10 +16,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const gulpFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -32,7 +38,7 @@ const gulpFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const gulpAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -44,6 +50,20 @@ afterEach(async () => {
 });
 
 describe("gulp integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through real Gulp buffers, streams, and paths", async () => {
+    const workspace = await createWorkspace();
+    const input = await scaffoldInputFixtures(workspace, true);
+    for (const kind of ["buffer", "stream", "path"]) {
+      const outDir = join(workspace, `pdf-optimized-${kind}`);
+      await runGulpPipeline(input, outDir, {
+        plugin: squeezitGulp(),
+        buffer: kind !== "stream",
+        read: kind !== "path",
+      });
+      await findBuiltAssets(outDir);
+    }
+  });
+
   test("creates a transform that uses default mode with metadata stripping", () => {
     const stream = squeezitGulp();
     const options = createGulpOptimizationOptions("/tmp/gulp-out", false);
@@ -138,6 +158,75 @@ describe("gulp integration", () => {
     );
   });
 
+  test.each(["buffer", "stream", "path"])(
+    "preserves protected PDF %s contents even when a Vinyl path contains other bytes",
+    async (kind) => {
+      const workspace = await createWorkspace();
+      const path = join(workspace, "document.pdf");
+      const protectedBytes = await readFile(
+        representativeFixtures.pdfProtected
+      );
+      await cp(
+        kind === "path"
+          ? representativeFixtures.pdfProtected
+          : representativeFixtures.pdf,
+        path
+      );
+      const diskBefore = await readFile(path);
+      const file = {
+        path,
+        contents:
+          kind === "buffer"
+            ? protectedBytes
+            : kind === "stream"
+              ? Readable.from([protectedBytes])
+              : null,
+        stat: { size: protectedBytes.length },
+        isBuffer: () => kind === "buffer",
+        isStream: () => kind === "stream",
+        isNull: () => kind === "path",
+      };
+      const result = await runSingleVinylThroughPlugin(
+        squeezitGulp({ checkDependencies: false }),
+        file
+      );
+      expect(result.contents).toEqual(protectedBytes);
+      expect(result.path).toBe(path);
+      expect(result.stat.size).toBe(protectedBytes.length);
+      expect(await readFile(path)).toEqual(diskBefore);
+    }
+  );
+
+  test("preserves empty-password encrypted PDF streams without touching their disk path", async () => {
+    const workspace = await createWorkspace();
+    const path = join(workspace, "encrypted.pdf");
+    await promisify(execFile)("qpdf", [
+      "--encrypt",
+      "",
+      "fixture-owner",
+      "256",
+      "--",
+      representativeFixtures.pdf,
+      path,
+    ]);
+    const encrypted = await readFile(path);
+    const file = {
+      path,
+      contents: Readable.from([encrypted]),
+      stat: { size: encrypted.length },
+      isBuffer: () => false,
+      isStream: () => true,
+      isNull: () => false,
+    };
+    const result = await runSingleVinylThroughPlugin(
+      squeezitGulp({ checkDependencies: false }),
+      file
+    );
+    expect(result.contents).toEqual(encrypted);
+    expect(result.stat.size).toBe(encrypted.length);
+    expect(await readFile(path)).toEqual(encrypted);
+  });
+
   test("passes through null vinyl files without a usable path", async () => {
     const plugin = squeezitGulp();
     const file = {
@@ -161,11 +250,14 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldInputFixtures(workspace: string): Promise<string> {
+async function scaffoldInputFixtures(
+  workspace: string,
+  pdfOnly = false
+): Promise<string> {
   const inputDir = join(workspace, "input");
   await mkdir(inputDir, { recursive: true });
 
-  const fixtures = getGulpFixtures();
+  const fixtures = getGulpFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(fixture.sourcePath, join(inputDir, fixture.fileName));
   }
@@ -182,11 +274,15 @@ async function runGulpPipeline(
     buffer?: boolean;
   } = {}
 ): Promise<void> {
-  const sourceStream = src(join(inputDir, "*"), {
+  // Gulp 5 supports binary encoding:false; its DefinitelyTyped SrcOptions
+  // still describes the older host interface.
+  const sourceOptions = {
+    encoding: false,
     cwd: inputDir,
     read: options.read ?? true,
     buffer: options.buffer ?? true,
-  });
+  };
+  const sourceStream = src(join(inputDir, "*"), sourceOptions);
 
   const stages: NodeJS.ReadWriteStream[] = [sourceStream];
   if (options.plugin) {
@@ -240,6 +336,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -254,12 +351,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getGulpFixtures(): Array<{
+function getGulpFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return gulpFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];

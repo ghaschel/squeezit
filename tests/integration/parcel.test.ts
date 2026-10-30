@@ -22,12 +22,15 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace } from "../helpers/temp";
 
 const require = createRequire(import.meta.url);
 const repoRoot = process.cwd();
 const workspaces: string[] = [];
 const parcelFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -43,7 +46,7 @@ const parcelFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const parcelAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -55,6 +58,22 @@ afterEach(async () => {
 });
 
 describe("parcel integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through the real Parcel host", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldParcelProject(workspace, true);
+    await buildProject(workspace, "pdf-optimized", {
+      usePlugin: true,
+      mode: "production",
+    });
+    await findBuiltAssets(join(workspace, "pdf-optimized"));
+    await buildProject(workspace, "pdf-disabled", {
+      usePlugin: true,
+      mode: "production",
+      pluginConfig: { enabled: false },
+    });
+    await findBuiltAssets(join(workspace, "pdf-disabled"));
+  });
+
   test("exports a parcel optimizer plugin module", () => {
     expect(typeof squeezitParcel).toBe("object");
   });
@@ -213,9 +232,15 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldParcelProject(workspace: string): Promise<void> {
+async function scaffoldParcelProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "src", "fixtures"), { recursive: true });
   await mkdir(join(workspace, "node_modules"), { recursive: true });
+  // Keep Parcel config lookup inside this isolated project rather than the
+  // parent repository, whose .git would otherwise define projectRoot.
+  await writeFile(join(workspace, ".git"), "gitdir: fixture\n");
 
   await symlink(
     process.cwd(),
@@ -223,7 +248,7 @@ async function scaffoldParcelProject(workspace: string): Promise<void> {
     "dir"
   );
 
-  const fixtures = getParcelFixtures();
+  const fixtures = getParcelFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(
       fixture.sourcePath,
@@ -336,7 +361,7 @@ async function writeParcelRc(
           "url:*": ["@parcel/transformer-raw"],
         },
         optimizers: {
-          "*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}": [
+          "*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}": [
             "...",
             "./node_modules/squeezit/dist/parcel.cjs",
           ],
@@ -364,6 +389,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -378,12 +404,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getParcelFixtures(): Array<{
+function getParcelFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return parcelFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];
@@ -426,7 +453,9 @@ function buildEntrySource(
 }
 
 function createParcelCache(cacheDir: string): Cache {
-  return new (FSCache as unknown as {
-    new (...args: unknown[]): Cache;
-  })(new NodeFS(), cacheDir);
+  return new (
+    FSCache as unknown as {
+      new (...args: unknown[]): Cache;
+    }
+  )(new NodeFS(), cacheDir);
 }

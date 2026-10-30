@@ -15,10 +15,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const rollupFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -34,7 +37,7 @@ const rollupFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const rollupAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -46,6 +49,27 @@ afterEach(async () => {
 });
 
 describe("rollup integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through the real Rollup host", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldRollupProject(workspace, true);
+    await buildProject(
+      workspace,
+      "pdf-optimized",
+      [squeezitRollup()],
+      true,
+      true
+    );
+    await findBuiltAssets(join(workspace, "pdf-optimized"));
+    await buildProject(
+      workspace,
+      "pdf-disabled",
+      [squeezitRollup({ enabled: false })],
+      true,
+      true
+    );
+    await findBuiltAssets(join(workspace, "pdf-disabled"));
+  });
+
   test("creates a plugin that uses default mode with metadata stripping", () => {
     const plugin = squeezitRollup();
     const options = createRollupOptimizationOptions("/tmp/rollup-out", false);
@@ -172,7 +196,10 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldRollupProject(workspace: string): Promise<void> {
+async function scaffoldRollupProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "fixtures"), { recursive: true });
   await writeFile(
     join(workspace, "entry.js"),
@@ -180,7 +207,7 @@ async function scaffoldRollupProject(workspace: string): Promise<void> {
     "utf8"
   );
 
-  for (const fixture of getRollupFixtures()) {
+  for (const fixture of getRollupFixtures(pdfOnly)) {
     await cp(fixture.sourcePath, join(workspace, "fixtures", fixture.fileName));
   }
 }
@@ -189,11 +216,12 @@ async function buildProject(
   workspace: string,
   outDir: string,
   extraPlugins: RollupPlugin[] = [],
-  hashed = false
+  hashed = false,
+  pdfOnly = false
 ): Promise<void> {
   const bundle = await rollup({
     input: join(workspace, "entry.js"),
-    plugins: [createFixtureEmitterPlugin(workspace), ...extraPlugins],
+    plugins: [createFixtureEmitterPlugin(workspace, pdfOnly), ...extraPlugins],
   });
 
   try {
@@ -210,14 +238,17 @@ async function buildProject(
   }
 }
 
-function createFixtureEmitterPlugin(workspace: string): RollupPlugin {
+function createFixtureEmitterPlugin(
+  workspace: string,
+  pdfOnly = false
+): RollupPlugin {
   const fixtureIds: string[] = [];
 
   return {
     name: "test:fixture-emitter",
     buildStart() {
       fixtureIds.splice(0, fixtureIds.length);
-      for (const fixture of getRollupFixtures()) {
+      for (const fixture of getRollupFixtures(pdfOnly)) {
         fixtureIds.push(
           this.emitFile({
             type: "asset",
@@ -245,7 +276,7 @@ function createFixtureEmitterPlugin(workspace: string): RollupPlugin {
   };
 }
 
-function createPostWriteAssetPlugin(workspace: string): RollupPlugin {
+function createPostWriteAssetPlugin(_workspace: string): RollupPlugin {
   return {
     name: "test:post-write-asset",
     async generateBundle(outputOptions: NormalizedOutputOptions) {
@@ -270,6 +301,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -298,12 +330,13 @@ async function readBuiltChunk(directory: string): Promise<string> {
   return readFile(firstChunk, "utf8");
 }
 
-function getRollupFixtures(): Array<{
+function getRollupFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return rollupFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];

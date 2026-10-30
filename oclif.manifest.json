@@ -93,7 +93,7 @@
           "required": false
         }
       },
-      "description": "Compress image files with safe lossless optimization.",
+      "description": "Compress image and PDF files with safe lossless optimization.",
       "flags": {
         "json": {
           "description": "Format output as json.",
@@ -139,7 +139,7 @@
           "type": "option"
         },
         "strip-meta": {
-          "description": "Remove EXIF/IPTC/XMP metadata.",
+          "description": "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",
           "name": "strip-meta",
           "allowNo": false,
           "type": "boolean"
@@ -699,7 +699,7 @@
           "required": false
         }
       },
-      "description": "Create a reviewable compression plan without changing images.",
+      "description": "Create a reviewable compression plan without changing image or PDF inputs.",
       "flags": {
         "json": {
           "description": "Format output as json.",
@@ -753,7 +753,7 @@
           "type": "option"
         },
         "strip-meta": {
-          "description": "Remove EXIF/IPTC/XMP metadata when the plan is applied.",
+          "description": "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",
           "name": "strip-meta",
           "allowNo": false,
           "type": "boolean"

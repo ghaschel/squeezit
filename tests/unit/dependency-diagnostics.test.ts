@@ -1,7 +1,13 @@
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { describe, expect, test } from "vitest";
 
 import {
   buildMissingDependencyMessage,
+  collectDependencyInstallTargets,
+  collectRequiredDependencies,
   compareDependencyVersions,
   DEPENDENCY_CATALOG,
   diagnoseDependency,
@@ -9,6 +15,7 @@ import {
   resolveMozjpegBinary,
 } from "../../src/core";
 import { diagnoseDependency as diagnoseDependencyFromUtils } from "../../src/utils";
+import { resolveCompressOptions } from "../../src/utils/options";
 
 describe("dependency catalog diagnostics", () => {
   test("re-exports diagnostics through the utility barrel", () => {
@@ -27,11 +34,112 @@ describe("dependency catalog diagnostics", () => {
     expect(DEPENDENCY_CATALOG.oxipng.aptPackage).toBeUndefined();
     expect(DEPENDENCY_CATALOG.oxipng.cargoPackage).toEqual({
       crate: "oxipng",
-      version: "10.1.0",
+      version: "10.2.1",
     });
     expect(
       buildMissingDependencyMessage([DEPENDENCY_CATALOG.oxipng], "debian")
-    ).toContain("cargo install oxipng --version 10.1.0 --locked");
+    ).toContain("cargo install oxipng --version 10.2.1 --locked");
+  });
+
+  test("does not promise distribution packages that cannot meet the compatibility floor", () => {
+    const names = [
+      "jpegoptim",
+      "optipng",
+      "svgo",
+      "cwebp",
+      "dwebp",
+      "webpinfo",
+      "webpmux",
+      "gif2webp",
+      "avifenc",
+      "avifdec",
+      "tiffcp",
+      "magick",
+      "exiftool",
+      "dnglab",
+    ] as const;
+    for (const name of names) {
+      expect(
+        collectDependencyInstallTargets([DEPENDENCY_CATALOG[name]], "debian")
+      ).toEqual([]);
+      expect(
+        buildMissingDependencyMessage([DEPENDENCY_CATALOG[name]], "debian")
+      ).toContain(DEPENDENCY_CATALOG[name].manualInstall);
+    }
+  });
+
+  test("selects QPDF for PDF compression and no metadata writer for PDF metadata-only requests", () => {
+    const inputs = [
+      { absolutePath: "/tmp/report.PDF", displayPath: "report.PDF" },
+    ];
+    expect(
+      collectRequiredDependencies(
+        inputs,
+        resolveCompressOptions([], {}, process.cwd())
+      ).map(({ binary }) => binary)
+    ).toEqual(["file", "qpdf"]);
+    expect(
+      collectRequiredDependencies(
+        inputs,
+        resolveCompressOptions([], { exif: true }, process.cwd())
+      ).map(({ binary }) => binary)
+    ).toEqual(["file"]);
+  });
+
+  test("requires PDF dependencies for PDF bytes under misleading image extensions", () => {
+    const directory = mkdtempSync(join(tmpdir(), "squeezit-pdf-deps-"));
+    try {
+      for (const extension of ["jpg", "cr2", "cur"]) {
+        const path = join(directory, `protected.${extension}`);
+        writeFileSync(path, "%PDF-1.7\nsynthetic header");
+        const inputs = [{ absolutePath: path, displayPath: path }];
+        expect(
+          collectRequiredDependencies(
+            inputs,
+            resolveCompressOptions([], {}, directory)
+          ).map(({ binary }) => binary)
+        ).toEqual(["file", "qpdf"]);
+        expect(
+          collectRequiredDependencies(
+            inputs,
+            resolveCompressOptions([], { exif: true }, directory)
+          ).map(({ binary }) => binary)
+        ).toEqual(["file"]);
+      }
+    } finally {
+      rmSync(directory, { force: true, recursive: true });
+    }
+  });
+
+  test("selects the libavif decoder rather than ImageMagick for AVIF pixels", () => {
+    const inputs = [
+      { absolutePath: "/tmp/sample.avif", displayPath: "sample.avif" },
+    ];
+    expect(
+      collectRequiredDependencies(
+        inputs,
+        resolveCompressOptions([], {}, process.cwd())
+      ).map(({ binary }) => binary)
+    ).toEqual(["file", "avifdec", "avifenc"]);
+    expect(DEPENDENCY_CATALOG.avifdec.minimumVersion).toBe("1.4.0");
+  });
+
+  test("rejects QPDF below the supported structured-inspection floor", async () => {
+    const diagnostic = await diagnoseDependency("qpdf", {
+      platform: "debian",
+      commandExists: async () => true,
+      providerVersionLookup: async () => undefined,
+      runCommand: async () => ({
+        exitCode: 0,
+        stdout: "qpdf version 11.2.0",
+        stderr: "",
+        all: "qpdf version 11.2.0",
+      }),
+    });
+    expect(diagnostic).toMatchObject({
+      status: "outdated",
+      minimumVersion: "11.3.0",
+    });
   });
 
   test("uses supported version probe arguments for WebP and TIFF tools", () => {

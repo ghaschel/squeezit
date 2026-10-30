@@ -1,0 +1,2 @@
+# Preserve PDF offsets and signature byte ranges exactly across checkouts.
+*.pdf binary

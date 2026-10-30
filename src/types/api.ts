@@ -1,4 +1,4 @@
-import type { Summary } from "./optimization";
+import type { PdfSkipReason, Summary } from "./optimization";
 
 export type ApiOptimizationMode = "default" | "exif" | "max";
 
@@ -30,6 +30,7 @@ export interface ApiOptimizationResult {
   changed: boolean;
   wroteOutput: boolean;
   message?: string;
+  skipReason?: PdfSkipReason;
 }
 
 export interface ApiBatchResult extends Summary {

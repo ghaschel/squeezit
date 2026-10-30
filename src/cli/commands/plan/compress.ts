@@ -16,7 +16,7 @@ export default class PlanCompress extends SqueezitOperationCommand {
   };
 
   static override description =
-    "Create a reviewable compression plan without changing images.";
+    "Create a reviewable compression plan without changing image or PDF inputs.";
 
   static override flags = {
     output: Flags.string({
@@ -33,7 +33,8 @@ export default class PlanCompress extends SqueezitOperationCommand {
       options: ["standard", "max"] as const,
     })(),
     "strip-meta": Flags.boolean({
-      description: "Remove EXIF/IPTC/XMP metadata when the plan is applied.",
+      description:
+        "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",
     }),
     "keep-time": Flags.boolean({
       char: "k",

@@ -1,1 +1,7 @@
 oclif.manifest.json
+
+# Machine-generated audit snapshots retain their original evidence formatting.
+docs/superpowers/plans/evidence/
+
+# Disposable real-host build fixtures.
+.squeezit-*/

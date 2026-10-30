@@ -273,3 +273,19 @@ only its compact summary.
 
 Schema v2 supersedes the JSON envelope used by older Squeezit releases. Agents
 should require `schemaVersion: 2` before relying on this contract.
+
+## PDF results
+
+PDF compression preserves content and metadata. Protected or inconclusively
+inspected inputs are successful skips, reported through the existing result and
+event envelopes with optional `skipReason`: `pdf-encrypted`, `pdf-signature`,
+`pdf-signature-field`, `pdf-inspection-inconclusive`,
+`pdf-unsupported-structure`, or `pdf-metadata-unsupported`. Existing schema
+versions and status values remain unchanged. The optimizer creates no output
+on these skips; metadata-only PDF operations never invoke a writer.
+
+Plans describe fingerprinted candidates, not promised PDF eligibility. Apply
+inspects each snapshot again. Resume retains completed skips and reinspects
+pending or failed inputs. Earlier cross-reference revisions (including affected
+unsigned linearized PDFs) and XFA are conservatively unsupported. No password,
+ignore-signature, or force-protected option exists.

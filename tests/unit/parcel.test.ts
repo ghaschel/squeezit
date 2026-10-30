@@ -1,12 +1,20 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import { Readable } from "node:stream";
 
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
+
+const hoisted = vi.hoisted(() => ({ optimizeAsset: vi.fn() }));
+vi.mock("../../src/core", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../../src/core")>()),
+  optimizeAsset: hoisted.optimizeAsset,
+}));
 
 import {
   createParcelOptimizationOptions,
   loadParcelPluginConfigFromProjectRoot,
   normalizeParcelPluginConfig,
+  squeezitParcel,
 } from "../../src/integrations/parcel";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
@@ -29,6 +37,40 @@ describe("parcel integration helpers", () => {
     expect(options.mode).toBe("default");
     expect(options.stripMetadata).toBe(true);
     expect(options.checkDependencies).toBe(false);
+  });
+
+  test("returns normalized original PDF bytes after consuming a skipped Readable", async () => {
+    const bytes = Buffer.concat([
+      Buffer.from("%PDF-1.7"),
+      Buffer.from([0xff, 0, 0x80]),
+    ]);
+    hoisted.optimizeAsset.mockResolvedValue({
+      contents: bytes,
+      result: { status: "skipped", skipReason: "pdf-encrypted" },
+    });
+    const plugin = (
+      squeezitParcel as unknown as Record<
+        symbol,
+        {
+          optimize(
+            args: unknown
+          ): Promise<{ contents: Buffer; map: unknown; type: string }>;
+        }
+      >
+    )[Symbol.for("parcel-plugin-config")];
+    const map = { original: true };
+    const result = await plugin!.optimize({
+      bundle: { type: "pdf", displayName: "document.pdf" },
+      contents: Readable.from([bytes]),
+      map,
+      options: { mode: "production", projectRoot: "/tmp" },
+      config: { enabled: true, productionOnly: true, checkDependencies: false },
+    });
+    expect(result).toEqual({ contents: bytes, map, type: "pdf" });
+    expect(hoisted.optimizeAsset).toHaveBeenCalledWith(
+      expect.objectContaining({ contents: bytes }),
+      expect.anything()
+    );
   });
 
   test("normalizes parcel config with defaults", () => {

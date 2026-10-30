@@ -121,18 +121,36 @@ describe("tag release workflow", () => {
     expect(jobs.publish_release.permissions).toEqual({ contents: "write" });
   });
 
-  test("pins validation to Ubuntu, Node 24.16.0, and Bun 1.3.5", async () => {
+  test("pins validation to Ubuntu, Node 24.22.2, and Bun 1.4.4", async () => {
     const jobs = requiredJobs(await readWorkflow());
     const validate = jobs.validate;
 
     expect(validate["runs-on"]).toBe("ubuntu-latest");
     expect(action(validate, "actions/setup-node")?.with).toEqual({
-      "node-version": "24.16.0",
+      "node-version": "24.22.2",
+      "package-manager-cache": false,
     });
     expect(action(validate, "oven-sh/setup-bun")?.with).toEqual({
-      "bun-version": "1.3.5",
+      "bun-version": "1.4.4",
     });
     expect(JSON.stringify(validate)).not.toContain("registry-url");
+  });
+
+  test("keeps every release runtime aligned with the exact development pins", async () => {
+    const jobs = requiredJobs(await readWorkflow());
+    for (const job of Object.values(jobs)) {
+      for (const step of job.steps ?? []) {
+        if (step.uses?.startsWith("actions/setup-node@")) {
+          expect(step.with).toMatchObject({
+            "node-version": "24.22.2",
+            "package-manager-cache": false,
+          });
+        }
+        if (step.uses?.startsWith("oven-sh/setup-bun@")) {
+          expect(step.with).toMatchObject({ "bun-version": "1.4.4" });
+        }
+      }
+    }
   });
 
   test("pins every external action to an immutable reviewed commit", async () => {
@@ -147,11 +165,11 @@ describe("tag release workflow", () => {
 
     expect(uses).toEqual(
       expect.arrayContaining([
-        "actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8",
-        "actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444",
+        "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+        "actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
         "oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6",
-        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
-        "actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+        "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+        "actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333",
       ])
     );
     expect(uses).toHaveLength(15);
@@ -159,19 +177,19 @@ describe("tag release workflow", () => {
       true
     );
     expect(workflowSource).toMatch(
-      /actions\/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5\.0\.0/
+      /actions\/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7\.0\.1/
     );
     expect(workflowSource).toMatch(
-      /actions\/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5\.0\.0/
+      /actions\/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7\.1\.0/
     );
     expect(workflowSource).toMatch(
       /oven-sh\/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2\.2\.0/
     );
     expect(workflowSource).toMatch(
-      /actions\/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4\.6\.2/
+      /actions\/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7\.0\.2/
     );
     expect(workflowSource).toMatch(
-      /actions\/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4\.3\.0/
+      /actions\/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8\.0\.2/
     );
   });
 
@@ -204,24 +222,16 @@ describe("tag release workflow", () => {
 
     expect(run).toContain("sudo apt-get update");
     expect(run).toContain(
-      "sudo apt-get install --yes build-essential libpng-dev perl pngcrush"
+      "sudo apt-get install --yes build-essential cmake libpng-dev libjpeg-dev zlib1g-dev perl pngcrush poppler-utils"
     );
-    expect(run).toContain('OPTIPNG_VERSION="7.9.1"');
-    expect(run).toContain(
-      'OPTIPNG_SHA256="c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29"'
-    );
-    expect(run).toContain("downloads.sourceforge.net/project/optipng");
+    expect(run).toContain("scripts/native-tool-target.ts optipng");
     expect(run).toContain("sha256sum --check");
     expect(run).toContain('./configure --prefix="$PREFIX"');
     expect(run).toContain("make -j2");
     expect(run).toContain("make install");
     expect(run).toContain('"$PREFIX/bin/optipng" -v | grep -F');
     expect(run).toContain('echo "$PREFIX/bin" >> "$GITHUB_PATH"');
-    expect(run).toContain('EXIFTOOL_VERSION="13.50"');
-    expect(run).toContain(
-      'EXIFTOOL_SHA256="27e2d66eb21568cc0d59520f89afcaaa50735e1ad9fa4b36d0a4ccf916c70d31"'
-    );
-    expect(run).toContain("cpan.metacpan.org/authors/id/E/EX/EXIFTOOL");
+    expect(run).toContain("scripts/native-tool-target.ts exiftool");
     expect(run).toContain(
       'cp -R "$EXIFTOOL_SOURCE/lib" "$EXIFTOOL_PREFIX/bin/lib"'
     );
@@ -230,11 +240,17 @@ describe("tag release workflow", () => {
     );
     expect(run).toContain('"$EXIFTOOL_PREFIX/bin/exiftool" -ver | grep -Fx');
     expect(run).toContain('echo "$EXIFTOOL_PREFIX/bin" >> "$GITHUB_PATH"');
-    expect(run).toContain("cargo install oxipng --version 10.1.0 --locked");
+    expect(run).toContain(
+      'cargo install oxipng --version "$OXIPNG_VERSION" --locked'
+    );
     expect(run).toContain('echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"');
+    expect(run).toContain("scripts/native-tool-target.ts qpdf");
+    expect(run).toContain('-DCMAKE_INSTALL_RPATH="$QPDF_PREFIX/lib"');
+    expect(run).toContain("scripts/native-tool-target.ts oxipng");
+    expect(run).toContain("rustup toolchain install 1.88.0 --profile minimal");
     expect(run).not.toContain("sudo apt-get install --yes pngcrush optipng");
     expect(
-      run.indexOf("cargo install oxipng --version 10.1.0 --locked")
+      run.indexOf('cargo install oxipng --version "$OXIPNG_VERSION" --locked')
     ).toBeLessThan(run.indexOf("bun run test:cli"));
   });
 

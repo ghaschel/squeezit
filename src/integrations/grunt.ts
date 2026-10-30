@@ -6,6 +6,7 @@ import { optimizeFile } from "../api";
 import type { CoreOptimizationOptions, OptimizeFileOptions } from "../types";
 
 const supportedExtensions = new Set([
+  ".pdf",
   ".jpg",
   ".jpeg",
   ".png",

@@ -1,9 +1,16 @@
 import { describe, expect, test, vi } from "vitest";
 
+const hoisted = vi.hoisted(() => ({
+  optimize: vi.fn().mockResolvedValue({ results: [] }),
+}));
+vi.mock("../../src/integrations/vite", () => ({
+  optimizeViteOutputDirectory: hoisted.optimize,
+}));
+
 import { squeezitAstro } from "../../src/integrations/astro";
 
 describe("astro integration", () => {
-  test("creates a build-only astro integration that injects the vite plugin", () => {
+  test("delegates final static output to Vite once after all environments finish", async () => {
     const integration = squeezitAstro({ checkDependencies: false });
     const updateConfig = vi.fn();
     const warn = vi.fn();
@@ -30,20 +37,24 @@ describe("astro integration", () => {
     });
 
     expect(warn).not.toHaveBeenCalled();
-    expect(updateConfig).toHaveBeenCalledTimes(1);
-    expect(updateConfig).toHaveBeenCalledWith(
-      expect.objectContaining({
-        vite: expect.objectContaining({
-          plugins: expect.arrayContaining([
-            expect.objectContaining({
-              name: "squeezit:vite",
-              apply: "build",
-              enforce: "post",
-            }),
-          ]),
-        }),
-      })
-    );
+    expect(updateConfig).not.toHaveBeenCalled();
+    hoisted.optimize.mockClear();
+    await integration.hooks["astro:build:done"]?.({
+      dir: new URL("file:///tmp/astro-output/"),
+      pages: [],
+      routes: [],
+      logger: {},
+    } as never);
+    await integration.hooks["astro:build:done"]?.({
+      dir: new URL("file:///tmp/astro-output/"),
+      pages: [],
+      routes: [],
+      logger: {},
+    } as never);
+    expect(hoisted.optimize).toHaveBeenCalledTimes(1);
+    expect(hoisted.optimize).toHaveBeenCalledWith("/tmp/astro-output/", {
+      checkDependencies: false,
+    });
   });
 
   test("skips non-build commands", () => {
@@ -98,5 +109,41 @@ describe("astro integration", () => {
       expect.stringContaining("only static Astro builds are supported")
     );
     expect(updateConfig).not.toHaveBeenCalled();
+  });
+  test("disabled builds do not invoke the Vite output optimizer", async () => {
+    hoisted.optimize.mockClear();
+    const integration = squeezitAstro({ enabled: false });
+    integration.hooks["astro:config:setup"]?.({
+      command: "build",
+      config: { output: "static" },
+      logger: { warn: vi.fn() },
+    } as never);
+    await integration.hooks["astro:build:done"]?.({
+      dir: new URL("file:///tmp/out/"),
+    } as never);
+    expect(hoisted.optimize).not.toHaveBeenCalled();
+  });
+
+  test("reports native optimization failures with PDF paths", async () => {
+    hoisted.optimize.mockResolvedValueOnce({
+      results: [
+        {
+          status: "failed",
+          filePath: "document.pdf",
+          message: "QPDF is unavailable",
+        },
+      ],
+    });
+    const integration = squeezitAstro();
+    integration.hooks["astro:config:setup"]?.({
+      command: "build",
+      config: { output: "static" },
+      logger: { warn: vi.fn() },
+    } as never);
+    await expect(
+      integration.hooks["astro:build:done"]?.({
+        dir: new URL("file:///tmp/out/"),
+      } as never)
+    ).rejects.toThrow("document.pdf: QPDF is unavailable");
   });
 });

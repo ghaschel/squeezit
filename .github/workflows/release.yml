@@ -22,19 +22,20 @@ jobs:
       version: ${{ steps.release.outputs.version }}
     steps:
       - name: Checkout tag
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
 
       - name: Set up Node
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24.16.0
+          node-version: 24.22.2
+          package-manager-cache: false
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.3.5
+          bun-version: 1.4.4
 
       - name: Validate immutable release inputs
         id: release
@@ -83,13 +84,12 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install --yes build-essential libpng-dev perl pngcrush
-          OPTIPNG_VERSION="7.9.1"
-          OPTIPNG_SHA256="c2579be58c2c66dae9d63154edcb3d427fef64cb00ec0aff079c9d156ec46f29"
+          sudo apt-get install --yes build-essential cmake libpng-dev libjpeg-dev zlib1g-dev perl pngcrush poppler-utils
+          read -r OPTIPNG_VERSION OPTIPNG_URL OPTIPNG_SHA256 < <(bun scripts/native-tool-target.ts optipng)
           ARCHIVE="$RUNNER_TEMP/optipng.tar.gz"
           PREFIX="$RUNNER_TEMP/optipng"
           curl --fail --location --retry 3 --output "$ARCHIVE" \
-            "https://downloads.sourceforge.net/project/optipng/OptiPNG/optipng-$OPTIPNG_VERSION/optipng-$OPTIPNG_VERSION.tar.gz"
+            "$OPTIPNG_URL"
           echo "$OPTIPNG_SHA256  $ARCHIVE" | sha256sum --check
           tar -xzf "$ARCHIVE" --directory "$RUNNER_TEMP"
           pushd "$RUNNER_TEMP/optipng-$OPTIPNG_VERSION"
@@ -99,13 +99,12 @@ jobs:
           popd
           "$PREFIX/bin/optipng" -v | grep -F "OptiPNG version $OPTIPNG_VERSION"
           echo "$PREFIX/bin" >> "$GITHUB_PATH"
-          EXIFTOOL_VERSION="13.50"
-          EXIFTOOL_SHA256="27e2d66eb21568cc0d59520f89afcaaa50735e1ad9fa4b36d0a4ccf916c70d31"
+          read -r EXIFTOOL_VERSION EXIFTOOL_URL EXIFTOOL_SHA256 < <(bun scripts/native-tool-target.ts exiftool)
           EXIFTOOL_ARCHIVE="$RUNNER_TEMP/exiftool.tar.gz"
           EXIFTOOL_SOURCE="$RUNNER_TEMP/Image-ExifTool-$EXIFTOOL_VERSION"
           EXIFTOOL_PREFIX="$RUNNER_TEMP/exiftool"
           curl --fail --location --retry 3 --output "$EXIFTOOL_ARCHIVE" \
-            "https://cpan.metacpan.org/authors/id/E/EX/EXIFTOOL/Image-ExifTool-$EXIFTOOL_VERSION.tar.gz"
+            "$EXIFTOOL_URL"
           echo "$EXIFTOOL_SHA256  $EXIFTOOL_ARCHIVE" | sha256sum --check
           tar -xzf "$EXIFTOOL_ARCHIVE" --directory "$RUNNER_TEMP"
           mkdir -p "$EXIFTOOL_PREFIX/bin"
@@ -113,7 +112,23 @@ jobs:
           cp "$EXIFTOOL_SOURCE/exiftool" "$EXIFTOOL_PREFIX/bin/exiftool"
           "$EXIFTOOL_PREFIX/bin/exiftool" -ver | grep -Fx "$EXIFTOOL_VERSION"
           echo "$EXIFTOOL_PREFIX/bin" >> "$GITHUB_PATH"
-          cargo install oxipng --version 10.1.0 --locked
+          read -r QPDF_VERSION QPDF_URL QPDF_SHA256 < <(bun scripts/native-tool-target.ts qpdf)
+          QPDF_ARCHIVE="$RUNNER_TEMP/qpdf.tar.gz"
+          QPDF_PREFIX="$RUNNER_TEMP/qpdf"
+          curl --fail --location --retry 3 --output "$QPDF_ARCHIVE" "$QPDF_URL"
+          echo "$QPDF_SHA256  $QPDF_ARCHIVE" | sha256sum --check
+          tar -xzf "$QPDF_ARCHIVE" --directory "$RUNNER_TEMP"
+          cmake -S "$RUNNER_TEMP/qpdf-$QPDF_VERSION" -B "$RUNNER_TEMP/qpdf-build" \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$QPDF_PREFIX" \
+            -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_INSTALL_RPATH="$QPDF_PREFIX/lib" \
+            -DBUILD_TESTING=OFF
+          cmake --build "$RUNNER_TEMP/qpdf-build" --parallel 2
+          cmake --install "$RUNNER_TEMP/qpdf-build"
+          "$QPDF_PREFIX/bin/qpdf" --version | grep -F "qpdf version $QPDF_VERSION"
+          echo "$QPDF_PREFIX/bin" >> "$GITHUB_PATH"
+          read -r OXIPNG_VERSION _ _ < <(bun scripts/native-tool-target.ts oxipng)
+          rustup toolchain install 1.88.0 --profile minimal
+          rustup run 1.88.0 cargo install oxipng --version "$OXIPNG_VERSION" --locked
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       - name: Test CLI surface
@@ -134,17 +149,18 @@ jobs:
       id-token: write
     steps:
       - name: Checkout tag
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Node
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24.16.0
+          node-version: 24.22.2
+          package-manager-cache: false
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.3.5
+          bun-version: 1.4.4
 
       - name: Install locked dependencies
         run: bun ci
@@ -200,17 +216,18 @@ jobs:
       npm_tarball_sha256: ${{ steps.artifacts.outputs.npm_tarball_sha256 }}
     steps:
       - name: Checkout tag
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Node
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24.16.0
+          node-version: 24.22.2
+          package-manager-cache: false
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.3.5
+          bun-version: 1.4.4
 
       - name: Build archives in temporary Oclif staging
         id: artifacts
@@ -309,7 +326,7 @@ jobs:
           test ! -e package-lock.json
 
       - name: Upload verified release artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-artifacts
           path: |-
@@ -329,10 +346,10 @@ jobs:
       contents: write
     steps:
       - name: Checkout tag
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Download release artifacts
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: release-artifacts
           path: artifacts
@@ -366,12 +383,12 @@ jobs:
       contents: read
     steps:
       - name: Checkout release source
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: source
 
       - name: Checkout personal Homebrew tap default branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: ghaschel/homebrew-tap
           token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
@@ -381,7 +398,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          bun-version: 1.3.5
+          bun-version: 1.4.4
 
       - name: Render formula and prepare local tap commit
         id: formula

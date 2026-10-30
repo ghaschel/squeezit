@@ -65,6 +65,61 @@ describe("rollup helpers", () => {
     expect(asset.source).toEqual(source);
   });
 
+  test.each(["buffer", "string"])(
+    "never rewrites a %s PDF while renaming another asset",
+    (kind) => {
+      const bytes = Buffer.concat([
+        Buffer.from("%PDF-1.7\nassets/hero-12345678.png\n"),
+        Buffer.from([0xff, 0x80, 0x00]),
+      ]);
+      const pdf = createOutputAsset("assets/protected.pdf", bytes);
+      if (kind === "string") pdf.source = bytes.toString("latin1");
+      const original = pdf.source;
+      const references = [".js", ".css", ".html", ".json"].map((extension) =>
+        createOutputAsset(
+          `reference${extension}`,
+          Buffer.from("assets/hero-12345678.png")
+        )
+      );
+      const binary = createOutputAsset("unknown.dat", bytes);
+      const bundle: OutputBundle = {
+        "assets/protected.pdf": pdf,
+        "unknown.dat": binary,
+        ...Object.fromEntries(
+          references.map((asset) => [asset.fileName, asset])
+        ),
+      };
+      rewriteRollupBundleReferences(
+        bundle,
+        "assets/hero-12345678.png",
+        "assets/hero-deadbeef.png"
+      );
+      expect(pdf.source).toEqual(original);
+      expect(binary.source).toEqual(bytes);
+      for (const asset of references)
+        expect(Buffer.from(asset.source).toString()).toContain(
+          "assets/hero-deadbeef.png"
+        );
+    }
+  );
+
+  test("passes PDFs through the shared protection guard and retains skipped names", async () => {
+    const source = Buffer.from("%PDF-1.7 protected");
+    hoisted.optimizeAsset.mockResolvedValue({
+      contents: source,
+      result: { status: "skipped", skipReason: "pdf-signature-field" },
+    });
+    const asset = createOutputAsset("assets/document-12345678.pdf", source);
+    const bundle: OutputBundle = { [asset.fileName]: asset };
+    await runGenerateBundle(
+      squeezitRollup({ checkDependencies: false }),
+      bundle
+    );
+    expect(hoisted.optimizeAsset).toHaveBeenCalledOnce();
+    expect(asset.source).toEqual(source);
+    expect(asset.fileName).toBe("assets/document-12345678.pdf");
+  });
+
   test("derives a new hashed rollup asset file name from optimized bytes", () => {
     const asset = {
       fileName: "assets/hero-12345678.png",

@@ -160,8 +160,7 @@ describe("dependency planning", () => {
       )
     ).toEqual([
       { installer: "apt", package: "pngcrush" },
-      { installer: "apt", package: "optipng" },
-      { installer: "cargo", package: "oxipng", version: "10.1.0" },
+      { installer: "cargo", package: "oxipng", version: "10.2.1" },
     ]);
   });
 
@@ -187,11 +186,11 @@ describe("dependency planning", () => {
       { command: "sudo", args: ["apt", "update"] },
       {
         command: "sudo",
-        args: ["apt", "install", "-y", "pngcrush", "optipng"],
+        args: ["apt", "install", "-y", "pngcrush"],
       },
       {
         command: "cargo",
-        args: ["install", "oxipng", "--version", "10.1.0", "--locked"],
+        args: ["install", "oxipng", "--version", "10.2.1", "--locked"],
       },
     ]);
   });

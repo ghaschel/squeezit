@@ -670,7 +670,7 @@ export function parseGitPorcelain(
 
 function parseBunVersion(value: unknown): string {
   const match = typeof value === "string" ? /^bun@(.+)$/.exec(value) : null;
-  return match?.[1] ?? "1.3.5";
+  return match?.[1] ?? "1.4.4";
 }
 
 function parseMinimumNodeVersion(value: unknown): string {

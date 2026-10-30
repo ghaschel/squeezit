@@ -1,12 +1,14 @@
+import { mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { mkdir, writeFile } from "node:fs/promises";
 
 const APP_NAME = "squeezit";
 const PACKAGE_NAME = "squeezit";
 
 function detectPackageManager() {
-  const userAgent = (process.env.npm_config_user_agent ?? "").trim().toLowerCase();
+  const userAgent = (process.env.npm_config_user_agent ?? "")
+    .trim()
+    .toLowerCase();
 
   if (userAgent.startsWith("bun/")) {
     return "bun";

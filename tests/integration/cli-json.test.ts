@@ -434,3 +434,89 @@ async function runJson(
     stderr: result.stderr,
   };
 }
+
+describe("PDF CLI contracts", () => {
+  test("reports protected skips in JSON and keeps plan application and receipts conservative", async () => {
+    const workspace = await createTempWorkspace();
+    workspaces.push(workspace);
+    const input = await copyFixtureToWorkspace(
+      representativeFixtures.pdfProtected,
+      workspace
+    );
+    const before = await hashFile(input);
+    const direct = await runJson(["compress", input, "--json", "--dry-run"]);
+    expect(direct.envelope).toMatchObject({
+      ok: true,
+      data: {
+        results: [{ status: "skipped", skipReason: "pdf-signature-field" }],
+      },
+    });
+    const plan = resolve(workspace, "pdf-plan.json");
+    const planned = await runJson([
+      "plan",
+      "compress",
+      input,
+      "--output",
+      plan,
+      "--json",
+    ]);
+    expect(planned.exitCode).toBe(0);
+    const receipt = resolve(workspace, "pdf-receipt.json");
+    const applied = await runJson([
+      "plan",
+      "apply",
+      plan,
+      "--receipt",
+      receipt,
+      "--yes",
+      "--json",
+    ]);
+    expect(applied.envelope).toMatchObject({
+      ok: true,
+      data: {
+        report: {
+          results: [{ status: "skipped", skipReason: "pdf-signature-field" }],
+        },
+      },
+    });
+    const recorded = JSON.parse(await readFile(receipt, "utf8"));
+    expect(recorded.inputs[0].result.skipReason).toBe("pdf-signature-field");
+    const resumed = await runJson([
+      "receipt",
+      "resume",
+      receipt,
+      "--output",
+      resolve(workspace, "resumed.json"),
+      "--yes",
+      "--json",
+    ]);
+    expect(resumed.exitCode).toBe(1);
+    expect(resumed.envelope.error?.code).toBe("RECEIPT_NOT_RESUMABLE");
+    expect(await hashFile(input)).toBe(before);
+  });
+  test("reports metadata-only PDFs as non-writing skips", async () => {
+    const workspace = await createTempWorkspace();
+    workspaces.push(workspace);
+    const input = await copyFixtureToWorkspace(
+      representativeFixtures.pdf,
+      workspace
+    );
+    const before = await hashFile(input);
+    const result = await runJson([
+      "metadata",
+      "strip",
+      input,
+      "--json",
+      "--yes",
+    ]);
+    expect(result.envelope).toMatchObject({
+      ok: true,
+      data: {
+        results: [
+          { status: "skipped", skipReason: "pdf-metadata-unsupported" },
+        ],
+      },
+    });
+    expect(await hashFile(input)).toBe(before);
+  });
+});

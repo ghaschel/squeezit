@@ -72,6 +72,7 @@ describe("Homebrew formula renderer", () => {
       '  depends_on "optipng"',
       '  depends_on "oxipng"',
       '  depends_on "pngcrush"',
+      '  depends_on "qpdf"',
       '  depends_on "svgo"',
       '  depends_on "webp"',
       '  depends_on "zopfli"',

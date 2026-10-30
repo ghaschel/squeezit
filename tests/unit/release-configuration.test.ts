@@ -53,16 +53,28 @@ describe("release configuration", () => {
     }
   });
 
-  test("embeds Node 24.16.0 for exactly the supported Oclif archives", async () => {
+  test("embeds Node 24.22.2 for exactly the supported Oclif archives", async () => {
     const packageJson = await readPackageJson();
     const oclif = packageJson.oclif as {
       update?: { node?: { targets?: string[]; version?: string } };
     };
 
     expect(oclif.update?.node).toEqual({
-      version: "24.16.0",
+      version: "24.22.2",
       targets: ["darwin-arm64", "darwin-x64", "linux-x64"],
     });
+  });
+
+  test("aligns exact development runtime pins independently of consumer engines", async () => {
+    const packageJson = await readPackageJson();
+    expect(packageJson.packageManager).toBe("bun@1.4.4");
+    expect(
+      (packageJson.devDependencies as Record<string, string>)["@types/bun"]
+    ).toBe("1.4.4");
+    expect(
+      (await readFile(resolve(root, ".node-version"), "utf8")).trim()
+    ).toBe("24.22.2");
+    expect(packageJson.engines).toMatchObject({ node: ">=22.13.0" });
   });
 
   test("provides guarded release and push aliases", async () => {

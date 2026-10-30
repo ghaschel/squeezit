@@ -14,10 +14,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const webpackFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -33,7 +36,7 @@ const webpackFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const webpackAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -45,6 +48,17 @@ afterEach(async () => {
 });
 
 describe("webpack integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through the real Webpack host", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldWebpackProject(workspace, true);
+    await buildProject(workspace, "pdf-optimized", [squeezitWebpack()]);
+    await findBuiltAssets(join(workspace, "pdf-optimized"));
+    await buildProject(workspace, "pdf-disabled", [
+      squeezitWebpack({ enabled: false }),
+    ]);
+    await findBuiltAssets(join(workspace, "pdf-disabled"));
+  });
+
   test("creates a build-time plugin that uses default mode with metadata stripping", () => {
     const plugin = squeezitWebpack();
     const options = createWebpackOptimizationOptions("/tmp/webpack-out", false);
@@ -118,10 +132,13 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldWebpackProject(workspace: string): Promise<void> {
+async function scaffoldWebpackProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "src", "fixtures"), { recursive: true });
 
-  const fixtures = getWebpackFixtures();
+  const fixtures = getWebpackFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(
       fixture.sourcePath,
@@ -154,7 +171,7 @@ async function buildProject(
     module: {
       rules: [
         {
-          test: /\.(png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i,
+          test: /\.(pdf|png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i,
           type: "asset/resource",
         },
       ],
@@ -197,6 +214,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -211,12 +229,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getWebpackFixtures(): Array<{
+function getWebpackFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return webpackFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];

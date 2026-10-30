@@ -29,6 +29,7 @@ import type {
 } from "../types";
 
 const supportedExtensions = new Set([
+  ".pdf",
   ".jpg",
   ".jpeg",
   ".png",
@@ -195,7 +196,7 @@ export function squeezitRollup(
         );
       }
     },
-    async writeBundle(outputOptions, bundle) {
+    async writeBundle(outputOptions, _bundle) {
       if (options.enabled === false) {
         return;
       }
@@ -366,6 +367,22 @@ export function rewriteRollupBundleReferences(
 
     if (entry.fileName === currentFileName) {
       entry.fileName = nextFileName;
+    }
+
+    // Only known reference-bearing text formats may be decoded or rewritten.
+    if (
+      !new Set([
+        ".js",
+        ".mjs",
+        ".cjs",
+        ".css",
+        ".html",
+        ".htm",
+        ".json",
+        ".map",
+      ]).has(extname(entry.fileName).toLowerCase())
+    ) {
+      continue;
     }
 
     if (typeof entry.source === "string") {

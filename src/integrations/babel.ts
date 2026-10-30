@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, realpathSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, realpathSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import {
   dirname,
   extname,
@@ -10,7 +11,7 @@ import {
 } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { NodePath, PluginObj, PluginPass } from "@babel/core";
+import type { NodePath, PluginPass } from "@babel/core";
 import type {
   CallExpression,
   ImportDeclaration,
@@ -19,6 +20,7 @@ import type {
 } from "@babel/types";
 
 const supportedExtensions = new Set([
+  ".pdf",
   ".jpg",
   ".jpeg",
   ".png",
@@ -54,19 +56,19 @@ interface BabelState extends PluginPass {
       filename?: string;
     };
   };
-  squeezitBabelCache?: Map<string, string>;
+  squeezitBabelCache?: Map<string, string | null>;
   squeezitOptions?: Required<SqueezitBabelPluginOptions>;
 }
 
 export function squeezitBabel(
   api: {
-    assertVersion(version: number): void;
+    assertVersion(version: number | string): void;
     env(value?: string | string[]): boolean;
     types: typeof import("@babel/types");
   },
   options: SqueezitBabelPluginOptions = {}
-): PluginObj<BabelState> {
-  api.assertVersion(7);
+) {
+  api.assertVersion("^7.0.0 || ^8.0.0");
 
   const resolvedOptions: Required<SqueezitBabelPluginOptions> = {
     enabled: options.enabled ?? true,
@@ -82,7 +84,7 @@ export function squeezitBabel(
 
   return {
     name: "squeezit:babel",
-    pre() {
+    pre(this: BabelState) {
       this.squeezitBabelCache = new Map();
       this.squeezitOptions = resolvedOptions;
     },
@@ -244,8 +246,8 @@ function rewriteSingleReference(
 
   const cacheKey = `${resolvedAsset}::${state.squeezitOptions.cacheDir}`;
   const cached = state.squeezitBabelCache?.get(cacheKey);
-  if (cached) {
-    return toImportPath(relative(dirname(sourceFile), cached));
+  if (state.squeezitBabelCache?.has(cacheKey)) {
+    return cached ? toImportPath(relative(dirname(sourceFile), cached)) : null;
   }
 
   const projectRoot = process.cwd();
@@ -255,13 +257,28 @@ function rewriteSingleReference(
     state.squeezitOptions.cacheDir
   );
 
-  mkdirSync(dirname(targetPath), { recursive: true });
-  cpSync(resolvedAsset, targetPath, { force: true });
-  optimizeGeneratedAsset(
-    targetPath,
-    projectRoot,
-    state.squeezitOptions.checkDependencies
-  );
+  // Stage all inputs privately: PDFs can arrive under an image extension.
+  const workspace = mkdtempSync(join(tmpdir(), "squeezit-babel-"));
+  const stagedPath = join(workspace, `asset${extension}`);
+  try {
+    cpSync(resolvedAsset, stagedPath, { force: true });
+    const result = optimizeGeneratedAsset(
+      stagedPath,
+      projectRoot,
+      state.squeezitOptions.checkDependencies
+    );
+    if (
+      (extension === ".pdf" || result.label === "[PDF]") &&
+      result.status !== "optimized"
+    ) {
+      state.squeezitBabelCache?.set(cacheKey, null);
+      return null;
+    }
+    mkdirSync(dirname(targetPath), { recursive: true });
+    cpSync(stagedPath, targetPath, { force: true });
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
 
   state.squeezitBabelCache?.set(cacheKey, targetPath);
   return toImportPath(relative(dirname(sourceFile), targetPath));
@@ -289,7 +306,7 @@ function optimizeGeneratedAsset(
   targetPath: string,
   projectRoot: string,
   checkDependencies: boolean
-): void {
+): { status: string; label: string } {
   const script = [
     "const [modulePath, filePath, cwd, checkDeps] = process.argv.slice(1);",
     "const { optimizeFile } = require(modulePath);",
@@ -303,6 +320,7 @@ function optimizeGeneratedAsset(
     '  if (result.status === "failed") {',
     "    throw new Error(result.message || `Failed to optimize ${filePath}`);",
     "  }",
+    "  process.stdout.write(JSON.stringify({ status: result.status, label: result.label }));",
     "})().catch((error) => {",
     "  console.error(error instanceof Error ? error.message : String(error));",
     "  process.exit(1);",
@@ -333,6 +351,24 @@ function optimizeGeneratedAsset(
         result.stdout ||
         "[squeezit:babel] Failed to optimize generated asset."
       ).trim()
+    );
+  }
+  try {
+    const parsed: unknown = JSON.parse(result.stdout);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      !("status" in parsed) ||
+      !("label" in parsed) ||
+      typeof parsed.label !== "string" ||
+      !["optimized", "skipped", "dry-run"].includes(String(parsed.status))
+    ) {
+      throw new Error("Invalid optimization result");
+    }
+    return { status: String(parsed.status), label: parsed.label };
+  } catch {
+    throw new Error(
+      "[squeezit:babel] Invalid optimization result from child process."
     );
   }
 }

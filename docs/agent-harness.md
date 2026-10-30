@@ -49,7 +49,7 @@ and the current verification recommendation.
 
 `agent:preflight` wraps that report with `blockers`, `warnings`, and ordered
 `nextActions`. It blocks only when Git/project inspection cannot run, Bun is
-not the required `1.3.5`, Node is below `22.13.0`, `bun.lock` is absent, or
+not the required `1.4.4`, Node is below `22.13.0`, `bun.lock` is absent, or
 project dependencies are unavailable. A dirty worktree, missing upstream,
 stale/shadowed installation, unsupported native-tool platform, or unhealthy
 optimizer is a warning. Preserve existing dirty changes; they are never

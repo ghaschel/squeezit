@@ -13,10 +13,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const esbuildFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -32,7 +35,7 @@ const esbuildFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const esbuildAssetPattern =
-  "**/*.{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  "**/*.{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -44,6 +47,17 @@ afterEach(async () => {
 });
 
 describe("esbuild integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through the real Esbuild host", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldEsbuildProject(workspace, true);
+    await buildProject(workspace, "pdf-optimized", [squeezitEsbuild()]);
+    await findBuiltAssets(join(workspace, "pdf-optimized"));
+    await buildProject(workspace, "pdf-disabled", [
+      squeezitEsbuild({ enabled: false }),
+    ]);
+    await findBuiltAssets(join(workspace, "pdf-disabled"));
+  });
+
   test("creates a build-time plugin that uses default mode with metadata stripping", () => {
     const plugin = squeezitEsbuild();
     const options = createEsbuildOptimizationOptions("/tmp/esbuild-out", false);
@@ -127,10 +141,13 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldEsbuildProject(workspace: string): Promise<void> {
+async function scaffoldEsbuildProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "src", "fixtures"), { recursive: true });
 
-  const fixtures = getEsbuildFixtures();
+  const fixtures = getEsbuildFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(
       fixture.sourcePath,
@@ -163,6 +180,7 @@ async function buildProject(
     entryNames: "bundle",
     assetNames: "assets/[name]",
     loader: {
+      ".pdf": "file",
       ".png": "file",
       ".gif": "file",
       ".webp": "file",
@@ -187,6 +205,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -201,12 +220,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getEsbuildFixtures(): Array<{
+function getEsbuildFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return esbuildFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];

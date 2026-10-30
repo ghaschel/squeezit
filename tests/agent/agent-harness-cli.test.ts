@@ -22,7 +22,7 @@ describe("agent harness scripts", () => {
           changedPaths: expect.arrayContaining(["scripts/agent-status.ts"]),
         },
         runtime: {
-          bun: expect.objectContaining({ expected: "1.3.5" }),
+          bun: expect.objectContaining({ expected: "1.4.4" }),
           node: expect.objectContaining({ minimum: "22.13.0" }),
         },
         skills: expect.objectContaining({ available: expect.any(Array) }),

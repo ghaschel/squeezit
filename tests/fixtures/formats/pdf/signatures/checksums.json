@@ -1,0 +1,12 @@
+{
+  "openssl": "OpenSSL 4.0.3 29 Sep 2026 (Library: OpenSSL 4.0.3 29 Sep 2026)",
+  "sha256": {
+    "valid-signer.pem": "ef6acf9bcf537918b64401c9285776003ad674ccb522cb163aece728225b32bf",
+    "expired-signer.pem": "b8c5b5c622299803c57ea558b2a58dd4f2cc1309981a18a59a97f5488a41077a",
+    "signed-valid.pdf": "5d454fa007269e630f0fe5ea539e9b604956ad5925eaa6f256a9536372b9ad1c",
+    "signed-invalid.pdf": "991c4a1348da18a05646cbe497853b572e2b47fa09816cf546c1723b98f74a81",
+    "signed-expired.pdf": "d1a6250d8be8c976f7f1f4acab5d551052f7a4bb21eb1bf8b9f530538729374c",
+    "certification-structure.pdf": "5b3f158598d0cbc6ce0c6925d703a28eb35f8969bae02b7e445259cb2e44a2d9",
+    "timestamp-structure.pdf": "a8f9e100df89602a777035826ae996ec0bc9eda23113bde98e3b3348e298d4c2"
+  }
+}

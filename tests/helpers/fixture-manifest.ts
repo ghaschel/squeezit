@@ -28,8 +28,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 555181,
-        optimizedSize: 544004,
-        savedBytes: 11177,
+        optimizedSize: 543913,
+        savedBytes: 11268,
       },
       exif: {
         status: "optimized",
@@ -40,8 +40,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 555181,
-        optimizedSize: 540792,
-        savedBytes: 14389,
+        optimizedSize: 540751,
+        savedBytes: 14430,
       },
     },
   },
@@ -52,8 +52,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 768552,
-        optimizedSize: 701357,
-        savedBytes: 67195,
+        optimizedSize: 703270,
+        savedBytes: 65282,
       },
       exif: {
         status: "optimized",
@@ -64,8 +64,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 768552,
-        optimizedSize: 701324,
-        savedBytes: 67228,
+        optimizedSize: 703270,
+        savedBytes: 65282,
       },
     },
   },
@@ -76,8 +76,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 1006708,
-        optimizedSize: 945583,
-        savedBytes: 61125,
+        optimizedSize: 948529,
+        savedBytes: 58179,
       },
       exif: {
         status: "optimized",
@@ -112,8 +112,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 370648,
-        optimizedSize: 1582,
-        savedBytes: 369066,
+        optimizedSize: 327124,
+        savedBytes: 43524,
       },
     },
   },
@@ -196,8 +196,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 2147816,
-        optimizedSize: 941666,
-        savedBytes: 1206150,
+        optimizedSize: 941665,
+        savedBytes: 1206151,
       },
       exif: {
         status: "optimized",
@@ -220,8 +220,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 2147816,
-        optimizedSize: 941666,
-        savedBytes: 1206150,
+        optimizedSize: 941665,
+        savedBytes: 1206151,
       },
       exif: {
         status: "optimized",
@@ -244,8 +244,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 3797505,
-        optimizedSize: 2465189,
-        savedBytes: 1332316,
+        optimizedSize: 3670898,
+        savedBytes: 126607,
       },
       exif: {
         status: "optimized",
@@ -256,8 +256,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 3797505,
-        optimizedSize: 2319973,
-        savedBytes: 1477532,
+        optimizedSize: 2322286,
+        savedBytes: 1475219,
       },
     },
   },
@@ -292,8 +292,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 2155326,
-        optimizedSize: 730610,
-        savedBytes: 1424716,
+        optimizedSize: 742416,
+        savedBytes: 1412910,
       },
       exif: {
         status: "optimized",
@@ -304,8 +304,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 2155326,
-        optimizedSize: 703307,
-        savedBytes: 1452019,
+        optimizedSize: 703624,
+        savedBytes: 1451702,
       },
     },
   },
@@ -316,8 +316,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 180638,
-        optimizedSize: 76365,
-        savedBytes: 104273,
+        optimizedSize: 76463,
+        savedBytes: 104175,
       },
       exif: {
         status: "skipped",
@@ -340,8 +340,8 @@ export const formatFixtures: FormatFixture[] = [
       default: {
         status: "optimized",
         originalSize: 4286,
-        optimizedSize: 302,
-        savedBytes: 3984,
+        optimizedSize: 304,
+        savedBytes: 3982,
       },
       exif: {
         status: "skipped",
@@ -352,8 +352,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 4286,
-        optimizedSize: 302,
-        savedBytes: 3984,
+        optimizedSize: 304,
+        savedBytes: 3982,
       },
     },
   },
@@ -376,8 +376,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 24746752,
-        optimizedSize: 20644438,
-        savedBytes: 4102314,
+        optimizedSize: 19588048,
+        savedBytes: 5158704,
       },
     },
   },
@@ -400,8 +400,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 23187950,
-        optimizedSize: 21367518,
-        savedBytes: 1820432,
+        optimizedSize: 20487626,
+        savedBytes: 2700324,
       },
     },
   },
@@ -424,8 +424,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 19300180,
-        optimizedSize: 15568526,
-        savedBytes: 3731654,
+        optimizedSize: 14983510,
+        savedBytes: 4316670,
       },
     },
   },
@@ -448,8 +448,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 14127616,
-        optimizedSize: 7664300,
-        savedBytes: 6463316,
+        optimizedSize: 7301028,
+        savedBytes: 6826588,
       },
     },
   },
@@ -472,8 +472,8 @@ export const formatFixtures: FormatFixture[] = [
       max: {
         status: "optimized",
         originalSize: 33746448,
-        optimizedSize: 20138338,
-        savedBytes: 13608110,
+        optimizedSize: 19666016,
+        savedBytes: 14080432,
       },
     },
   },
@@ -530,9 +530,35 @@ export const formatFixtures: FormatFixture[] = [
       },
     },
   },
+  {
+    format: "pdf",
+    relativePath: "pdf/document.pdf",
+    expectations: {
+      default: {
+        status: "optimized",
+        originalSize: 35205,
+        optimizedSize: 934,
+        savedBytes: 34271,
+      },
+      exif: {
+        status: "skipped",
+        originalSize: 35205,
+        optimizedSize: 35205,
+        savedBytes: 0,
+      },
+      max: {
+        status: "optimized",
+        originalSize: 35205,
+        optimizedSize: 934,
+        savedBytes: 34271,
+      },
+    },
+  },
 ];
 
 export const representativeFixtures = {
+  pdf: join(fixtureRoot, "pdf", "document.pdf"),
+  pdfProtected: join(fixtureRoot, "pdf", "signature-field.pdf"),
   jpg: join(fixtureRoot, "jpeg", "sample.jpg"),
   jpeg: join(fixtureRoot, "jpeg", "sample.jpeg"),
   png: join(fixtureRoot, "png", "sample.png"),

@@ -14,10 +14,13 @@ import {
   hasRepresentativeFixture,
   representativeFixtures,
 } from "../helpers/fixture-manifest";
+import { assertBuiltPdfAssets } from "../helpers/pdf-adapters";
 import { cleanupWorkspace, createTempWorkspace } from "../helpers/temp";
 
 const workspaces: string[] = [];
 const viteFixtureKeys = [
+  "pdf",
+  "pdfProtected",
   "png",
   "apng",
   "gif",
@@ -33,9 +36,9 @@ const viteFixtureKeys = [
 ] as const;
 const rawFixtureKeys = ["arw", "cr2", "nef", "orf", "raf"] as const;
 const viteAssetExtensionPattern =
-  ".{png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
+  ".{pdf,png,gif,webp,svg,heif,heic,avif,bmp,ico,cur,jxl}";
 const viteAssetsInclude =
-  /\.(png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i;
+  /\.(pdf|png|gif|webp|svg|heif|heic|avif|bmp|ico|cur|jxl)$/i;
 
 afterEach(async () => {
   while (workspaces.length > 0) {
@@ -47,6 +50,17 @@ afterEach(async () => {
 });
 
 describe("vite integration", () => {
+  test("optimizes eligible PDFs and preserves protected PDFs through the real Vite host", async () => {
+    const workspace = await createWorkspace();
+    await scaffoldViteProject(workspace, true);
+    await buildProject(workspace, "pdf-optimized", [squeezitVite()]);
+    await findBuiltAssets(join(workspace, "pdf-optimized"));
+    await buildProject(workspace, "pdf-disabled", [
+      squeezitVite({ enabled: false }),
+    ]);
+    await findBuiltAssets(join(workspace, "pdf-disabled"));
+  });
+
   test("creates a build-only plugin that uses default mode with metadata stripping", () => {
     const plugin = squeezitVite();
     const options = createViteOptimizationOptions("/tmp/vite-out", false);
@@ -122,11 +136,21 @@ async function createWorkspace(): Promise<string> {
   return workspace;
 }
 
-async function scaffoldViteProject(workspace: string): Promise<void> {
+async function scaffoldViteProject(
+  workspace: string,
+  pdfOnly = false
+): Promise<void> {
   await mkdir(join(workspace, "src"), { recursive: true });
   await mkdir(join(workspace, "src", "fixtures"), { recursive: true });
 
-  const fixtures = getViteFixtures();
+  await mkdir(join(workspace, "public"), { recursive: true });
+  await cp(representativeFixtures.pdf, join(workspace, "public/publicPdf.pdf"));
+  await cp(
+    representativeFixtures.pdfProtected,
+    join(workspace, "public/public-pdfProtected.pdf")
+  );
+
+  const fixtures = getViteFixtures(pdfOnly);
   for (const fixture of fixtures) {
     await cp(
       fixture.sourcePath,
@@ -193,6 +217,7 @@ async function findBuiltAssets(directory: string): Promise<string[]> {
   });
 
   const assets = matches.sort();
+  await assertBuiltPdfAssets(assets);
   if (assets.length === 0) {
     throw new Error(`Expected built image assets in ${directory}, found none.`);
   }
@@ -207,12 +232,13 @@ async function totalAssetSize(paths: string[]): Promise<number> {
   return sizes.reduce((total, size) => total + size, 0);
 }
 
-function getViteFixtures(): Array<{
+function getViteFixtures(pdfOnly = false): Array<{
   key: string;
   sourcePath: string;
   fileName: string;
 }> {
   return viteFixtureKeys
+    .filter((key) => !pdfOnly || key === "pdf" || key === "pdfProtected")
     .filter((key) => hasRepresentativeFixture(key))
     .map((key) => {
       const sourcePath = representativeFixtures[key];

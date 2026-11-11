@@ -58,15 +58,18 @@ describe("cli option resolution", () => {
     expect(parsed.concurrency).toBe(2);
   });
 
-  test("rejects a threshold override for the max profile", () => {
-    expect(() =>
-      resolveCompressOptions(
-        [],
-        { profile: "max", threshold: 1 } as never,
-        process.cwd()
-      )
-    ).toThrow("--threshold cannot be used with --profile max");
-  });
+  test.each([{ profile: "max" }, { max: true }])(
+    "rejects a threshold override for %j",
+    (flags) => {
+      expect(() =>
+        resolveCompressOptions(
+          [],
+          { ...flags, threshold: 1 } as never,
+          process.cwd()
+        )
+      ).toThrow("--threshold cannot be used with --profile max");
+    }
+  );
 
   test("forces threshold zero in max mode", () => {
     const parsed = resolveCompressOptions([], { max: true }, process.cwd());

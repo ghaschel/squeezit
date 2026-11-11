@@ -281,28 +281,34 @@ describe("CLI plan/apply workflow", () => {
     });
   });
 
-  test("rejects explicit unsupported inputs before writing an artifact", async () => {
+  test("omits explicit unsupported inputs from the plan artifact", async () => {
     const workspace = await createWorkspace();
     const unsupported = join(workspace, "notes.txt");
     const output = join(workspace, "plans", "compress.json");
     await writeFile(unsupported, "not an image");
+    const input = await copyFixtureToWorkspace(
+      representativeFixtures.svg,
+      workspace
+    );
 
     const result = await runJson(
-      ["plan", "compress", unsupported, "--output", output, "--json"],
+      ["plan", "compress", unsupported, input, "--output", output, "--json"],
       workspace
     );
 
     expect(result).toMatchObject({
-      exitCode: 1,
+      exitCode: 0,
       envelope: {
-        error: {
-          code: "UNSUPPORTED_FORMAT",
-          details: { paths: [unsupported] },
+        data: {
+          plan: { inputs: [expect.objectContaining({ path: input })] },
         },
-        ok: false,
+        ok: true,
       },
     });
-    await expect(readFile(output)).rejects.toMatchObject({ code: "ENOENT" });
+    expect(JSON.parse(await readFile(output, "utf8"))).toEqual(
+      result.envelope.data.plan
+    );
+    expect(await readFile(unsupported, "utf8")).toBe("not an image");
   });
 });
 

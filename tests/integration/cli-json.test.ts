@@ -262,28 +262,30 @@ describe("agent-facing JSON CLI contract", () => {
     });
   });
 
-  test("rejects incompatible profile flags without starting max compression", async () => {
-    const result = await runJson([
-      "compress",
-      "--profile",
-      "max",
-      "--threshold",
-      "1",
-      "--json",
-    ]);
+  test.each([["--profile", "max"], ["--max"], ["-m"]])(
+    "rejects incompatible profile flags without starting max compression (%j)",
+    async (...profile) => {
+      const result = await runJson([
+        "compress",
+        ...profile,
+        "--threshold",
+        "1",
+        "--json",
+      ]);
 
-    expect(result.exitCode).toBe(1);
-    expect(result.envelope).toMatchObject({
-      schemaVersion: 2,
-      command: "compress",
-      ok: false,
-      data: {},
-      error: {
-        code: "VALIDATION_ERROR",
-        message: "--threshold cannot be used with --profile max",
-      },
-    });
-  });
+      expect(result.exitCode).toBe(1);
+      expect(result.envelope).toMatchObject({
+        schemaVersion: 2,
+        command: "compress",
+        ok: false,
+        data: {},
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "--threshold cannot be used with --profile max",
+        },
+      });
+    }
+  );
 
   test("returns scoped dependency diagnostics as JSON", async () => {
     const result = await runJson([

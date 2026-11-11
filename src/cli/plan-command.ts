@@ -4,7 +4,6 @@ import type { OptimizationInputGuard } from "../utils";
 import {
   collectRequiredDependencies,
   diagnoseDependencies,
-  findUnsupportedExplicitInputs,
   resolveInputs,
 } from "../utils";
 import type { CommandProgressReporter } from "./events";
@@ -37,19 +36,7 @@ export async function createPlanArtifact(params: {
   plan: OptimizationPlan;
 }> {
   params.events?.phaseStarted("input-discovery");
-  const [inputs, unsupportedInputs] = await Promise.all([
-    resolveInputs(params.options),
-    findUnsupportedExplicitInputs(params.options),
-  ]);
-
-  if (unsupportedInputs.length > 0) {
-    throw new SqueezitError({
-      code: "UNSUPPORTED_FORMAT",
-      details: { paths: unsupportedInputs },
-      message: `Unsupported image format: ${unsupportedInputs.join(", ")}`,
-      remediation: "Use a supported image format or remove this input.",
-    });
-  }
+  const inputs = await resolveInputs(params.options);
 
   params.events?.phaseCompleted("input-discovery", { inputs: inputs.length });
   await params.onInputsResolved?.(inputs);

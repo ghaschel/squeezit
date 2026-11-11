@@ -30,6 +30,9 @@ sqz deps upgrade "images/**/*.png" --profile max --dry-run
 dependencies as compression. With no input patterns, the command checks all
 24 executables. It does not compress the selected files.
 
+`deps doctor`, `deps install`, and `deps upgrade` also accept `--max` or `-m`
+as a shortcut for `--profile max`. Use one spelling per invocation.
+
 ## Targets and verification
 
 Targets are upstream version floors for this command. Newer installed versions

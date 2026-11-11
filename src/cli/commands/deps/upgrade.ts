@@ -14,6 +14,7 @@ import {
 } from "../../../utils";
 import { SqueezitOperationCommand } from "../../operation-command";
 import { requiresExplicitConfirmation, SqueezitError } from "../../output";
+import { optimizationProfileFlags } from "../../profile-flags";
 
 export default class DependenciesUpgrade extends SqueezitOperationCommand {
   static override args = {
@@ -32,11 +33,9 @@ export default class DependenciesUpgrade extends SqueezitOperationCommand {
       char: "r",
       description: "Recurse into directories.",
     }),
-    profile: Flags.option({
-      description: "Include tools needed for this optimization profile.",
-      default: "standard",
-      options: ["standard", "max"] as const,
-    })(),
+    ...optimizationProfileFlags(
+      "Include tools needed for this optimization profile."
+    ),
     "strip-meta": Flags.boolean({
       description: "Include image metadata stripping tools.",
     }),
@@ -60,6 +59,7 @@ export default class DependenciesUpgrade extends SqueezitOperationCommand {
     const options = resolveCompressOptions(
       args.patterns ?? [],
       {
+        max: flags.max,
         profile: flags.profile,
         recursive: flags.recursive,
         stripMeta: flags["strip-meta"],
@@ -68,7 +68,7 @@ export default class DependenciesUpgrade extends SqueezitOperationCommand {
     );
     const dryRun = Boolean(flags["dry-run"]);
     await this.beginReceipt(flags.receipt, "deps upgrade", {
-      profile: flags.profile,
+      profile: options.max ? "max" : "standard",
       recursive: Boolean(flags.recursive),
       stripMeta: Boolean(flags["strip-meta"]),
       dryRun,

@@ -25,6 +25,12 @@ Use the reported capability data rather than hard-coding a command taxonomy.
 In particular, inspect `effects` and `confirmation.requiredWhen` before an
 operation that may write files, install system tools, or update Squeezit.
 
+Commands with `--profile standard|max` also accept `--max` or `-m` as a
+shortcut for `--profile max`. Use either the shortcut or an explicit profile,
+not both. Both spellings produce the same normalized plan and receipt options
+and apply the same `--threshold` validation. This applies to `compress`,
+`plan compress`, `deps doctor`, `deps install`, and `deps upgrade`.
+
 ## Command envelope v2
 
 Every `--json` response from a Squeezit-owned command has this top-level
@@ -107,10 +113,10 @@ Command failures retain the same envelope and add an `error` object:
   "ok": false,
   "data": {},
   "error": {
-    "code": "UNSUPPORTED_FORMAT",
-    "message": "Unsupported image format: /work/document.txt",
-    "remediation": "Use a supported image format or remove this input.",
-    "details": { "paths": ["/work/document.txt"] }
+    "code": "CONFIRMATION_REQUIRED",
+    "message": "--yes is required for compress in JSON, JSON Lines, or non-interactive mode.",
+    "remediation": "Re-run with --yes after reviewing the files that will change.",
+    "details": { "command": "compress" }
   },
   "meta": {
     "squeezitVersion": "2.0.7",
@@ -131,7 +137,6 @@ human-readable `message`.
 | --------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `VALIDATION_ERROR`          | CLI syntax or incompatible flags are invalid.                                                       | Inspect `sqz capabilities --json` or `--help`, then correct the invocation.          |
 | `UNKNOWN_COMMAND`           | A requested command does not exist.                                                                 | Discover commands with `sqz capabilities --json`.                                    |
-| `UNSUPPORTED_FORMAT`        | An explicit existing input is not an image Squeezit supports.                                       | Remove it or provide a supported image file.                                         |
 | `UNSUPPORTED_PLATFORM`      | The host OS cannot use the native toolchain.                                                        | Use macOS or Debian/Ubuntu Linux.                                                    |
 | `DEPENDENCY_MISSING`        | Required optimizer binaries are unavailable or unhealthy.                                           | Run `sqz deps install` or follow the remediation.                                    |
 | `DEPENDENCY_UPGRADE_FAILED` | A dependency target is still unmet/unverifiable, or a package command failed.                       | Inspect `toolsAfter`, `blocked`, and `executed`; fix the provider or PATH and retry. |
@@ -156,9 +161,13 @@ human-readable `message`.
 not command failures. They identify another discovered binary that is newer
 than, or appears earlier on `PATH` than, the active Squeezit installation.
 
-Explicit existing unsupported files fail early—before confirmations,
-dependency checks, or writes. Directory scans and glob patterns still ignore
-unsupported files so mixed asset directories remain convenient.
+Input discovery ignores files with unsupported extensions in explicit paths,
+shell-expanded arguments, directory scans, and glob patterns. These files are
+excluded from results, counts, receipts, and plans; they are never modified.
+Compression and metadata stripping succeed with zero processed files if no
+supported inputs remain, without requiring confirmation or optimizer tools.
+`UNSUPPORTED_FORMAT` remains reserved in the schema for compatibility; input
+discovery no longer emits it for unsupported paths.
 
 ## Reviewable plan and apply workflow
 

@@ -35,6 +35,15 @@ describe("Oclif command taxonomy", () => {
   });
 
   test("makes profile, progress, and package manager choices discoverable", () => {
+    for (const command of [
+      Compress,
+      PlanCompress,
+      DependenciesDoctor,
+      DependenciesInstall,
+      DependenciesUpgrade,
+    ]) {
+      expect(command.flags).toHaveProperty("max.char", "m");
+    }
     expect(Compress.flags.profile.options).toEqual(["standard", "max"]);
     expect(Compress.flags.progress.options).toEqual(["auto", "off"]);
     expect(UpdateCheck.flags.pm.options).toEqual(["npm", "bun", "brew"]);

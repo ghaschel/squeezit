@@ -138,6 +138,16 @@
           ],
           "type": "option"
         },
+        "max": {
+          "char": "m",
+          "description": "Shortcut for --profile max; use either spelling.",
+          "exclusive": [
+            "profile"
+          ],
+          "name": "max",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "strip-meta": {
           "description": "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",
           "name": "strip-meta",
@@ -276,6 +286,16 @@
           ],
           "type": "option"
         },
+        "max": {
+          "char": "m",
+          "description": "Shortcut for --profile max; use either spelling.",
+          "exclusive": [
+            "profile"
+          ],
+          "name": "max",
+          "allowNo": false,
+          "type": "boolean"
+        },
         "strip-meta": {
           "description": "Include metadata stripping tools.",
           "name": "strip-meta",
@@ -360,6 +380,16 @@
             "max"
           ],
           "type": "option"
+        },
+        "max": {
+          "char": "m",
+          "description": "Shortcut for --profile max; use either spelling.",
+          "exclusive": [
+            "profile"
+          ],
+          "name": "max",
+          "allowNo": false,
+          "type": "boolean"
         },
         "strip-meta": {
           "description": "Include metadata stripping tools.",
@@ -452,6 +482,16 @@
             "max"
           ],
           "type": "option"
+        },
+        "max": {
+          "char": "m",
+          "description": "Shortcut for --profile max; use either spelling.",
+          "exclusive": [
+            "profile"
+          ],
+          "name": "max",
+          "allowNo": false,
+          "type": "boolean"
         },
         "strip-meta": {
           "description": "Include image metadata stripping tools.",
@@ -850,6 +890,16 @@
             "max"
           ],
           "type": "option"
+        },
+        "max": {
+          "char": "m",
+          "description": "Shortcut for --profile max; use either spelling.",
+          "exclusive": [
+            "profile"
+          ],
+          "name": "max",
+          "allowNo": false,
+          "type": "boolean"
         },
         "strip-meta": {
           "description": "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",

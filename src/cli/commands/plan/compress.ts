@@ -3,6 +3,7 @@ import { Args, Flags } from "@oclif/core";
 import { resolveCompressOptions } from "../../../utils";
 import { SqueezitOperationCommand } from "../../operation-command";
 import { createPlanArtifact, runtimeSnapshot } from "../../plan-command";
+import { optimizationProfileFlags } from "../../profile-flags";
 import { receiptOptions } from "../compress";
 
 export default class PlanCompress extends SqueezitOperationCommand {
@@ -27,11 +28,7 @@ export default class PlanCompress extends SqueezitOperationCommand {
       char: "r",
       description: "Recurse into directories.",
     }),
-    profile: Flags.option({
-      description: "Optimization profile recorded in the plan.",
-      default: "standard",
-      options: ["standard", "max"] as const,
-    })(),
+    ...optimizationProfileFlags("Optimization profile recorded in the plan."),
     "strip-meta": Flags.boolean({
       description:
         "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",
@@ -67,6 +64,7 @@ export default class PlanCompress extends SqueezitOperationCommand {
         concurrency: flags.concurrency,
         inPlace: flags["in-place"],
         keepTime: flags["keep-time"],
+        max: flags.max,
         profile: flags.profile,
         recursive: flags.recursive,
         stripMeta: flags["strip-meta"],

@@ -391,19 +391,38 @@ sqz <command> [arguments] [flags]
 | Flag                        | Description                                                                                                                                                                                                               |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `--profile standard \| max` | `max` preserves the former full/max behavior: heaviest lossless passes, image metadata removal, PDF metadata preservation, threshold `0`, and a default concurrency cap of `2`. It cannot be combined with `--threshold`. |
+| `-m, --max`                 | Shortcut for `--profile max`; cannot be combined with an explicit `--profile` or `--threshold`.                                                                                                                           |
 | `-r, --recursive`           | Recurse into input directories.                                                                                                                                                                                           |
-| `-s, --strip-meta`          | Remove image EXIF, IPTC, and XMP metadata during compression; PDF metadata is preserved.                                                                                                                                  |
+| `--strip-meta`              | Remove image EXIF, IPTC, and XMP metadata during compression; PDF metadata is preserved.                                                                                                                                  |
 | `-d, --dry-run`             | Report potential changes without writing files.                                                                                                                                                                           |
 | `-k, --keep-time`           | Preserve input timestamps.                                                                                                                                                                                                |
 | `-c, --concurrency <n>`     | Set worker count.                                                                                                                                                                                                         |
 | `--progress auto \| off`    | Use TTY progress automatically or force streaming output.                                                                                                                                                                 |
-| `-t, --threshold <bytes>`   | Minimum bytes saved before replacement; invalid with `--profile max`.                                                                                                                                                     |
-| `-i, --in-place`            | Create temporary artifacts beside source files.                                                                                                                                                                           |
+| `--threshold <bytes>`       | Minimum bytes saved before replacement; invalid with `--profile max`.                                                                                                                                                     |
+| `--in-place`                | Create temporary artifacts beside source files.                                                                                                                                                                           |
 | `-y, --yes`                 | Confirm non-dry-run image or PDF changes without an interactive prompt. Required in JSON, JSON Lines, or non-interactive mode.                                                                                            |
 | `-v, --verbose`             | Print diagnostics to stderr, or include them in JSON output.                                                                                                                                                              |
 | `--receipt <path>`          | Atomically checkpoint an auditable receipt for an operational command.                                                                                                                                                    |
 
 Patterns can be explicit paths, directories, shell patterns, or glob expressions. A `compress` command with no patterns scans supported image and PDF extensions in the current directory; scanning is non-recursive unless `--recursive` is supplied.
+
+Files with unsupported extensions are ignored, including explicit paths and
+files expanded by your shell. Broad patterns such as `sqz compress -r **/*.*`
+process only supported files. If none remain, the command succeeds without
+processing any files. The same filtering applies to metadata stripping and
+plan creation.
+
+Use `--profile max`, `--max`, or `-m` to select the same max profile. The
+shortcuts are available on `compress`, `plan compress`, `deps doctor`,
+`deps install`, and `deps upgrade`. Use one spelling per invocation;
+`--max`/`-m` cannot be combined with an explicit `--profile`. Max compression
+rejects `--threshold` with either spelling.
+
+```bash
+sqz compress --profile max -r '**/*.*'
+sqz compress --max -r '**/*.*'
+sqz compress -m -r '**/*.*'
+```
 
 ### Progress Output
 
@@ -749,7 +768,7 @@ The completion command exposes Squeezit commands, both binary aliases, flags, an
 
 ## Migrating to 2.0
 
-2.0 intentionally replaces the root compression command and its operational flags. Use explicit commands instead:
+2.0 intentionally replaced the root compression command and its operational flags. That migration removed `--max` in favor of `compress --profile max`. The current CLI restores `--max` and `-m` as equivalent shortcuts on commands that accept `--profile`; the root command remains non-operational. The original migration was:
 
 | Before 2.0               | 2.0                          |
 | ------------------------ | ---------------------------- |

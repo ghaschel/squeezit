@@ -72,6 +72,7 @@ describe("agent capability discovery", () => {
       json: true,
       outputSchema: "#/$defs/optimizationData",
       flags: expect.arrayContaining([
+        expect.objectContaining({ name: "max", char: "m", type: "boolean" }),
         expect.objectContaining({
           default: "standard",
           name: "profile",

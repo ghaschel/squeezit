@@ -8,7 +8,8 @@ export function resolveCompressOptions(
   flags: CompressCliFlags,
   cwd: string
 ): CompressCommandOptions {
-  if (flags.profile === "max" && flags.threshold !== undefined) {
+  const max = flags.profile === "max" || (flags.max ?? false);
+  if (max && flags.threshold !== undefined) {
     throw new SqueezitError({
       code: "VALIDATION_ERROR",
       details: { profile: "max", threshold: flags.threshold },
@@ -17,7 +18,6 @@ export function resolveCompressOptions(
     });
   }
 
-  const max = flags.profile === "max" || (flags.max ?? false);
   const exifOnly = flags.exif ?? false;
   const stripMeta = max || exifOnly || (flags.stripMeta ?? false);
   const threshold = max ? 0 : (flags.threshold ?? 100);

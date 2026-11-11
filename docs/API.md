@@ -58,6 +58,10 @@ const result = await optimizeFile("assets/hero.png", {
 
 Optimizes multiple files, directories, or patterns and returns batch results plus a summary.
 
+Files with unsupported extensions are excluded during input discovery, even
+when supplied as explicit paths. If no supported inputs remain, the batch
+returns an empty result list and a zero-count summary.
+
 ```ts
 const result = await optimizeFiles(["images", "*.png"], {
   recursive: true,

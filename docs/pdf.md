@@ -29,6 +29,10 @@ Preview the stronger profile:
 sqz compress document.pdf --profile max --dry-run
 ```
 
+`--max` or `-m` is an equivalent shortcut for `--profile max`. All three
+spellings preserve PDF metadata and use the same inspection and compression
+pipeline. Use one spelling per invocation.
+
 Use the public API to keep the source and write to a separate directory:
 
 ```ts

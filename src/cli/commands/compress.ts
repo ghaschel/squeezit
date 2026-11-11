@@ -13,7 +13,6 @@ import {
   confirmImageOptimization,
   diagnoseDependencies,
   ensureDependencies,
-  findUnsupportedExplicitInputs,
   formatOptimizationResult,
   logOptimizationResult,
   type OptimizationInputGuard,
@@ -27,6 +26,7 @@ import {
 import type { CommandProgressReporter } from "../events";
 import { SqueezitOperationCommand } from "../operation-command";
 import { requiresExplicitConfirmation, SqueezitError } from "../output";
+import { optimizationProfileFlags } from "../profile-flags";
 
 export default class Compress extends SqueezitOperationCommand {
   static override args = {
@@ -45,11 +45,7 @@ export default class Compress extends SqueezitOperationCommand {
       char: "r",
       description: "Recurse into directories.",
     }),
-    profile: Flags.option({
-      description: "Optimization profile.",
-      default: "standard",
-      options: ["standard", "max"] as const,
-    })(),
+    ...optimizationProfileFlags("Optimization profile."),
     "strip-meta": Flags.boolean({
       description:
         "Remove image EXIF/IPTC/XMP metadata; preserve PDF metadata.",
@@ -98,6 +94,7 @@ export default class Compress extends SqueezitOperationCommand {
         dryRun: flags["dry-run"],
         inPlace: flags["in-place"],
         keepTime: flags["keep-time"],
+        max: flags.max,
         profile: flags.profile,
         progress: flags.progress,
         recursive: flags.recursive,
@@ -161,20 +158,7 @@ export async function optimizeCommand(
     ? null
     : ora("Resolving image inputs").start();
   events?.phaseStarted("input-discovery");
-  const [inputs, unsupportedInputs] = await Promise.all([
-    resolveInputs(options),
-    findUnsupportedExplicitInputs(options),
-  ]);
-
-  if (unsupportedInputs.length > 0) {
-    discoverySpinner?.fail("Unsupported image input");
-    throw new SqueezitError({
-      code: "UNSUPPORTED_FORMAT",
-      details: { paths: unsupportedInputs },
-      message: `Unsupported image format: ${unsupportedInputs.join(", ")}`,
-      remediation: "Use a supported image format or remove this input.",
-    });
-  }
+  const inputs = await resolveInputs(options);
 
   events?.phaseCompleted("input-discovery", { inputs: inputs.length });
   await hooks?.onInputsResolved?.(inputs);

@@ -50,7 +50,7 @@ describe("published JSON Schemas", () => {
       true,
       false,
       false,
-      false,
+      true,
       false,
       false,
     ]);

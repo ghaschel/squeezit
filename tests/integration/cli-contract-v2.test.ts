@@ -1,4 +1,4 @@
-import { writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { execa } from "execa";
@@ -112,28 +112,85 @@ describe("CLI JSON v2 contract", () => {
     });
   });
 
-  test("rejects an explicit unsupported file before it can be changed", async () => {
+  test("ignores an explicit unsupported file without requiring tools or confirmation", async () => {
     const workspace = await createTempWorkspace("squeezit-cli-contract-");
     const input = resolve(workspace, "notes.txt");
     await writeFile(input, "not an image");
 
     try {
-      const result = await runJson(["compress", input, "--json"]);
+      const result = await runJson(["compress", input, "--json"], {
+        env: { PATH: "" },
+      });
 
-      expect(result.exitCode).toBe(1);
+      expect(result.exitCode).toBe(0);
       expect(result.envelope).toMatchObject({
         command: "compress",
-        error: {
-          code: "UNSUPPORTED_FORMAT",
-          details: { paths: [input] },
-          remediation: expect.any(String),
+        data: {
+          inputs: 0,
+          results: [],
+          summary: { processed: 0, failed: 0 },
         },
-        ok: false,
+        ok: true,
       });
+      expect(await readFile(input, "utf8")).toBe("not an image");
     } finally {
       await cleanupWorkspace(workspace);
     }
   });
+
+  test.each(["expanded", "glob", "directory"])(
+    "filters unsupported files from %s recursive inputs",
+    async (mode) => {
+      const workspace = await realpath(
+        await createTempWorkspace("squeezit-cli-contract-")
+      );
+      try {
+        const nested = resolve(workspace, "nested");
+        await mkdir(nested);
+        const input = await copyFixtureToWorkspace(
+          representativeFixtures.svg,
+          nested
+        );
+        const before = await readFile(input);
+        const unsupported = [
+          "README.md",
+          "checksums.json",
+          "original.jp2",
+          "original.ttf",
+          "signer.pem",
+        ];
+        for (const name of unsupported) {
+          await writeFile(resolve(nested, name), "leave unchanged");
+        }
+        const patterns =
+          mode === "expanded"
+            ? [input, ...unsupported.map((name) => resolve(nested, name))]
+            : [mode === "glob" ? "**/*.*" : "."];
+        const result = await runJson(
+          ["compress", "-r", ...patterns, "--dry-run", "--json"],
+          { cwd: workspace }
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(result.envelope).toMatchObject({
+          ok: true,
+          data: {
+            inputs: 1,
+            results: [expect.objectContaining({ filePath: input })],
+            summary: { processed: 1, failed: 0 },
+          },
+        });
+        expect(await readFile(input)).toEqual(before);
+        for (const name of unsupported) {
+          expect(await readFile(resolve(nested, name), "utf8")).toBe(
+            "leave unchanged"
+          );
+        }
+      } finally {
+        await cleanupWorkspace(workspace);
+      }
+    }
+  );
 
   test("requires an explicit confirmation for a JSON file-changing operation", async () => {
     const workspace = await createTempWorkspace("squeezit-cli-contract-");

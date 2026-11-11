@@ -46,7 +46,7 @@ describe("api behavior integration", () => {
     const outputDir = join(workspace, "dry-run-out");
 
     const result = await optimizeFile(inputPath, {
-      mode: "max",
+      mode: "default",
       cwd: workspace,
       outputDir,
       dryRun: true,

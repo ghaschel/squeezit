@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
+import { execFileSync, execSync } from "child_process";
 import { remark } from "remark";
 import remarkParse from "remark-parse";
 
@@ -92,7 +92,13 @@ const tagName = `v${version}`;
 
 try {
   // Write message to temp file to handle multiline properly
-  const tempFile = path.resolve(".git", "TAG_MESSAGE");
+  const tempFile = execFileSync(
+    "git",
+    ["rev-parse", "--git-path", "TAG_MESSAGE"],
+    {
+      encoding: "utf8",
+    }
+  ).trim();
   fs.writeFileSync(tempFile, tagMessage, "utf8");
 
   // Delete the tag locally

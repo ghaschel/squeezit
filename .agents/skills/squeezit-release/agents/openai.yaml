@@ -1,4 +1,4 @@
 interface:
   display_name: "Squeezit Release"
-  short_description: "Prepare and safely publish a Squeezit release"
-  default_prompt: "Use $squeezit-release to prepare the next Squeezit release."
+  short_description: "Commit, push, release, and wait for GitHub Actions"
+  default_prompt: "Use $squeezit-release to commit and push the intended changes, skip max tests, run bun release then bun push, and wait for the release GitHub Actions workflow to finish."

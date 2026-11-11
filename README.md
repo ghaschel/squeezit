@@ -835,6 +835,11 @@ reported skills, and use its verification recommendation. The harness is
 repository-only and read-only; the detailed workflow and JSON contract are in
 [`docs/agent-harness.md`](docs/agent-harness.md).
 
+For versioning and publication, follow the [release guide](docs/releasing.md).
+The repository-local `squeezit-release` skill commits and pushes the intended
+changes, skips max tests, runs `bun release` and `bun push` with the focused
+release checks, and waits for the matching GitHub Actions run to finish.
+
 ## License
 
 [MIT](https://github.com/ghaschel/squeezit/blob/main/LICENSE)

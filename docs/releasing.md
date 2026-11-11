@@ -21,21 +21,43 @@ which runs when a `v*` tag is pushed. Do not publish a release locally.
 ## Create and push a release
 
 Start from a clean, up-to-date `main` checkout with the release notes prepared.
-The local release command verifies the branch, clean tree, remote configuration,
-and tag availability before changing the version and creating a tag:
+Commit the intended changes and push those commits to `origin/main` first.
+The readiness script verifies a clean worktree, local `main`, and
+`HEAD == origin/main`; inspect the push destination and version/tag availability
+separately. This procedure supports stable `X.Y.Z` versions. Prerelease and
+build-metadata versions need changes to changelog splitting and npm channel
+handling before they can use this workflow.
+
+For agents, the repository-only
+[`squeezit-release` skill](https://github.com/ghaschel/squeezit/blob/main/.agents/skills/squeezit-release/SKILL.md)
+carries out the commit, push, release, and monitoring sequence. Include paths
+from the previous published tag through `HEAD` as repeated `--path` arguments
+to `bun run agent:preflight --json`, so already-committed changes receive their
+required checks. Run the recommended non-slow checks; the skill explicitly
+skips the long max-compression lane.
+
+Create the local release commit and tag:
 
 ```bash
 bun release
 ```
 
-Review the generated commit, changelog, and tag. When ready, run the focused
-release checks and push the release commit and tag:
+Review the generated commit, changelog, and tag. Run the focused release checks,
+preview the push destination and outgoing refs, then push:
 
 ```bash
-bun run release:push
+bun run release:check
+git push --dry-run --follow-tags
+bun push
 ```
 
-The release lifecycle rebuilds the Oclif CLI and regenerates
+The preview must update only the intended `main` and release tag on
+`ghaschel/squeezit`. `bun push` uses Git's default push destination and
+`--follow-tags` can include other reachable annotated tags. The existing
+`bun run release:push` convenience command combines the checks and push.
+
+The `postbump` lifecycle hook registered in `.versionrc.cjs` invokes
+`bun run postbump`, which rebuilds the Oclif CLI and regenerates
 `oclif.manifest.json` after the version bump, before the version commit and tag
 are created. The committed manifest therefore always carries the same version
 as `package.json`.
@@ -48,6 +70,11 @@ maximum-compression suite.
 The first live tag is an integration check for the full external path: npm OIDC
 publication, Oclif archive packaging, GitHub release creation, and the macOS
 Homebrew tap smoke test. Watch that run rather than attempting a local publish.
+
+Find the `release.yml` push run matching both the release tag and commit SHA,
+then use `gh run watch <run-id> --repo ghaschel/squeezit --exit-status` to wait
+for completion. Confirm a successful run and a non-draft GitHub release with
+the assets below before reporting success.
 
 ## What the workflow publishes
 
@@ -80,8 +107,11 @@ If a run fails before publication, fix the underlying problem and rerun the
 same tag workflow. Reruns may resume an existing draft release, refresh its
 notes, and replace its assets. A published release is deliberately not
 overwritten: the validation step fails rather than attempting recovery. If the
-tap update fails, the release remains a draft; correct the token, tap state, or
-formula issue and rerun the workflow.
+tap update fails, the release remains a draft; correct the token, external tap
+state, or runner issue and rerun failed jobs with
+`gh run rerun <run-id> --repo ghaschel/squeezit --failed`. Changes to tagged
+source, including formula generation, require a new version and tag. Never move
+an already-pushed release tag.
 
 ## User installation notes
 
